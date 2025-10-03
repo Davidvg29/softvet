@@ -1,9 +1,11 @@
 const express = require ("express")
+const morgan = require ("morgan")
 const cors = require ("cors");
 const {connection} = require('./config//bd/dataBase')
 
 //instancio express
 const app = express()
+
 
 //habilito cors
 app.use(cors({
@@ -12,8 +14,9 @@ app.use(cors({
 
 //utilizo libreria
 app.use(express.json())
+app.use(morgan('dev'));
 
-const prueba = require('./controllers/prueba')
+const prueba = require('./controllers/prueba');
 
 app.use('/prueba', prueba)
 
