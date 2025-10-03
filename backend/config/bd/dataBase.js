@@ -1,4 +1,4 @@
-require('dotenv').config(); // asegurate de cargar dotenv
+require('dotenv').config();
 
 const mysql = require('mysql2');
 
