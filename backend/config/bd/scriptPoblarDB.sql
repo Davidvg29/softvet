@@ -6,10 +6,10 @@ INSERT INTO roles (nombre_rol) VALUES
 ('Recepcionista');
 
 INSERT INTO empleados (usuario, contrasena, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, id_rol) VALUES
-('admin01', '123456', 'Joaquin', '12345670', 'Av. Siempre Viva 123', '3814556677', 'joaquin@vet.com', 1),
-('vet01', '', 'Mariano', '12345671', 'Calle San Martín 456', '3814551122', 'mariano@vet.com', 2),
-('recep01', '123456', 'Angel', '12345672', 'Belgrano 789', '3814223344', 'angel@vet.com', 3),
-('recep02', '123456', 'David', '12345673', 'Vallistos m6 c21', '3814223344', 'david@vet.com', 3);
+('joaquin', '123456', 'Joaquin', '12345670', 'Av. Siempre Viva 123', '3814556677', 'joaquin@softvet.com', 1),
+('mariano', '123456', 'Mariano', '12345671', 'Calle San Martín 456', '3814551122', 'mariano@softvet.com', 2),
+('angel', '123456', 'Angel', '12345672', 'Belgrano 789', '3814223344', 'angel@softvet.com', 3),
+('david', '123456', 'David', '12345673', 'Vallistos m6 c21', '3814223344', 'david@softvet.com', 3);
 
 INSERT INTO clientes (nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente) VALUES
 ('María García', '40123456', 'Independencia 456', '3814332211', 'maria@gmail.com'),
@@ -43,7 +43,6 @@ INSERT INTO turnos (fecha_hora, motivo_turno, estado, id_cliente, id_mascota, id
 (NOW(), 'Vacunación anual', 'Pendiente', 1, 1, 2),
 (NOW(), 'Consulta general', 'Pendiente', 2, 2, 2);
 
-
 INSERT INTO categorias (nombre_categoria) VALUES
 ('Medicamentos'),
 ('Accesorios'),
@@ -57,11 +56,11 @@ INSERT INTO productos (nombre_producto, codigo_producto, precio_producto, id_cat
 INSERT INTO stock (cantidad, fecha_ingreso, observaciones_stock, id_producto, id_sucursal) VALUES
 (50, NOW(), 'Lote octubre', 1, 1),
 (30, NOW(), 'Ingreso semanal', 2, 1),
-(20, NOW(), 'Ingreso de sabados', 3, 2);
+(20, NOW(), 'Ingreso de sábados', 3, 2);
 
-INSERT INTO proveedores (nombre_proveedor, direccion_proveedor, celular_proveedor, mail_proveedor) VALUES
-('Vet Supplies SA', 'Ruta 9 km 120', '3814998877', 'ventas@vetsupplies.com'),
-('Animal Foods SRL', 'Av. Libertad 200', '3814332211', 'info@animalfoods.com');
+INSERT INTO proveedores (nombre_proveedor, direccion_proveedor, celular_proveedor, mail_proveedor, fecha_hora_alta_proveedor) VALUES
+('Vet Supplies SA', 'Ruta 9 km 120', '3814998877', 'ventas@vetsupplies.com', NOW()),
+('Animal Foods SRL', 'Av. Libertad 200', '3814332211', 'info@animalfoods.com', NOW());
 
 INSERT INTO proveedor_productos (id_proveedor, id_producto) VALUES
 (1, 1),
