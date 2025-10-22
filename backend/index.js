@@ -1,7 +1,7 @@
 const express = require ("express")
 const morgan = require ("morgan")
 const cors = require ("cors");
-const {connection} = require('./config//bd/dataBase')
+const {connection} = require('./config/bd/dataBase')
 
 //instancio express
 const app = express()
@@ -17,8 +17,12 @@ app.use(express.json())
 app.use(morgan('dev'));
 
 const prueba = require('./controllers/prueba');
+const empleados = require('./routers/empleados');
+const clientes = require('./routers/clientes');
 
 app.use('/prueba', prueba)
+app.use('/empleados', empleados)
+app.use('/clientes', clientes)
 
 app.listen(8000, () => {
     console.log("Servidor corriendo en el puerto 8000")
