@@ -19,10 +19,14 @@ app.use(morgan('dev'));
 const prueba = require('./controllers/prueba');
 const empleados = require('./routers/empleados');
 const clientes = require('./routers/clientes');
+const roles = require('./routers/roles');
+const turnos = require('./routers/turnos');
 
 app.use('/prueba', prueba)
 app.use('/empleados', empleados)
 app.use('/clientes', clientes)
+app.use('/roles', roles)
+app.use('/turnos', turnos)
 
 app.listen(8000, () => {
     console.log("Servidor corriendo en el puerto 8000")
