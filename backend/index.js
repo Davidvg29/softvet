@@ -17,10 +17,12 @@ app.use(express.json())
 app.use(morgan('dev'));
 
 const prueba = require('./controllers/prueba');
-const roles = require('./routers/roles')
+const roles = require('./routers/roles');
+const turnos = require('./routers/turnos');
 
 app.use('/prueba', prueba)
 app.use('/roles', roles)
+app.use('/turnos', turnos)
 
 app.listen(8000, () => {
     console.log("Servidor corriendo en el puerto 8000")
