@@ -6,7 +6,8 @@ const mostrarEmpleados = (req, res) => {
     connection.query(`
         SELECT e.*, r.nombre_rol AS rol 
         FROM empleados e
-        LEFT JOIN roles r ON e.id_rol = r.id_rol`, (error, results) => {
+        LEFT JOIN roles r ON e.id_rol = r.id_rol
+        WHERE e.is_active = TRUE`, (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener los empleados.' });
         }
@@ -111,7 +112,7 @@ const editarEmpleado = (req, res) => {
 // Eliminar un empleado
 const eliminarEmpleado = (req, res) => {
     const { id } = req.params;
-    connection.query('DELETE FROM empleados WHERE id_empleado = ?', [id], (error, results) => {
+    connection.query('UPDATE empleados SET is_active = FALSE WHERE id_empleado = ?', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al eliminar el empleado.' });
         }

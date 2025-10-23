@@ -3,7 +3,7 @@ const {connection} = require('../config/bd/dataBase');
 // Obtener todos los clientes
 const mostrarClientes = (req, res) => {
 
-    connection.query('SELECT * FROM clientes', (error, results) => {
+    connection.query('SELECT * FROM clientes WHERE e.is_active = TRUE', (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener los clientes.' });
         }
@@ -96,7 +96,7 @@ const editarCliente = (req, res) => {
 // Eliminar un cliente
 const eliminarCliente = (req, res) => {
     const { id } = req.params;
-    connection.query('DELETE FROM clientes WHERE id_cliente = ?', [id], (error, results) => {
+    connection.query('UPDATE clientes SET is_active = FALSE WHERE id_cliente = ?', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al eliminar el cliente.' });
         }
