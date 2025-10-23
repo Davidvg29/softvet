@@ -24,6 +24,7 @@ const clientes = require('./routers/clientes');
 const historiaClinica = require('./routers/historiaClinica');
 const roles = require('./routers/roles');
 const turnos = require('./routers/turnos');
+const razas = require('./routers/razas');
 const especies = require('./routers/especies');
 
 app.use('/', prueba)
@@ -34,6 +35,7 @@ app.use('/clientes', clientes)
 app.use('/historiaClinica', historiaClinica)
 app.use('/roles', roles)
 app.use('/turnos', turnos)
+app.use('/razas', razas)
 app.use('/especies', especies);
 
 app.listen(8000, () => {
