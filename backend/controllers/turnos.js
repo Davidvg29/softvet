@@ -66,10 +66,21 @@ const crearTurno = (req, res) => {
     if (isNaN(Date.parse(fecha_hora))) {
         return res.status(400).json({ error: 'Formato de fecha inválido' });
     }
+
+
     //convierto la fecha a formato compatible con MySQL
     const fechaFormateada = new Date(fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
 
-    const est = typeof estado === 'string' && estado.trim() !== '' ? estado.trim() : 'pendiente';
+    const estadosPermitidos = ['Pendiente', 'Confirmado', 'Cancelado', 'Atendido'];
+    const estadoFinal = estado ? estado.trim() : 'Pendiente';
+
+    if (!estadosPermitidos.includes(estadoFinal)) {
+        return res.status(400).json({ 
+            error: `Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`
+        });
+    }
+
+    
     const motivo = motivo_turno ? motivo_turno.trim() : null;
 
     const checkSql = `
@@ -91,7 +102,7 @@ const crearTurno = (req, res) => {
             INSERT INTO turnos (fecha_hora, motivo_turno, estado, id_cliente, id_mascota, id_empleado)
             VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const params = [fechaFormateada, motivo, est, id_cliente, id_mascota, id_empleado];
+        const params = [fechaFormateada, motivo, estadoFinal, id_cliente, id_mascota, id_empleado];
 
         connection.query(insertSql, params, (error, results) => {
             if (error) {
@@ -107,7 +118,7 @@ const crearTurno = (req, res) => {
 
 };
 
-// Actualizar un turno
+// editar un turno
 const editarTurno = (req, res) => {
     const { id } = req.params;
     const { fecha_hora, motivo_turno, estado, id_cliente, id_mascota, id_empleado } = req.body;
@@ -130,9 +141,19 @@ const editarTurno = (req, res) => {
             }
             newFecha = new Date(fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
         }
+
+         // Validar estado permitido
+        const estadosPermitidos = ['Pendiente', 'Confirmado', 'Cancelado', 'Atendido'];
+        const newEstado = estado ? estado.trim() : existing.estado;
+
+        if (!estadosPermitidos.includes(newEstado)) {
+            return res.status(400).json({
+                error: `Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`
+            });
+        }
+
         //actualizar los campos 
         const newMotivo = typeof motivo_turno === 'string' ? motivo_turno : existing.motivo_turno;
-        const newEstado = typeof estado === 'string' ? estado : existing.estado;
         const newCliente = typeof id_cliente !== 'undefined' ? id_cliente : existing.id_cliente;
         const newMascota = typeof id_mascota !== 'undefined' ? id_mascota : existing.id_mascota;
         const newEmpleado = typeof id_empleado !== 'undefined' ? id_empleado : existing.id_empleado;
