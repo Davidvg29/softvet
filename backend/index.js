@@ -16,19 +16,27 @@ app.use(cors({
 app.use(express.json())
 app.use(morgan('dev'));
 
-const prueba = require('./controllers/prueba');
+const prueba = require('./routers/prueba');
+const mascotasRouter  = require("./routers/mascotas");
+const stockRouter = require("./routers/stock");
 const empleados = require('./routers/empleados');
 const clientes = require('./routers/clientes');
+const historiaClinica = require('./routers/historiaClinica');
 const roles = require('./routers/roles');
 const turnos = require('./routers/turnos');
 const razas = require('./routers/razas');
+const especies = require('./routers/especies');
 
-app.use('/prueba', prueba)
+app.use('/', prueba)
+app.use('/mascotas', mascotasRouter);
+app.use('/stock', stockRouter);
 app.use('/empleados', empleados)
 app.use('/clientes', clientes)
+app.use('/historiaClinica', historiaClinica)
 app.use('/roles', roles)
 app.use('/turnos', turnos)
 app.use('/razas', razas)
+app.use('/especies', especies);
 
 app.listen(8000, () => {
     console.log("Servidor corriendo en el puerto 8000")

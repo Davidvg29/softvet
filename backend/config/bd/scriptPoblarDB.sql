@@ -84,3 +84,10 @@ INSERT INTO detalles_compras (cantidad, precio_unitario, sub_total, id_producto,
 ('10', '1500.00', '15000.00', 1, 1),
 ('20', '2500.00', '50000.00', 2, 1),
 ('15', '1000.00', '15000.00', 3, 2);
+
+INSERT INTO detalle_historia_clinica
+(observaciones, fecha_hora, id_empleado, id_historia_clinica, id_sucursal, id_venta) VALUES
+('Vacunación anual realizada correctamente', NOW(), 2, 1, 1, 1),
+('Chequeo general, sin problemas de salud', NOW(), 2, 2, 1, 2),
+('Aplicación de antiparasitario interno', NOW(), 2, 1, 1, 1),
+('Control de peso y nutrición, recomendación de dieta especial', NOW(), 2, 2, 2, 2);
