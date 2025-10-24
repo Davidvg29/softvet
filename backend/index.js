@@ -28,6 +28,8 @@ const razas = require('./routers/razas');
 const especies = require('./routers/especies');
 const productos = require('./routers/productos');
 const proveedores = require('./routers/proveedores');
+const ventas = require('./routers/ventas');
+const detallesVentas = require('./routers/detallesVentas');
 
 app.use('/', prueba)
 app.use('/mascotas', mascotasRouter);
@@ -41,6 +43,8 @@ app.use('/razas', razas)
 app.use('/especies', especies);
 app.use('/productos', productos);
 app.use('/proveedores', proveedores);
+app.use('/ventas', ventas);
+app.use('/detallesVentas', detallesVentas);
 
 app.listen(8000, () => {
     console.log("Servidor corriendo en el puerto 8000")
