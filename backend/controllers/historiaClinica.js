@@ -78,9 +78,9 @@ const crearHistoriaClinica = (req, res) => {
             return res.status(400).json({ error: 'La mascota asociada no existe' });
         }
 
-        const queryInsertarHC = 'INSERT INTO historia_clinica (id_mascota, fecha_apertura, observaciones_generales) VALUES (?, ?, ?)';
+        const queryInsertarHC = 'INSERT INTO historia_clinica (id_mascota, fecha_apertura, observaciones_generales) VALUES (?, now(), ?)';
 
-        connection.query(queryInsertarHC, [id_mascota, fecha_apertura, observaciones_generales], (error, results) => {
+        connection.query(queryInsertarHC, [id_mascota, observaciones_generales], (error, results) => {
             if (error) {
                 return res.status(500).json({ error: 'Error al crear la historia clínica', detalle: error.message });
             }
@@ -96,9 +96,9 @@ const editarHistoriaClinica = (req, res) => {
     const { id } = req.params;
     const { fecha_apertura, observaciones_generales } = req.body;
 
-    const queryActualizarHC = 'UPDATE historia_clinica SET fecha_apertura = ?, observaciones_generales = ? WHERE id_historia_clinica = ?';
+    const queryActualizarHC = 'UPDATE historia_clinica SET fecha_apertura = now(), observaciones_generales = ? WHERE id_historia_clinica = ?';
 
-    connection.query(queryActualizarHC, [fecha_apertura, observaciones_generales, id], (error, results) => {
+    connection.query(queryActualizarHC, [ observaciones_generales, id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al actualizar la historia clínica', detalle: error.message });
         }
