@@ -26,6 +26,8 @@ const roles = require('./routers/roles');
 const turnos = require('./routers/turnos');
 const razas = require('./routers/razas');
 const especies = require('./routers/especies');
+const productos = require('./routers/productos');
+const proveedores = require('./routers/proveedores');
 const ventas = require('./routers/ventas');
 const detallesVentas = require('./routers/detallesVentas');
 
@@ -39,6 +41,8 @@ app.use('/roles', roles)
 app.use('/turnos', turnos)
 app.use('/razas', razas)
 app.use('/especies', especies);
+app.use('/productos', productos);
+app.use('/proveedores', proveedores);
 app.use('/ventas', ventas);
 app.use('/detallesVentas', detallesVentas);
 
