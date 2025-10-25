@@ -1,4 +1,45 @@
 const { connection } = require('../config/bd/dataBase');
+const { encriptarContraseña, compararContraseña } = require('../service/bcrypt');
+
+const autenticarEmpleado = (req, res) => {
+    const { usuario, contrasena } = req.body;
+    if (!usuario || !contrasena) {
+        return res.status(400).json({ error: 'Faltan datos obligatorios.' });
+    }
+    const queryGetEmpleado = `SELECT 
+        empleados.id_empleado,
+        empleados.usuario,
+        empleados.contrasena,
+        empleados.nombre_empleado,
+        empleados.dni_empleado,
+        empleados.direccion_empleado,
+        empleados.telefono_empleado,
+        empleados.mail_empleado,
+        roles.nombre_rol
+        FROM empleados
+        left join roles on roles.id_rol = empleados.id_rol
+        WHERE empleados.usuario = ? AND empleados.is_active = TRUE;
+        `;
+    connection.query(queryGetEmpleado, [usuario], async (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Error al autenticar el empleado' });
+        }
+        if (results.length === 0) {
+        return res.status(404).json({ error: 'Usuario no encontrado o inactivo.' });
+        }
+            compararContraseña(contrasena, results[0]?.contrasena)
+            .then((isMatch)=>{
+                if(!isMatch){
+                    return  res.status(401).json({ error: 'Credenciales inválidas.' });
+                }
+                const { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } = results[0];
+                return res.status(200).json({ message: 'Usuario autenticado correctamente.', empleado: { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } });
+            })
+            .catch((error)=>{
+                return res.status(500).json({ error: 'Error al autenticar el empleado.', detalle: error.message });
+            })
+    })
+}
 
 // Obtener todos los empleados
 const mostrarEmpleados = (req, res) => {
@@ -61,14 +102,19 @@ const crearEmpleado = (req, res) => {
             });
         }
 
-
-    const nuevoEmpleado = { usuario, contrasena, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado,id_rol };
-    connection.query('INSERT INTO empleados SET ?', nuevoEmpleado, (error, results) => {
-        if (error) {
-                return res.status(500).json({ error: 'Error al crear el Empleado', detalle: error.message });
-            }
-            res.json({ message: 'Empleado creado correctamente' });
-    });
+    encriptarContraseña(contrasena)
+    .then((contrasenaEncriptada)=>{
+        const nuevoEmpleado = { usuario, contrasena:contrasenaEncriptada, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado,id_rol };
+        connection.query('INSERT INTO empleados SET ?', nuevoEmpleado, (error, results) => {
+            if (error) {
+                    return res.status(500).json({ error: 'Error al crear el Empleado', detalle: error.message });
+                }
+                res.json({ message: 'Empleado creado correctamente' });
+        });
+    })
+    .catch((error)=>{
+        return res.status(500).json({ error: 'Error al crear el Empleado', detalle: error.message });
+    })
     });
 }
 
@@ -128,5 +174,6 @@ module.exports = {
     mostrarEmpleadoPorId,
     crearEmpleado,
     editarEmpleado,
-    eliminarEmpleado
+    eliminarEmpleado,
+    autenticarEmpleado
 };
