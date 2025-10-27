@@ -20,7 +20,8 @@ const verifyToken = (req, res, next) => {
     }
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
-        req.empleado_softvet = payload.empleado;
+        req.empleado_softvet = payload;
+        console.log(req);
         
         next();
     } catch (error) {

@@ -3,19 +3,24 @@ const morgan = require ("morgan")
 const cors = require ("cors");
 const cookieParser = require('cookie-parser');
 const {connection} = require('./config/bd/dataBase')
+const antiCache = require('./middlewares/antiCache');
+
 
 //instancio express
 const app = express()
 
 //habilito cors
 app.use(cors({
-  origin: 'http://localhost:5173' // Puerto que utilizo en el frontend
+  origin: 'http://localhost:5173',
+  credentials: true // Puerto que utilizo en el frontend
 })); 
 
 //utilizo libreria
+app.use(cookieParser())
 app.use(express.json())
 app.use(morgan('dev'));
-app.use(cookieParser())
+app.use(antiCache)
+
 
 const prueba = require('./routers/prueba');
 const mascotasRouter  = require("./routers/mascotas");
@@ -39,7 +44,7 @@ const detallesCompras = require('./routers/detallesCompras');
 const { verifyToken } = require("./middlewares/jwt");
 
 app.use('/', prueba)
-app.use('/mascotas', mascotasRouter);
+app.use('/mascotas',verifyToken, mascotasRouter);
 app.use('/stock',verifyToken, stockRouter);
 app.use('/empleados', empleados)
 app.use('/clientes',verifyToken, clientes)
@@ -50,7 +55,7 @@ app.use('/razas',verifyToken, razas)
 app.use('/especies',verifyToken, especies);
 app.use('/sucursales',verifyToken, sucursales);
 app.use('/categorias',verifyToken, categorias);
-app.use('/detalleHistoriaClinica', detalleHistoriaClinica);
+app.use('/detalleHistoriaClinica',verifyToken, detalleHistoriaClinica);
 app.use('/compras',verifyToken, compras);
 app.use('/productos',verifyToken, productos);
 app.use('/proveedores',verifyToken, proveedores);
