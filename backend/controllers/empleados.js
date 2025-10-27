@@ -1,4 +1,5 @@
 const { connection } = require('../config/bd/dataBase');
+const { createToken } = require('../middlewares/jwt');
 const { encriptarContraseña, compararContraseña } = require('../service/bcrypt');
 
 const autenticarEmpleado = (req, res) => {
@@ -33,6 +34,17 @@ const autenticarEmpleado = (req, res) => {
                     return  res.status(401).json({ error: 'Credenciales inválidas.' });
                 }
                 const { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } = results[0];
+
+                const token = createToken({id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol});
+
+                res.cookie('TOKEN_SOFTVET', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'strict',
+                    maxAge: 3600000, //1 hora
+                    path: '/'
+                });
+
                 return res.status(200).json({ message: 'Usuario autenticado correctamente.', empleado: { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } });
             })
             .catch((error)=>{

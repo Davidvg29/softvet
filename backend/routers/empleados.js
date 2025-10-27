@@ -8,13 +8,14 @@ const {
     eliminarEmpleado,
     autenticarEmpleado
 } = require('../controllers/empleados');
+const { verifyToken } = require('../middlewares/jwt');
 
 // Rutas para empleados
-router.get('/ver', mostrarEmpleados);
-router.get('/ver/:id', mostrarEmpleadoPorId);
-router.post('/crear', crearEmpleado);
-router.put('/editar/:id', editarEmpleado);
-router.delete('/eliminar/:id', eliminarEmpleado);
+router.get('/ver',verifyToken, mostrarEmpleados);
+router.get('/ver/:id',verifyToken, mostrarEmpleadoPorId);
+router.post('/crear',verifyToken, crearEmpleado);
+router.put('/editar/:id',verifyToken, editarEmpleado);
+router.delete('/eliminar/:id',verifyToken, eliminarEmpleado);
 router.post('/autenticar', autenticarEmpleado);
 
 module.exports = router;
