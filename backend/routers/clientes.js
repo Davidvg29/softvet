@@ -7,12 +7,13 @@ const {
     editarCliente,
     eliminarCliente
 } = require('../controllers/clientes');
+const { verifyToken } = require('../middlewares/jwt');
 
 // Rutas para clientes
-router.get('/ver', mostrarClientes);
-router.get('/ver/:id', mostrarClientePorId);
-router.post('/crear', crearCliente);
-router.put('/editar/:id', editarCliente);
-router.delete('/eliminar/:id', eliminarCliente);
+router.get('/ver', verifyToken, mostrarClientes);
+router.get('/ver/:id', verifyToken, mostrarClientePorId);
+router.post('/crear', verifyToken, crearCliente);
+router.put('/editar/:id', verifyToken, editarCliente);
+router.delete('/eliminar/:id', verifyToken, eliminarCliente);
 
 module.exports = router;

@@ -7,12 +7,13 @@ const {
     editarHistoriaClinica,
     eliminarHistoriaClinica
 } = require('../controllers/historiaClinica');
+const { verifyToken } = require('../middlewares/jwt');
 
 // Rutas para historia clínica
-router.get('/ver', mostrarHistoriasClinicas);
-router.get('/ver/:id', mostrarHistoriaClinicaPorId);
-router.post('/crear', crearHistoriaClinica);
-router.put('/editar/:id', editarHistoriaClinica);
-router.delete('/eliminar/:id', eliminarHistoriaClinica);
+router.get('/ver', verifyToken, mostrarHistoriasClinicas);
+router.get('/ver/:id', verifyToken, mostrarHistoriaClinicaPorId);
+router.post('/crear', verifyToken, crearHistoriaClinica);
+router.put('/editar/:id', verifyToken, editarHistoriaClinica);
+router.delete('/eliminar/:id', verifyToken, eliminarHistoriaClinica);
 
 module.exports = router;
