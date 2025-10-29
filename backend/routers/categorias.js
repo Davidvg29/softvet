@@ -8,12 +8,13 @@ const {
     editarCategoria,
     eliminarCategoria
 } = require('../controllers/categorias');
+const { verifyToken } = require('../middlewares/jwt');
 
 // Rutas para gestión de categorías
-router.get('/ver', mostrarCategorias);
-router.get('/ver/:id', mostrarCategoriaPorId);
-router.post('/crear', crearCategoria);
-router.put('/editar/:id', editarCategoria);
-router.delete('/eliminar/:id', eliminarCategoria);
+router.get('/ver',verifyToken, mostrarCategorias);
+router.get('/ver/:id',verifyToken, mostrarCategoriaPorId);
+router.post('/crear',verifyToken, crearCategoria);
+router.put('/editar/:id',verifyToken, editarCategoria);
+router.delete('/eliminar/:id',verifyToken, eliminarCategoria);
 
 module.exports = router;
