@@ -1,4 +1,5 @@
 const { connection } = require('../config/bd/dataBase');
+const { createToken } = require('../middlewares/jwt');
 const { encriptarContraseña, compararContraseña } = require('../service/bcrypt');
 
 const autenticarEmpleado = (req, res) => {
@@ -33,6 +34,17 @@ const autenticarEmpleado = (req, res) => {
                     return  res.status(401).json({ error: 'Credenciales inválidas.' });
                 }
                 const { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } = results[0];
+
+                const token = createToken({id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol});
+
+                res.cookie('TOKEN_SOFTVET', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'strict',
+                    maxAge: 3600000, //1 hora
+                    path: '/'
+                });
+
                 return res.status(200).json({ message: 'Usuario autenticado correctamente.', empleado: { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } });
             })
             .catch((error)=>{
@@ -45,7 +57,7 @@ const autenticarEmpleado = (req, res) => {
 const mostrarEmpleados = (req, res) => {
 
     connection.query(`
-        SELECT e.*, r.nombre_rol AS rol 
+        SELECT e.id_empleado, e.usuario, e.nombre_empleado, e.dni_empleado, e.direccion_empleado, e.telefono_empleado, e.mail_empleado, r.nombre_rol
         FROM empleados e
         LEFT JOIN roles r ON e.id_rol = r.id_rol
         WHERE e.is_active = TRUE`, (error, results) => {
@@ -61,7 +73,7 @@ const mostrarEmpleadoPorId = (req, res) => {
 
     const { id } = req.params;
     connection.query(`
-        SELECT e.*, r.nombre_rol AS rol
+        SELECT e.id_empleado, e.usuario, e.nombre_empleado, e.dni_empleado, e.direccion_empleado, e.telefono_empleado, e.mail_empleado, r.nombre_rol
         FROM empleados e
         LEFT JOIN roles r ON e.id_rol = r.id_rol
         WHERE e.id_empleado = ?
@@ -121,13 +133,20 @@ const crearEmpleado = (req, res) => {
 // Editar un empleado
 const editarEmpleado = (req, res) => {
     const { id } = req.params;
-    const { usuario, contrasena, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado,id_rol } = req.body;
+    const { usuario, contrasena, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, id_rol } = req.body;
 
-    const validacion = 'SELECT * FROM empleados WHERE (dni_empleado = ? OR usuario = ? OR mail_empleado = ?) AND id_empleado != ?';
+    // Validar duplicados
+    const validacion = `
+        SELECT * FROM empleados 
+        WHERE (dni_empleado = ? OR usuario = ? OR mail_empleado = ?) 
+        AND id_empleado != ?
+    `;
+    
     connection.query(validacion, [dni_empleado, usuario, mail_empleado, id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al verificar duplicados', detalle: error.message });
         }
+
         if (results.length > 0) {
             const datosDuplicados = [];
             results.forEach(result => {
@@ -141,19 +160,39 @@ const editarEmpleado = (req, res) => {
             });
         }
 
-        
-    const empleadoActualizado = { usuario, contrasena, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado,id_rol };
-    connection.query('UPDATE empleados SET ? WHERE id_empleado = ?', [empleadoActualizado, id], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error: 'Error al actualizar el empleado.' });
+        // Encriptar contraseña solo si viene una nueva
+        const actualizarEmpleado = (contrasenaFinal) => {
+            const empleadoActualizado = { 
+                usuario, 
+                nombre_empleado, 
+                dni_empleado, 
+                direccion_empleado, 
+                telefono_empleado, 
+                mail_empleado, 
+                id_rol 
+            };
+            
+            if (contrasenaFinal) empleadoActualizado.contrasena = contrasenaFinal;
+
+            connection.query('UPDATE empleados SET ? WHERE id_empleado = ?', [empleadoActualizado, id], (error, results) => {
+                if (error) {
+                    return res.status(500).json({ error: 'Error al actualizar el empleado', detalle: error.message });
+                }
+                res.json({ message: 'Empleado actualizado correctamente' });
+            });
+        };
+
+        //  Si se envía una nueva contraseña, encriptar; si no, mantener la existente
+        if (contrasena && contrasena.trim() !== "") {
+            encriptarContraseña(contrasena)
+                .then(contrasenaEncriptada => actualizarEmpleado(contrasenaEncriptada))
+                .catch(error => res.status(500).json({ error: 'Error al encriptar la contraseña', detalle: error.message }));
+        } else {
+            actualizarEmpleado(null);
         }
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: 'Empleado no encontrado.' });
-        }
-        res.json({ message: 'Empleado actualizado correctamente.' });
     });
-    });
-}
+};
+
 
 // Eliminar un empleado
 const eliminarEmpleado = (req, res) => {
