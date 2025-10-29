@@ -10,8 +10,8 @@ const Home = () => {
     <>
       <Header/>
       <SoftVetDemo/>
-      <Carrousel/>
        <SoftvetInfo/>
+       <Carrousel/>
        <section id="gestion" className="py-5">
        <SoftVetGestion/>
       </section>
