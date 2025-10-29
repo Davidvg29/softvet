@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
-import logovet from "../assets/logovet.svg";
-import login from "../assets/login.svg"
-import iconoCerrarSesion from "../assets/iconoCerrarSesion.svg"
+import logovet from "../../assets/logovet.svg";
+import login from "../../assets/login.svg"
+import iconoCerrarSesion from "../../assets/iconoCerrarSesion.svg"
 
 function Header() {
   return (

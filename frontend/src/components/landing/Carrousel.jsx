@@ -1,10 +1,10 @@
 import Carousel from 'react-bootstrap/Carousel';
 import { useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
-import carrousel1 from '../assets/carrousel1.svg';
-import carrousel2 from '../assets/carrousel2.svg';
-import carrousel3 from '../assets/carrousel3.svg';
-import carrousel4 from '../assets/carrousel4.svg';
+import carrousel1 from '../../assets/carrousel1.svg';
+import carrousel2 from '../../assets/carrousel2.svg';
+import carrousel3 from '../../assets/carrousel3.svg';
+import carrousel4 from '../../assets/carrousel4.svg';
  
 function Carrusel() {
 

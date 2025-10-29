@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from 'react-bootstrap/Button'
-import multidispositivo from '../assets/multidispositivo.svg';
+import multidispositivo from '../../assets/multidispositivo.svg';
 
 
 const Demo = () => {

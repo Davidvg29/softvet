@@ -1,9 +1,9 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import nube from '../assets/nube.svg';
-import compu from '../assets/compu.svg';
-import escudo from '../assets/escudo.svg';
-import soporte from '../assets/soporte.svg';
+import nube from '../../assets/nube.svg';
+import compu from '../../assets/compu.svg';
+import escudo from '../../assets/escudo.svg';
+import soporte from '../../assets/soporte.svg';
 
 const Info = () => {
 
