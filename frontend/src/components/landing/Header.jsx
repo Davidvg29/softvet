@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
-import logovet from "../assets/logovet.svg";
-import login from "../assets/login.svg"
-import iconoCerrarSesion from "../assets/iconoCerrarSesion.svg"
+import logovet from "../../assets/logovet.svg";
+import login from "../../assets/login.svg"
+import iconoCerrarSesion from "../../assets/iconoCerrarSesion.svg"
 
 function Header() {
   return (
@@ -45,7 +45,25 @@ function Header() {
           </Nav>
         ) : location.pathname === "/" ? (
           <Nav className="me-auto">
-            <Nav.Link href="#gestion">SoftVet Gestión</Nav.Link>
+            <Nav.Link
+  href="#gestion"
+  style={{
+    color: '#a52af1ff',
+    textDecoration: 'none',
+    transition: 'all 0.5s ease',
+    fontWeight: '400',
+  }}
+  onMouseEnter={(e) => {
+    e.target.style.color = '#a52af1ff';
+    e.target.style.textDecoration = 'underline';
+  }}
+  onMouseLeave={(e) => {
+    e.target.style.color = '#a52af1ff';
+    e.target.style.textDecoration = 'none';
+  }}
+>
+  SoftVet Gestión
+</Nav.Link>
           </Nav>
         ) : null}
         <Navbar.Toggle />
