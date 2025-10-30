@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from 'react-bootstrap/Button'
-import multidispositivo from '../assets/multidispositivo.svg';
+import multidispositivo from '../../assets/multidispositivo.svg';
 
 
 const Demo = () => {
@@ -14,10 +14,10 @@ const Demo = () => {
         justifyContent: 'space-between',
         padding: '4rem 6rem',
         borderRadius: '20px',
-        flexWrap: 'wrap', // para que se acomode en pantallas chicas
+        flexWrap: 'wrap' 
       }}
     >
-      {/* Texto a la izquierda */}
+     
       <div style={{ flex: '1', minWidth: '300px' }}>
         <h1
           style={{
@@ -28,7 +28,7 @@ const Demo = () => {
             textAlign: 'left',
           }}
         >
-          Tu sistema de gestión integral veterinario
+          Tu Sistema de Gestión Integral Veterinario
         </h1>
         <p>
             Optimizá la gestión de tu clínica con un software ágil y fácil de usar.
@@ -36,16 +36,19 @@ Automatizá tareas, ganá tiempo y enfocate en lo más importante: hacer crecer 
         </p>
 
         <Button
-          size="lg"
-          style={{
-            backgroundColor: '#f9b700',
-            borderColor: '#f9b700',
-            color: '#020202ff',
-            fontWeight: '600'
-          }}
-        >
-          Solicita tu demo ahora
-        </Button>
+  size="lg"
+  style={{
+    backgroundColor: '#f9b700',
+    borderColor: '#f9b700',
+    color: '#020202ff',
+    fontWeight: '600',
+    transition: 'transform 0.3s ease',
+  }}
+  onMouseEnter={(e) => (e.target.style.transform = 'scale(1.1)')}
+  onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
+>
+  Solicita Tu Demo Ahora ➨
+</Button>
 
         <p
           style={{color: '#f9b700', marginTop: '1rem', fontSize: '1rem'}}>

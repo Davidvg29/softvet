@@ -1,17 +1,17 @@
 import Prueba from '../components/Prueba';
-import Carrousel from '../components/Carrousel';
-import Header from '../components/Header';
-import SoftvetInfo from '../components/SoftvetInfo';
-import SoftVetGestion from '../components/SoftvetGestion';
-import SoftVetDemo from '../components/SoftVetDemo';
+import Carrousel from '../components/landing/Carrousel';
+import Header from '../components/landing/Header';
+import SoftvetInfo from '../components/landing/SoftvetInfo';
+import SoftVetGestion from '../components/landing/SoftVetGestion';
+import SoftVetDemo from '../components/landing/SoftVetDemo';
 
 const Home = () => {
   return (
     <>
       <Header/>
       <SoftVetDemo/>
-      <Carrousel/>
        <SoftvetInfo/>
+       <Carrousel/>
        <section id="gestion" className="py-5">
        <SoftVetGestion/>
       </section>
