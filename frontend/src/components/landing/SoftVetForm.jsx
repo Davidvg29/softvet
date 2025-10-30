@@ -12,7 +12,6 @@ function formulario() {
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     padding: '4rem 6rem',
-    borderRadius: '20px',
     flexWrap: 'wrap',
     gap: '2rem'
   }}
@@ -22,7 +21,7 @@ function formulario() {
     <h1
       style={{
         fontFamily: 'Segoe UI, sans-serif',
-        fontSize: '1.5rem',
+        fontSize: '2rem',
         fontWeight: '700',
         marginBottom: '2rem',
         textAlign: 'left'
@@ -33,23 +32,23 @@ function formulario() {
 
     <Form style={{ color: '#fff' }}>
       <Form.Group className="mb-3" controlId="formEmail">
-        <Form.Control type="email" placeholder="Correo Electrónico" required />
+        <Form.Control type="email" placeholder="Correo Electrónico" required style={{ width: '800px' }}/>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formNombre">
-        <Form.Control type="text" placeholder="Nombre Completo" required />
+        <Form.Control type="text" placeholder="Nombre Completo" required style={{ width: '800px' }}/>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formVeterinaria">
-        <Form.Control type="text" placeholder="Nombre de la Veterinaria" required />
+        <Form.Control type="text" placeholder="Nombre de la Veterinaria" required style={{ width: '800px' }}/>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formTelefono">
-        <Form.Control type="tel" placeholder="Número de Teléfono de Contacto" required />
+        <Form.Control type="tel" placeholder="Número de Teléfono de Contacto" required style={{ width: '800px' }}/>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formMensaje">
-        <Form.Control as="textarea" placeholder="Mensaje" rows={3} />
+        <Form.Control as="textarea" placeholder="Mensaje" rows={4} style={{ width: '800px' }}/>
       </Form.Group>
 
       <Button 
@@ -82,7 +81,7 @@ function formulario() {
     <img
       src={form}
       alt="Formulario"
-      style={{ maxWidth: '125%', height: 'auto', objectFit: 'contain' }}
+      style={{ maxWidth: '125%', height: 'auto', objectFit: 'contain', marginLeft: '250px' }}
     />
   </div>
 </div>
