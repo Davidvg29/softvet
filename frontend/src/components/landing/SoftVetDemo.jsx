@@ -14,10 +14,10 @@ const Demo = () => {
         justifyContent: 'space-between',
         padding: '4rem 6rem',
         borderRadius: '20px',
-        flexWrap: 'wrap' 
+        flexWrap: 'wrap'
       }}
     >
-     
+
       <div style={{ flex: '1', minWidth: '300px' }}>
         <h1
           style={{
@@ -31,32 +31,33 @@ const Demo = () => {
           Tu Sistema de Gestión Integral Veterinario
         </h1>
         <p>
-            Optimizá la gestión de tu clínica con un software ágil y fácil de usar.
-Automatizá tareas, ganá tiempo y enfocate en lo más importante: hacer crecer tu negocio.
+          Optimizá la gestión de tu clínica con un software ágil y fácil de usar.
+          Automatizá tareas, ganá tiempo y enfocate en lo más importante: hacer crecer tu negocio.
         </p>
 
         <Button
-  size="lg"
-  style={{
-    backgroundColor: '#f9b700',
-    borderColor: '#f9b700',
-    color: '#020202ff',
-    fontWeight: '600',
-    transition: 'transform 0.3s ease',
-  }}
-  onMouseEnter={(e) => (e.target.style.transform = 'scale(1.1)')}
-  onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
->
-  Solicita Tu Demo Ahora ➨
-</Button>
+          href="#formulario"
+          size="lg"
+          style={{
+            backgroundColor: '#f9b700',
+            borderColor: '#f9b700',
+            color: '#020202ff',
+            fontWeight: '600',
+            transition: 'transform 0.3s ease',
+          }}
+          onMouseEnter={(e) => (e.target.style.transform = 'scale(1.1)')}
+          onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
+        >
+          Solicita Tu Demo Ahora ➨
+        </Button>
 
         <p
-          style={{color: '#f9b700', marginTop: '1rem', fontSize: '1rem'}}>
-            Sin tarjeta de crédito. Sin contratos. Cancela cuando quieras.
+          style={{ color: '#f9b700', marginTop: '1rem', fontSize: '1rem' }}>
+          Sin tarjeta de crédito. Sin contratos. Cancela cuando quieras.
         </p>
       </div>
 
-      
+
       <div style={{ flex: '1', textAlign: 'right', minWidth: '300px', marginLeft: '5rem' }}>
         <img
           src={multidispositivo}

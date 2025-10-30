@@ -3,6 +3,11 @@ import Card from 'react-bootstrap/Card';
 import card1 from '../../assets/card1.svg';
 import card2 from '../../assets/card2.svg';
 import card3 from '../../assets/card3.svg';
+import card4 from '../../assets/card4.svg';
+import card5 from '../../assets/card5.svg';
+import card6 from '../../assets/card6.svg';
+import card7 from '../../assets/card7.svg';
+import card8 from '../../assets/card8.svg';
 
 const Gestion = () => {
 
@@ -24,6 +29,36 @@ const Gestion = () => {
             img : card3,
             titulo: "Gestion de Agenda y Turnos",
             descripcion: "Gestiona los turnos de tu clínica fácilmente."
+          },
+          {
+            id: 4,
+            img : card4,
+            titulo: "Gestion de Productos y Stock",
+            descripcion: "Controla el inventario y las ventas de tu clínica."
+          },
+          {
+            id: 5,
+            img : card5,
+            titulo: "Gestion de Compras y Proveedores",
+            descripcion: "Administra las compras y relaciones con proveedores."
+          },
+          {
+            id: 6,
+            img : card8,
+            titulo: "Gestion de Ventas",  
+            descripcion: "Realiza y controla las ventas de manera eficiente."
+          },
+          {
+            id: 7,
+            img : card7,
+            titulo: "Control Total de usuarios",
+            descripcion: "Administra los accesos y permisos de tu equipo."
+          },
+          {
+            id: 8,
+            img : card6,
+            titulo: "Seguridad y Respaldo de Datos",
+            descripcion: "Seguridad total para tus datos y los de tus clientes."
           }
   ];
 
@@ -37,7 +72,7 @@ const Gestion = () => {
                         fontFamily: 'Segoe UI, sans-serif',
                         fontSize: '2.8rem',
                         fontWeight: '700',
-                        color: '#a52af1ff',
+                        color: '#8921caff',
                         textAlign: 'center',
                         marginBottom: '2rem'
                     }}>
@@ -68,7 +103,7 @@ const Gestion = () => {
 </div>
 
 <div className='d-flex flex-column justify-content-center align-items-center w-100'>
-        <div className='d-flex flex-wrap justify-content-center align-items-center'>
+        <div className='d-flex flex-wrap justify-content-center align-items-center' style={{ marginBottom: '2rem' }}>
         {card.map((carta)=> (
             <Card key={carta.id} className= 'm-1'style={{ width: '18rem', border: 'none' }}>
       {carta.img && <Card.Img variant="top" src={carta.img} style={{ margin: '0', padding:'0' }}/>}
@@ -91,6 +126,14 @@ const Gestion = () => {
     </Card>
         ))}
         </div>
+
+        <p style={{
+                        fontFamily: 'Segoe UI, sans-serif',
+                        fontSize: '1.2rem',
+                        fontWeight: '700',
+                        color: '#040206ff',
+                        textAlign: 'center'
+                    }}> Y MUCHO MÁS... </p>
     </div>
     </>
   )
