@@ -17,7 +17,7 @@ function formulario() {
   }}
 >
   
-  <div style={{ flex: 1, minWidth: '300px', maxWidth: '600px' }}>
+  <div style={{ flex: 1, minWidth: '300px', maxWidth: '700px', width: '100%' }}>
     <h1
       style={{
         fontFamily: 'Segoe UI, sans-serif',
@@ -31,41 +31,44 @@ function formulario() {
     </h1>
 
     <Form style={{ color: '#fff' }}>
-      <Form.Group className="mb-3" controlId="formEmail">
-        <Form.Control type="email" placeholder="Correo Electrónico" required style={{ width: '800px' }}/>
-      </Form.Group>
+  <Form.Group className="mb-3" controlId="formEmail">
+    <Form.Control type="email" placeholder="Correo Electrónico" required style={{ width: '100%' }} />
+  </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formNombre">
-        <Form.Control type="text" placeholder="Nombre Completo" required style={{ width: '800px' }}/>
-      </Form.Group>
+  <Form.Group className="mb-3" controlId="formNombre">
+    <Form.Control type="text" placeholder="Nombre Completo" required style={{ width: '100%' }} />
+  </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formVeterinaria">
-        <Form.Control type="text" placeholder="Nombre de la Veterinaria" required style={{ width: '800px' }}/>
-      </Form.Group>
+  <Form.Group className="mb-3" controlId="formVeterinaria">
+    <Form.Control type="text" placeholder="Nombre de la Veterinaria" required style={{ width: '100%' }} />
+  </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formTelefono">
-        <Form.Control type="tel" placeholder="Número de Teléfono de Contacto" required style={{ width: '800px' }}/>
-      </Form.Group>
+  <Form.Group className="mb-3" controlId="formTelefono">
+    <Form.Control type="tel" placeholder="Número de Teléfono de Contacto" required style={{ width: '100%' }} />
+  </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formMensaje">
-        <Form.Control as="textarea" placeholder="Mensaje" rows={4} style={{ width: '800px' }}/>
-      </Form.Group>
+  <Form.Group className="mb-3" controlId="formMensaje">
+    <Form.Control as="textarea" placeholder="Mensaje" rows={4} style={{ width: '100%' }} />
+  </Form.Group>
 
-      <Button 
-      size="lg"
-  style={{
-    backgroundColor: '#f9b700',
-    borderColor: '#f9b700',
-    color: '#020202ff',
-    fontWeight: '600',
-    transition: 'transform 0.3s ease',
-  }}
-  onMouseEnter={(e) => (e.target.style.transform = 'scale(1.1)')}
-  onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
->
-  Enviar Formulario
-      </Button>
-    </Form>
+  <Button 
+    size="lg"
+    style={{
+      backgroundColor: '#f9b700',
+      borderColor: '#f9b700',
+      color: '#020202ff',
+      fontWeight: '600',
+      transition: 'transform 0.3s ease',
+      width: '100%', // para que se vea bien en móviles también
+      maxWidth: '300px', // límite visual
+      whiteSpace: 'normal'
+    }}
+    onMouseEnter={(e) => (e.target.style.transform = 'scale(1.1)')}
+    onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
+  >
+    Enviar Formulario
+  </Button>
+</Form>
   </div>
 
   
@@ -81,7 +84,7 @@ function formulario() {
     <img
       src={form}
       alt="Formulario"
-      style={{ maxWidth: '125%', height: 'auto', objectFit: 'contain', marginLeft: '250px' }}
+      style={{ Width: '100%', height: 'auto', objectFit: 'contain', marginLeft: '100px' }}
     />
   </div>
 </div>
