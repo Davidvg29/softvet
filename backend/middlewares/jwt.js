@@ -5,13 +5,13 @@ const createToken = (payload)=>{
     return jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        {expiresIn: "1h" }
+        {expiresIn: "10s" }
     )
 }
 
 //middleware que verifica si el token es valido, se agrega al crear cada ruta en routes.js como middleware
 const verifyToken = (req, res, next) => {
-    const token = req.cookies.TOKEN_SOFTVET;
+    const token = req.cookies.TOKEN_AUTH_SOFTVET;
     if (!token) {
         return res.status(401).json({
             status: false,
@@ -21,7 +21,7 @@ const verifyToken = (req, res, next) => {
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
         req.empleado_softvet = payload;
-        console.log(req);
+        console.log(req.empleado_softvet);
         
         next();
     } catch (error) {

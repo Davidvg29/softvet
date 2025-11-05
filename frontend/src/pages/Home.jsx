@@ -6,11 +6,8 @@ import SoftVetGestion from '../components/landing/SoftVetGestion';
 import SoftVetDemo from '../components/landing/SoftVetDemo';
 import SoftVetForm from '../components/landing/SoftVetForm';
 import Footer from '../components/landing/Footer';
-import { useEmpleadoStore  } from '../zustand/empleado';
 
 const Home = () => {
-  const empleadoGlobal = useEmpleadoStore((state) => state.empleado);
-  console.log(empleadoGlobal);
   
   return (
     <>

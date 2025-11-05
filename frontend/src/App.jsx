@@ -3,12 +3,19 @@ import './App.css';
 import Home from './pages/Home';
 import { HOME, INICIAR_SESION } from './routers/router';
 import IniciarSesion from './components/iniciarSesion/IniciarSesion';
+import RutaPrivada from './components/RutaPrivada/RutaPrivada';
 
 function App() {
   return (
     <Routes>
       <Route path={HOME} element={<Home/>} />
       <Route path={INICIAR_SESION} element={<IniciarSesion/>}/>
+      {/* grupo de rutas privadas */}
+      <Route element={<RutaPrivada/>}>
+        {/* Aqui van las rutas privadas */}
+        
+      </Route>
+      {/* fin grupo de rutas privadas */}
     </Routes>
   );
 }

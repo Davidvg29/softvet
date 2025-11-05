@@ -8,19 +8,26 @@ const autenticarEmpleado = (req, res) => {
         return res.status(400).json({ error: 'Faltan datos obligatorios.' });
     }
     const queryGetEmpleado = `SELECT 
-        empleados.id_empleado,
         empleados.usuario,
         empleados.contrasena,
-        empleados.nombre_empleado,
-        empleados.dni_empleado,
-        empleados.direccion_empleado,
-        empleados.telefono_empleado,
-        empleados.mail_empleado,
         roles.nombre_rol
         FROM empleados
         left join roles on roles.id_rol = empleados.id_rol
-        WHERE empleados.usuario = ? AND empleados.is_active = TRUE;
-        `;
+        WHERE empleados.usuario = ? AND empleados.is_active = TRUE;`;
+    // const queryGetEmpleado = `SELECT 
+    //     empleados.id_empleado,
+    //     empleados.usuario,
+    //     empleados.contrasena,
+    //     empleados.nombre_empleado,
+    //     empleados.dni_empleado,
+    //     empleados.direccion_empleado,
+    //     empleados.telefono_empleado,
+    //     empleados.mail_empleado,
+    //     roles.nombre_rol
+    //     FROM empleados
+    //     left join roles on roles.id_rol = empleados.id_rol
+    //     WHERE empleados.usuario = ? AND empleados.is_active = TRUE;
+    //     `;
     connection.query(queryGetEmpleado, [usuario], async (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al autenticar el empleado' });
@@ -33,11 +40,11 @@ const autenticarEmpleado = (req, res) => {
                 if(!isMatch){
                     return  res.status(401).json({ error: 'Credenciales inválidas.' });
                 }
-                const { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } = results[0];
+                const { usuario, nombre_rol } = results[0];
 
-                const token = createToken({id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol});
+                const token = createToken({usuario, nombre_rol});
 
-                res.cookie('TOKEN_SOFTVET', token, {
+                res.cookie('TOKEN_AUTH_SOFTVET', token, {
                     httpOnly: true,
                     secure: false,
                     sameSite: 'strict',
@@ -45,7 +52,7 @@ const autenticarEmpleado = (req, res) => {
                     path: '/'
                 });
 
-                return res.status(200).json({ message: 'Usuario autenticado correctamente.', empleado: { id_empleado, usuario, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado, nombre_rol } });
+                return res.status(200).json({ message: 'Usuario autenticado correctamente.', empleado: { usuario, nombre_rol, token } });
             })
             .catch((error)=>{
                 return res.status(500).json({ error: 'Error al autenticar el empleado.', detalle: error.message });
