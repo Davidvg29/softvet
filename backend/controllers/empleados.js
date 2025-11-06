@@ -60,6 +60,10 @@ const autenticarEmpleado = (req, res) => {
     })
 }
 
+const obtenerInfoEmpleado = (req, res) => {
+    const { usuario } = req.empleado;
+}
+
 // Obtener todos los empleados
 const mostrarEmpleados = (req, res) => {
 

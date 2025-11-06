@@ -3,7 +3,7 @@ import './App.css';
 import Home from './pages/Home';
 import { HOME, INICIAR_SESION } from './routers/router';
 import IniciarSesion from './components/iniciarSesion/IniciarSesion';
-import RutaPrivada from './components/RutaPrivada/RutaPrivada';
+import RutaPrivada from './components/RutaPrivada/RutaPrivada.jsx';
 
 function App() {
   return (

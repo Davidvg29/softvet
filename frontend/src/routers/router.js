@@ -1,2 +1,2 @@
 export const HOME = "/"
-export const INICIAR_SESION = "/iniciar-sesion"
+export const INICIAR_SESION = "/login"
