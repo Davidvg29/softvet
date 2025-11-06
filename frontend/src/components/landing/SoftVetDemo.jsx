@@ -65,6 +65,39 @@ const Demo = () => {
           style={{ width: '100%', maxWidth: '800px', borderRadius: '15px' }}
         />
       </div>
+
+      <style>
+    {`
+      @media (max-width: 992px) {
+        div[style*="background-color: #6f42c1"] {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 3rem 2rem;
+        }
+
+        div[style*="margin-left: 5rem"] {
+          margin-left: 0 !important;
+          margin-top: 2rem;
+          text-align: center !important;
+        }
+
+        h1 {
+          font-size: 2.2rem !important;
+          text-align: center !important;
+        }
+
+        p {
+          text-align: center !important;
+        }
+
+        img {
+          max-width: 100% !important;
+          height: auto !important;
+        }
+      }
+    `}
+  </style>
     </div>
   );
 };
