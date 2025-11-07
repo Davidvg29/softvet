@@ -6,7 +6,8 @@ const {
     crearEmpleado,
     editarEmpleado,
     eliminarEmpleado,
-    autenticarEmpleado
+    autenticarEmpleado,
+    obtenerInfoEmpleadoAutenticado
 } = require('../controllers/empleados');
 const { verifyToken } = require('../middlewares/jwt');
 const { autenticarRoles } = require('../middlewares/autenticarRoles');
@@ -18,5 +19,6 @@ router.post('/crear',verifyToken, autenticarRoles(["Administrador"]), crearEmple
 router.put('/editar/:id',verifyToken, autenticarRoles(["Administrador"]), editarEmpleado);
 router.delete('/eliminar/:id',verifyToken, autenticarRoles(["Administrador"]), eliminarEmpleado);
 router.post('/autenticar', autenticarEmpleado);
+router.post('/info', verifyToken, obtenerInfoEmpleadoAutenticado);
 
 module.exports = router;
