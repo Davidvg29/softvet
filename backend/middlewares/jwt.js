@@ -21,7 +21,7 @@ const verifyToken = (req, res, next) => {
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
         req.empleado_softvet = payload;
-        console.log(req.empleado_softvet);
+        // console.log(req.empleado_softvet);
         
         next();
     } catch (error) {

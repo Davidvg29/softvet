@@ -60,8 +60,19 @@ const autenticarEmpleado = (req, res) => {
     })
 }
 
-const obtenerInfoEmpleado = (req, res) => {
-    const { usuario } = req.empleado;
+const obtenerInfoEmpleadoAutenticado = (req, res) => {
+    const usuario = req.empleado_softvet.usuario;
+    
+    const queryGetInfoEmpleado = `SELECT e.id_empleado, e.usuario, e.nombre_empleado, e.dni_empleado, e.direccion_empleado, e.telefono_empleado, e.mail_empleado, r.nombre_rol
+        FROM empleados e
+        LEFT JOIN roles r ON e.id_rol = r.id_rol
+        where e.usuario = ?`
+    connection.query(queryGetInfoEmpleado, [usuario], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Error al obtener la información del empleado.' });
+        }
+        return res.status(200).json({ empleado: results[0] });    
+    })
 }
 
 // Obtener todos los empleados
@@ -225,5 +236,6 @@ module.exports = {
     crearEmpleado,
     editarEmpleado,
     eliminarEmpleado,
-    autenticarEmpleado
+    autenticarEmpleado,
+    obtenerInfoEmpleadoAutenticado
 };
