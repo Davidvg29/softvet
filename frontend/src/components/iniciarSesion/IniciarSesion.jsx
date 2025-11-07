@@ -22,7 +22,7 @@ const IniciarSesion = () => {
       return;
     }
     try {
-      const { data } = await axios.post(`${empleado}/autenticar`, user);
+      const { data } = await axios.post(`${empleado}/autenticar`, user, {withCredentials: true});
       console.log(data);
       setEmpleado(data.empleado); // ✅ guarda el empleado globalmente
       setMessage(data.message);
@@ -33,41 +33,54 @@ const IniciarSesion = () => {
   };
 
   return (
-    <Form onSubmit={sendUser}>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Usuario:</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Ingrese su usuario"
-          name="usuario"
-          onChange={handlerUser}
-        />
-      </Form.Group>
+   <div className="d-flex justify-content-center " style={{ minHeight: '75vh' }}>
+  <div className="container">
+    <div className="row justify-content-center">
+      <div className="col-12 col-sm-10 col-md-8 col-lg-6">
+        <Form onSubmit={sendUser} className="p-4 border rounded shadow-sm bg-white">
+          
+          <Form.Group className="mb-3 text-start" controlId="formBasicEmail">
+            <Form.Label className="fw-semibold">Usuario:</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese su usuario"
+              name="usuario"
+              onChange={handlerUser}
+            />
+          </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Contraseña</Form.Label>
-        <Form.Control
-          type="password"
-          placeholder="******"
-          name="contrasena"
-          onChange={handlerUser}
-        />
-      </Form.Group>
+          <Form.Group className="mb-3 text-start" controlId="formBasicPassword">
+            <Form.Label className="fw-semibold">Contraseña:</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="******"
+              name="contrasena"
+              onChange={handlerUser}
+            />
+          </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check
-          type="checkbox"
-          label="No soy un robot."
-          checked={checked}
-          onChange={(e) => setChecked(e.target.checked)}
-        />
-      </Form.Group>
+          <div className="d-flex flex-column align-items-center">
+            <Form.Group className="mb-3 text-start w-100" controlId="formBasicCheckbox">
+              <Form.Check
+                type="checkbox"
+                label="No soy un robot."
+                checked={checked}
+                onChange={(e) => setChecked(e.target.checked)}
+              />
+            </Form.Group>
 
-      <Button variant="primary" type="submit">
-        Iniciar Sesión
-      </Button>
-      <p>{message}</p>
-    </Form>
+            <Button variant="primary" type="submit" className="w-50">
+              Iniciar Sesión
+            </Button>
+          </div>
+
+          <p className="text-center mt-3">{message}</p>
+        </Form>
+      </div>
+    </div>
+  </div>
+</div>
+
   );
 };
 
