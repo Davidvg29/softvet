@@ -10,6 +10,8 @@ function Header() {
     <Navbar>
       <div className="px-5 w-100 d-flex align-items-center justify-content-between">
         <Navbar.Brand>
+          {location.pathname === "/administrator" || location.pathname === "/proveedores" || location.pathname === "/administrator/productos" ? (
+            <Link to="/administrator">
           {location.pathname === "/roles" || location.pathname === "/administrator/clientes" || location.pathname === "/administrator/productos" ? (
             <Link to="/">
               <img
