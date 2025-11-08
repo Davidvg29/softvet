@@ -6,7 +6,8 @@ import Prueba from './components/Prueba.jsx';
 import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION } from './routers/router';
+import Empleados from './pages/Empleados'
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS } from './routers/router';
 
 function App() {
   return (
@@ -17,8 +18,9 @@ function App() {
       <Route element={<RutaPrivada/>}>
         {/* Aqui van las rutas privadas */}
         <Route path='/prueba' element={<Prueba/>}/>
-        < Route path={PROVEEDORES} element={<Proveedores/>} />
-      <Route path={ROLES} element={<Roles/>} />
+        <Route path={PROVEEDORES} element={<Proveedores/>} />
+        <Route path={ROLES} element={<Roles/>} />
+        <Route path={EMPLEADOS} element={<Empleados/>} />
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>
