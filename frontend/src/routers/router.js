@@ -1,3 +1,5 @@
 export const HOME = "/"
 export const ROLES = "/roles"
 export const EMPLEADOS = "/empleados"
+export const INICIAR_SESION = "/login"
+export const PROVEEDORES = "/proveedores"
