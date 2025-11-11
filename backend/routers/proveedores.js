@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/ver', mostrarProveedores);   
 router.get('/ver/:id', mostrarProveedoresId);
 router.post('/crear',verifyToken, autenticarRoles(["Administrador"]), crearProveedor);
-router.put('/editar/:id',autenticarRoles(["Administrador"]), editarProveedor);
-router.delete('/eliminar/:id',autenticarRoles(["Administrador"]), eliminarProveedor);
+router.put('/editar/:id',verifyToken, autenticarRoles(["Administrador"]), editarProveedor);
+router.delete('/eliminar/:id', verifyToken, autenticarRoles(["Administrador"]), eliminarProveedor);
 
 module.exports = router;
