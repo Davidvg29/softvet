@@ -1,70 +1,91 @@
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import axios from "axios";
-import Swal from 'sweetalert2';
-import { ESPECIES } from '../../endpoints/endpoints';
-import validationCrearEspecies from '../../validations/validationCrearEspecies';
+import Swal from "sweetalert2";
+import { ESPECIES } from "../../endpoints/endpoints";
+import validationCrearEspecies from "../../validations/validationCrearEspecies";
 
-function CrearEspecies ({onClose, onUpdate}) {
-  const initialState = {
-        nombre_especie: ""  
+const EditEspecies = ({ id_especie, onClose, onUpdate }) => {
+  const [formData, setFormData] = useState({ nombre_especie: "" });
+
+  // 🔹 Cargar datos de la especie al montar el componente
+  useEffect(() => {
+    const fetchEspecie = async () => {
+      try {
+        const response = await axios.get(`${ESPECIES}/ver/${id_especie}`, {
+          withCredentials: true,
+        });
+        setFormData(response.data);
+      } catch (error) {
+        console.error("Error al obtener la especie:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo cargar la especie.",
+          confirmButtonColor: "#6f42c1",
+        });
+      }
     };
-    const [formData, setFormdata] = useState(initialState);
 
-    const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormdata({
-    ...formData,
-    [name]: value,
-  });
-};
+    if (id_especie) fetchEspecie();
+  }, [id_especie]);
 
-const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log("🟣 handleSubmit ejecutado");
+  // 🔹 Actualizar campo al escribir
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
-        const validation = validationCrearEspecies(formData.nombre_especie);
-        if (validation.length !== 0) {
+  // 🔹 Guardar cambios
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const validation = validationCrearEspecies(formData.nombre_especie);
+    if (validation.length !== 0) {
       return Swal.fire({
-        icon: 'warning',
-        title: 'Validación',
+        icon: "warning",
+        title: "Atención",
         text: validation,
-        confirmButtonText: 'Aceptar',
+        confirmButtonColor: "#6f42c1",
       });
     }
 
-        try {
-      const response = await axios.post(`${ESPECIES}/crear`, formData, { withCredentials: true });
+    try {
+      const response = await axios.put(
+        `${ESPECIES}/editar/${id_especie}`,
+        formData,
+        { withCredentials: true }
+      );
 
-      if (response.status === 200 || response.status === 201) {
-      
+      if (response.status === 200) {
         await Swal.fire({
-          icon: 'success',
-          title: 'Especie guardada con éxito!',
-          confirmButtonText: 'Aceptar',
-          confirmButtonColor: '#6f42c1',
+          icon: "success",
+          title: "Especie actualizada",
+          text: "Los cambios se guardaron correctamente.",
+          confirmButtonText: "Aceptar",
+          confirmButtonColor: "#6f42c1",
         });
 
-        setFormdata(initialState);
-        if (onUpdate) onUpdate();
-        if (onClose) onClose();
+        onUpdate();
+        onClose();
       }
     } catch (error) {
-      console.error("Error al guardar Especie", error);
-
+      console.error("Error al editar la especie:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Hubo un problema al guardar la especie.',
-        confirmButtonText: 'Aceptar',
+        icon: "error",
+        title: "Error",
+        text: "No se pudo guardar la especie. Inténtalo nuevamente.",
+        confirmButtonColor: "#6f42c1",
       });
     }
   };
 
   return (
-   
-      <div
+    <div
         style={{
           backgroundColor: "#cfcfcf",
           borderRadius: "10px",
@@ -82,9 +103,9 @@ const handleSubmit = async (e) => {
     <Form.Control
       type="text"
       name="nombre_especie"
-      value={formData.nombre_rol}
+      value={formData.nombre_especie}
       onChange={handleChange}
-      placeholder="Nombre de la especie"
+      placeholder="Nombre del especie"
       style={{ borderRadius: "8px", flex: 1 }}
     />
   </div>
@@ -122,7 +143,7 @@ const handleSubmit = async (e) => {
     e.target.style.boxShadow = "0 6px 0 #3c5bb3";
   }}
 >
-  Guardar
+  Guardar Cambios
 </Button>
 
 <Button
@@ -163,4 +184,4 @@ const handleSubmit = async (e) => {
   );
 }
 
-export default CrearEspecies
+export default EditEspecies;
