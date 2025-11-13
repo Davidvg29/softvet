@@ -5,10 +5,12 @@ import Header from '../components/landing/Header';
 
 const Empleados = () => {
   return (
-    <div>
-       <Header/>
-      <MainEmpleado/>
-        <Footer/>
+    <div className="d-flex flex-column min-vh-100">
+      <Header/>
+        <main className="flex-grow-1">
+          <MainEmpleado/>
+        </main>
+      <Footer/>
     </div>
   )
 }

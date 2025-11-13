@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { EMPLEADOS, ROLES } from "../../endpoints/endpoints";
+import { empleados, ROLES } from "../../endpoints/endpoints";
 import validationCrearEmpleados from "../../validations/validationCrearEmpleados";
 
 const EditEmpleado = ({ id_empleado, onClose, onUpdate }) => {
@@ -13,7 +13,7 @@ const EditEmpleado = ({ id_empleado, onClose, onUpdate }) => {
   useEffect(() => {
     const fetchEmpleado = async () => {
       try {
-        const response = await axios.get(`${EMPLEADOS}/ver/${id_empleado}`, {
+        const response = await axios.get(`${empleados}/ver/${id_empleado}`, {
           withCredentials: true,
         });
         setFormData(response.data);
