@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/esm/Button';
 import VerProveedor from './VerProveedor';
 import CrearProveedor from './CrearProveedor';
 import EditarProveedor from './EditarProveedor';
-import { X } from "lucide-react"; 
+import { X } from "lucide-react";
 
 const MainProveedores = () => {
 
@@ -101,44 +101,196 @@ const MainProveedores = () => {
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                     />
-                    <Button variant="light" style={{ backgroundColor: "rgba(63, 3, 175, 0.5)", color: "#fff" }} onClick={() => handleOpenModal("crearProveedor")} >Crear un nuevo Proveedor</Button>
+                    <Button
+                        onClick={() => handleOpenModal("crearProveedor")}
+                        style={{
+                            backgroundColor: "#6f42c1",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 4px 0 #6f42c1",
+                            transition: "all 0.1s ease",
+                            transform: "translateY(0)",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 6px 0 #6f42c1";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 4px 0 #6f42c1";
+                        }}
+                        onMouseDown={(e) => {
+                            e.target.style.transform = "translateY(2px)";
+                            e.target.style.boxShadow = "0 2px 0 #6f42c1";
+                        }}
+                        onMouseUp={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 6px 0 #6f42c1";
+                        }}
+                    >
+                        Crear un nuevo Proveedor
+                    </Button>
 
                 </div>
 
 
-                <div className='' style={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
-                    <Table striped bordered hover responsive className='w-100 table table-striped' style={{ overflowX: 'x' }}>
+                <div
+                    style={{
+                        border: "3px solid #6f42c1",
+                        borderRadius: "16px",
+                        padding: "25px",
+                        backgroundColor: "#f8f9fa",
+                        boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                        width: "85%",
+                        maxWidth: "950px",
+                        marginTop: "30px",
+                    }}>
+                    <Table
+                        hover
+                        responsive
+                        style={{
+                            width: "100%",
+                            borderCollapse: "separate",
+                            borderSpacing: "0 12px",
+                        }}
+
+                    >
                         <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Mail</th>
-                                <th>Ver</th>
-                                <th>Editar</th>
-                                <th>Eliminar</th>
+                            <tr
+                                style={{
+                                    background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+                                    color: "#fff",
+                                    textAlign: "center",
+                                    fontSize: "18px",
+                                    borderRadius: "10px",
+                                }}
+                            >
+                                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+                                    Nombre
+                                </th>
+                                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+                                    Mail
+                                </th>
+                                <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
+                                    Acciones
+                                </th>
                             </tr>
                         </thead>
                         <tbody className=''>
                             {proveedoresFiltrados.length > 0 ? (
                                 proveedoresFiltrados.reverse().map((proveedor) => (
-                                    <tr key={proveedor.id_proveedor}>
-                                        <td>{proveedor.nombre_proveedor}</td>
-                                        <td>{proveedor.mail_proveedor}</td>
-                                        <td>
-                                            <Button className='w-100' size="sm" variant='primary' onClick={() => handleOpenModal("verProveedor", proveedor.id_proveedor)}>Ver</Button>
+                                    <tr key={proveedor.id_proveedor}
+                                        style={{
+                                            backgroundColor: "#fff",
+                                            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                                            borderRadius: "12px",
+                                            transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                                            transform: "translateY(0)",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = "translateY(-3px)";
+                                            e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = "translateY(0)";
+                                            e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                                        }}
+                                    >
+                                        <td
+                                            style={{
+                                                padding: "14px 20px",
+                                                fontWeight: "500",
+                                                textAlign: "center",
+                                                color: "#333",
+                                                border: "none",
+                                            }}
+                                        >{proveedor.nombre_proveedor}</td>
+                                        <td
+                                            style={{
+                                                padding: "14px 20px",
+                                                fontWeight: "500",
+                                                textAlign: "center",
+                                                color: "#333",
+                                                border: "none",
+                                            }}
+                                        >{proveedor.mail_proveedor}</td>
+                                        <td
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                gap: "10px",
+                                                padding: "12px",
+                                                border: "none",
+                                            }}
+                                        >
+                                            <Button
+                                                style={{
+                                                    backgroundColor: "#1ab637",
+                                                    border: "none",
+                                                    fontWeight: "bold",
+                                                    color: "#fff",
+                                                    boxShadow: "0 3px 0 #138a28",
+                                                    transition: "all 0.1s ease",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.transform = "translateY(-2px)";
+                                                    e.target.style.boxShadow = "0 5px 0 #138a28";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.transform = "translateY(0)";
+                                                    e.target.style.boxShadow = "0 3px 0 #138a28";
+                                                }}
+                                                onClick={() => handleOpenModal("verProveedor", proveedor.id_proveedor)}>Ver</Button>
                                         </td>
                                         <td className="text-center">
-                                            <Button className='w-100' size="sm" variant="warning" onClick={() => handleOpenModal("editarProveedor", proveedor.id_proveedor)} >Editar</Button>
+                                            <Button
+                                                style={{
+                                                    backgroundColor: "#ffc107",
+                                                    border: "none",
+                                                    fontWeight: "bold",
+                                                    color: "#333",
+                                                    boxShadow: "0 3px 0 #d39e00",
+                                                    transition: "all 0.1s ease",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.transform = "translateY(-2px)";
+                                                    e.target.style.boxShadow = "0 5px 0 #d39e00";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.transform = "translateY(0)";
+                                                    e.target.style.boxShadow = "0 3px 0 #d39e00";
+                                                }}
+                                                onClick={() => handleOpenModal("editarProveedor", proveedor.id_proveedor)} >Editar</Button>
                                         </td>
 
                                         <td className="text-center">
-                                            <Button className='w-100' size="sm" variant="danger" onClick={() => { borrar(proveedor.id_proveedor) }} >Eliminar</Button>
+                                            <Button
+                                                style={{
+                                                    backgroundColor: "#dc3545",
+                                                    border: "none",
+                                                    fontWeight: "bold",
+                                                    color: "#fff",
+                                                    boxShadow: "0 3px 0 #a71d2a",
+                                                    transition: "all 0.1s ease",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.transform = "translateY(-2px)";
+                                                    e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.transform = "translateY(0)";
+                                                    e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                                                }}
+                                                onClick={() => { borrar(proveedor.id_proveedor) }} >Eliminar</Button>
                                         </td>
 
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="5" className="text-center">
+                                    <td colSpan="2" style={{ textAlign: "center", padding: "20px" }}>
                                         No se encontraron Proveedores.
                                     </td>
                                 </tr>
@@ -147,25 +299,76 @@ const MainProveedores = () => {
                     </Table>
                 </div>
             </div>
-            <Modal show={showModal} onHide={handleCloseModal} size='lg' centered>
-                <Modal.Header style={{ background: "linear-gradient(90deg, #ffde59, #ff914d)" }}>
-                    <Button
-                        variant="danger"
+            <Modal show={showModal}
+                onHide={handleCloseModal}
+                centered
+                backdrop="static"
+                size="lg">
+
+                <div
+                    style={{
+                        background: 'linear-gradient(135deg, #FFD700, #32CD32)',
+                        padding: '25px',
+                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
+                        position: 'relative',
+                    }}
+                >
+                    {/* Botón de cerrar (cruz roja más chica y cuadrada) */}
+                    <button
                         onClick={handleCloseModal}
-                        className="position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center"
-                        style={{ width: "32", height: "32", lineHeight: "0", }}
+                        aria-label="Cerrar"
+                        style={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            backgroundColor: '#e74c3c',
+                            color: 'white',
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                            transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => (e.target.style.backgroundColor = '#c0392b')}
+                        onMouseLeave={(e) => (e.target.style.backgroundColor = '#e74c3c')}
                     >
-                       <X size={20} />
-                    </Button>
-                    <Modal.Title >{TITULOS[fromType]}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className="d-flex justify-content-center " style={{ background: "linear-gradient(90deg, #ffde59, #ff914d)" }}>
-                    {fromType === "crearProveedor" && <CrearProveedor onClose={handleCloseModal} onUpdated={cargarProveedores} />}
-                    {fromType === "verProveedor" && <VerProveedor id={proveedorId} />}{/*paso el id por prop */}
-                    {fromType === "editarProveedor" && <EditarProveedor id={proveedorId} onClose={handleCloseModal} onUpdated={cargarProveedores} />}
+                        ✕
+                    </button>
 
-                </Modal.Body>
+                    {/* Caja interior del modal */}
+                    <div
+                        style={{
+                            backgroundColor: '#cfcfcf',
+                            padding: '30px 60px',
+                            textAlign: 'center',
+                            width: '700px',
+                            margin: 'auto',
+                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+                            borderRadius: '12px',
+                        }}
+                    >
+                        <h4
+                            style={{
+                                fontWeight: 'bold',
+                                textDecoration: 'underline',
+                                marginBottom: '25px',
+                            }}
+                        >
+                            {TITULOS[fromType]}
+                        </h4>
 
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                            {fromType === "crearProveedor" && <CrearProveedor onClose={handleCloseModal} onUpdated={cargarProveedores} />}
+                            {fromType === "verProveedor" && <VerProveedor id={proveedorId} />}{/*paso el id por prop */}
+                            {fromType === "editarProveedor" && <EditarProveedor id={proveedorId} onClose={handleCloseModal} onUpdated={cargarProveedores} />}
+                        </div>
+                    </div>
+                </div>
+                
 
             </Modal>
         </>

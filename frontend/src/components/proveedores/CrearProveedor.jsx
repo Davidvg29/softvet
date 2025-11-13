@@ -51,7 +51,12 @@ const CrearProveedor = ({ onClose, onUpdated }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-3 shadow text-dark w-100 " >
+    <div style={{
+      backgroundColor: "#cfcfcf",
+      borderRadius: "10px",
+      padding: "25px 40px",
+      color: "#000",
+    }}>
       <h3 className="text-center mb-4">Formulario de proveedores</h3>
       <Form className="px-5" onSubmit={handleSubmit} >
         <Form.Group as={Row} className="mb-3 align-items-center">
@@ -79,12 +84,72 @@ const CrearProveedor = ({ onClose, onUpdated }) => {
           </Col>
         </Form.Group>
 
-        <div className="text-center mt-4">
-          <Button variant="danger" className="me-3" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button type="submit" variant="primary">
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <Button
+            type="submit"
+            style={{
+              backgroundColor: "#5a7edc",
+              border: "none",
+              borderRadius: "20px",
+              padding: "10px 28px",
+              marginRight: "10px",
+              fontWeight: "bold",
+              color: "#fff",
+              boxShadow: "0 4px 0 #3c5bb3",
+              transition: "all 0.1s ease",
+              transform: "translateY(0)",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 6px 0 #3c5bb3";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 4px 0 #3c5bb3";
+            }}
+            onMouseDown={(e) => {
+              e.target.style.transform = "translateY(2px)";
+              e.target.style.boxShadow = "0 2px 0 #3c5bb3";
+            }}
+            onMouseUp={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 6px 0 #3c5bb3";
+            }}
+          >
             Guardar
+          </Button>
+
+          <Button
+            onClick={onClose}
+            style={{
+              backgroundColor: "#e74c3c",
+              border: "none",
+              borderRadius: "20px",
+              padding: "10px 28px",
+              fontWeight: "bold",
+              color: "#fff",
+              boxShadow: "0 4px 0 #b33a2b",
+              transition: "all 0.1s ease",
+              transform: "translateY(0)",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 6px 0 #b33a2b";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 4px 0 #b33a2b";
+            }}
+            onMouseDown={(e) => {
+              e.target.style.transform = "translateY(2px)";
+              e.target.style.boxShadow = "0 2px 0 #b33a2b";
+            }}
+            onMouseUp={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 6px 0 #b33a2b";
+            }}
+          >
+            Cancelar
           </Button>
         </div>
       </Form>

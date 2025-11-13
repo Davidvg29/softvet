@@ -12,8 +12,6 @@ function Header() {
         <Navbar.Brand>
           {location.pathname === "/administrator" || location.pathname === "/proveedores" || location.pathname === "/administrator/productos" ? (
             <Link to="/administrator">
-          {location.pathname === "/roles" || location.pathname === "/administrator/clientes" || location.pathname === "/administrator/productos" ? (
-            <Link to="/">
               <img
                 src={logovet}
                 width="200px"
