@@ -3,7 +3,7 @@ import { Navbar, Container, Offcanvas, Nav, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import logovet from '../assets/logovet.svg';
 import { useEmpleadoStore } from '../zustand/empleado';
-import { FaUser, FaHome, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaUser, FaHome, FaMapMarkerAlt, FaBox, FaUserShield, FaUsers, FaPaw} from 'react-icons/fa';
 const Header = () => {
     const empleado = useEmpleadoStore((state) => state.empleado);
     const [show, setShow] = useState(false);
@@ -79,10 +79,10 @@ const Header = () => {
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                     <Nav className="flex-column">
-                        <Nav.Link as={Link} to="/proveedores">Proveedores</Nav.Link>
-                        <Nav.Link as={Link} to="/roles">Roles</Nav.Link>
-                        <Nav.Link as={Link} to="/empleados">Empleados</Nav.Link>
-                        <Nav.Link as={Link} to="/especies">Especies</Nav.Link>
+                        <Nav.Link as={Link} to="/proveedores"> <FaBox className="me-2" /> Proveedores</Nav.Link>
+                        <Nav.Link as={Link} to="/roles"> <FaUserShield className="me-2" /> Roles</Nav.Link>
+                        <Nav.Link as={Link} to="/empleados"> <FaUsers className="me-2" /> Empleados</Nav.Link>
+                        <Nav.Link as={Link} to="/especies"> <FaPaw className="me-2" /> Especies</Nav.Link>
                     </Nav>
                 </Offcanvas.Body>
             </Offcanvas>

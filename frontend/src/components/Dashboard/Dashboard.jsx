@@ -3,14 +3,14 @@ import { Container, Row, Col, Card, Form, Badge, } from "react-bootstrap";
 import { People, Calendar2Check, Clock, CalendarX, EyeSlash, Capsule, PersonFill, Scissors, Globe, Hospital, } from "react-bootstrap-icons";
 import { useEmpleadoStore } from "../../zustand/empleado";
 import { useClientesStore } from "../../zustand/cliente";
-import {clientes} from "../../endpoints/endpoints";
+import { clientes } from "../../endpoints/endpoints";
 import axios from "axios";
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
   const { cliente, setCliente } = useClientesStore();
 
-  
-  
+
+
   useEffect(() => {
 
     const response = async () => {
@@ -32,9 +32,10 @@ const Dashboard = () => {
         {/* ===== Sidebar Izquierda ===== */}
         <Col
           xs="auto"
-          className="d-flex flex-column align-items-center p-3 text-white"
+          className="d-flex flex-column align-items-center p-3 text-white sidebar-col"
           style={{
             width: "260px",
+            maxWidth: "100%", // nunca supera el 100% de la pantalla
             backgroundColor: "#d7c9f7",
             borderTopRightRadius: "1px",
             borderBottomRightRadius: "1px",
@@ -107,7 +108,7 @@ const Dashboard = () => {
               <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
                 <Card.Body>
                   <People size={40} />
-                  <h2>{cliente?.length || 0 }</h2>
+                  <h2>{cliente?.length || 0}</h2>
                   <p>Clientes Activos</p>
                 </Card.Body>
               </Card>
