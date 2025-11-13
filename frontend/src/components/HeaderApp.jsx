@@ -70,7 +70,12 @@ const Header = () => {
                 }}
             >
                 <Offcanvas.Header closeButton>
-                    <Offcanvas.Title>Menú</Offcanvas.Title>
+                    <Offcanvas.Title>
+                        <Link to="/dashboard" className="d-flex align-items-center text-decoration-none text-dark">
+                            <FaHome className="me-2" />
+                            Menú
+                        </Link>
+                    </Offcanvas.Title>
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                     <Nav className="flex-column">
