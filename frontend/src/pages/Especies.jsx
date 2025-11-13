@@ -1,12 +1,12 @@
 import React from 'react'
 import MainEspecies from '../components/especies/MainEspecies';
 import Footer from '../components/landing/Footer';
-import Header from '../components/landing/Header';
+import HeaderApp from '../components/HeaderApp';
 
 const Especies = () => {
   return (
     <div>
-       <Header/>
+       <HeaderApp/>
       <MainEspecies/>
        <Footer/>
     </div>

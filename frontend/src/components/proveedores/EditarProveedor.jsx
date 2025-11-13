@@ -64,7 +64,12 @@ const EditarProveedor = ({ id, onClose, onUpdated }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-3 shadow text-dark w-100 ">
+    <div style={{
+      backgroundColor: "#cfcfcf",
+      borderRadius: "10px",
+      padding: "25px 40px",
+      color: "#000",
+    }}>
       <h3 className="text-center mb-4">Formulario de proveedors</h3>
       <Form className="px-5" onSubmit={handleSubmit} >
         <Form.Group as={Row} className="mb-3 align-items-center">
