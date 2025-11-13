@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from "axios";
-import { empleado } from '../../endpoints/endpoints';
+import { empleados } from '../../endpoints/endpoints';
 import { useEmpleadoStore } from '../../zustand/empleado';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const IniciarSesion = () => {
+  const navigate = useNavigate()
+  const empleado = useEmpleadoStore((state) => state.empleado); 
   const { setEmpleado } = useEmpleadoStore();
   const [user, setUser] = useState({ usuario: "", contrasena: "" });
   const [message, setMessage] = useState("");
@@ -22,15 +25,23 @@ const IniciarSesion = () => {
       return;
     }
     try {
-      const { data } = await axios.post(`${empleado}/autenticar`, user, {withCredentials: true});
+      const { data } = await axios.post(`${empleados}/autenticar`, user, {withCredentials: true});
       console.log(data);
       setEmpleado(data.empleado); // ✅ guarda el empleado globalmente
+      console.log(data.empleado)
       setMessage(data.message);
+      navigate("/dashboard")
     } catch (error) {
       console.log(error);
       setMessage("Credenciales incorrectas.");
     }
   };
+
+  useEffect(()=>{
+    if(empleado){
+      navigate("/dashboard")
+    }
+  }, [])
 
   return (
    <div className="d-flex justify-content-center " style={{ minHeight: '75vh' }}>

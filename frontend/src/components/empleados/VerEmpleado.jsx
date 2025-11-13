@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { EMPLEADOS, ROLES } from "../../endpoints/endpoints";
+import { empleados, ROLES } from "../../endpoints/endpoints";
 import axios from "axios";
 import { Card, Spinner } from "react-bootstrap";
 
@@ -30,7 +30,7 @@ const VerEmpleado = ({ id_empleado }) => {
 
     const getEmpleado = async () => {
       try {
-        const response = await axios.get(`${EMPLEADOS}/ver/${id_empleado}`, {
+        const response = await axios.get(`${empleados}/ver/${id_empleado}`, {
           withCredentials: true,
         });
         if (response.data) {
