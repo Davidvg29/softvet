@@ -5,7 +5,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { EMPLEADOS } from '../../endpoints/endpoints';
+import { empleados } from '../../endpoints/endpoints';
 import CrearEmpleado from './CrearEmpleado';
 import VerEmpleado from './VerEmpleado';
 import EditEmpleado from './EditEmpleado';
@@ -37,7 +37,7 @@ const MainEmpleado = () => {
 
   const cargarEmpleados = async () => {
     try {
-      const response = await axios.get(`${EMPLEADOS}/ver`, { withCredentials: true });
+      const response = await axios.get(`${empleados}/ver`, { withCredentials: true });
       setEmpleado(response.data);
     } catch (error) {
       console.error('Error al cargar los roles:', error);
@@ -69,7 +69,7 @@ const MainEmpleado = () => {
 
     try {
 
-      const response = await axios.delete(`${EMPLEADOS}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${empleados}/eliminar/${id}`, { withCredentials: true });
 
       if (response.status === 200) {
 

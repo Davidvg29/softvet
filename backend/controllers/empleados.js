@@ -47,7 +47,7 @@ const autenticarEmpleado = (req, res) => {
                 res.cookie('TOKEN_AUTH_SOFTVET', token, {
                     httpOnly: true,
                     secure: false,
-                    sameSite: 'none',
+                    sameSite: 'strict',
                     maxAge: 3600000, //1 hora
                     path: '/'
                 });

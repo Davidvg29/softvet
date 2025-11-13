@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 import Swal from 'sweetalert2';
-import { EMPLEADOS, ROLES } from '../../endpoints/endpoints';
+import { empleados, ROLES } from '../../endpoints/endpoints';
 import validationCrearEmpleados from '../../validations/validationCrearEmpleados';
 
 function CrearEmpleado({ onClose, onUpdate }) {
@@ -67,7 +67,7 @@ if (validation.length !== 0) {
 
 console.log("🟣 Datos enviados:", formData);
     try {
-      const response = await axios.post(`${EMPLEADOS}/crear`, formData, { withCredentials: true });
+      const response = await axios.post(`${empleados}/crear`, formData, { withCredentials: true });
 
       if (response.status === 200 || response.status === 201) {
 

@@ -7,20 +7,22 @@ import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, DASHBOARD } from './routers/router';
+import DashboardPage from './pages/DashboardPage.jsx';
 
 function App() {
   return (
     <Routes>
       <Route path={HOME} element={<Home/>} />
-      <Route path={INICIAR_SESION} element={<Login/>}/>
       {/* grupo de rutas privadas */}
+      <Route path={INICIAR_SESION} element={<Login/>}/>
       <Route element={<RutaPrivada/>}>
         {/* Aqui van las rutas privadas */}
         <Route path='/prueba' element={<Prueba/>}/>
         <Route path={PROVEEDORES} element={<Proveedores/>} />
         <Route path={ROLES} element={<Roles/>} />
         <Route path={EMPLEADOS} element={<Empleados/>} />
+        <Route path={DASHBOARD} element={<DashboardPage/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>
