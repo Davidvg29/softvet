@@ -5,10 +5,12 @@ import HeaderApp from '../components/HeaderApp';
 
 const Especies = () => {
   return (
-    <div>
-       <HeaderApp/>
-      <MainEspecies/>
-       <Footer/>
+    <div className="d-flex flex-column min-vh-100">
+      <HeaderApp/>
+        <main className="flex-grow-1">
+          <MainEspecies/>
+        </main>
+      <Footer/>
     </div>
   )
 }

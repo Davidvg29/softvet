@@ -5,6 +5,7 @@ import { useEmpleadoStore } from "../../zustand/empleado";
 import { useClientesStore } from "../../zustand/cliente";
 import { clientes } from "../../endpoints/endpoints";
 import axios from "axios";
+import { Link } from 'react-router-dom';
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
   const { cliente, setCliente } = useClientesStore();
@@ -105,129 +106,197 @@ const Dashboard = () => {
           {/* Primera fila */}
           <Row className="justify-content-center mb-4">
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <People size={40} />
-                  <h2>{cliente?.length || 0}</h2>
-                  <p>Clientes Activos</p>
-                </Card.Body>
-              </Card>
+              <Link to="/empleados">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 4}</h2> */}
+                    <p>Empleados</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <Calendar2Check size={40} />
-                  <h2>0</h2>
-                  <p>Gestionar Agenda</p>
-                </Card.Body>
-              </Card>
+              <Link to="/roles">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 3}</h2> */}
+                    <p>Roles</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <Clock size={40} />
-                  <h2>0</h2>
-                  <p>Cola de Espera</p>
-                </Card.Body>
-              </Card>
+              <Link to="/proveedores">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 3}</h2> */}
+                    <p>Proveedores</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <CalendarX size={40} />
-                  <h2>
-                    9 <Badge bg="danger">!</Badge>
-                  </h2>
-                  <p>Turnos Vencidos</p>
-                </Card.Body>
-              </Card>
+              <Link to="/especies">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Especies</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <EyeSlash size={40} />
-                  <h2>--</h2>
-                  <p>Balance de Caja</p>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* Selector de tipo de evento */}
-          <Row className="justify-content-center mb-4">
-            <Col xs={12} md={4}>
-              <div className="p-3 rounded-3 text-center" style={{ backgroundColor: "#a5d2fa" }}>
-                <Form.Select>
-                  <option>Tipo de evento</option>
-                  <option>Todos</option>
-                  <option>Hoy</option>
-                  <option>Semana</option>
-                  <option>Mes</option>
-                </Form.Select>
-                <div className="d-flex justify-content-around mt-2">
-                  <span>Hoy <Badge bg="danger">10</Badge></span>
-                  <span>Semana <Badge bg="danger">20</Badge></span>
-                  <span>Mes <Badge bg="danger">90</Badge></span>
-                </div>
-              </div>
-            </Col>
-          </Row>
-
-          {/* Segunda fila */}
-          <Row className="justify-content-center">
-            <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <Capsule size={40} />
-                  <h2>5</h2>
-                  <p>Vacunación</p>
-                </Card.Body>
-              </Card>
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Ventas</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <PersonFill size={40} />
-                  <h2>10</h2>
-                  <p>Atención Clínica</p>
-                </Card.Body>
-              </Card>
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Compras</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <Scissors size={40} />
-                  <h2>5</h2>
-                  <p>Baño y Peluquería</p>
-                </Card.Body>
-              </Card>
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Stock</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <Globe size={40} />
-                  <h2>8</h2>
-                  <p>Desparasitación</p>
-                </Card.Body>
-              </Card>
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Productos</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                <Card.Body>
-                  <Hospital size={40} />
-                  <h2>1</h2>
-                  <p>Quirófano</p>
-                </Card.Body>
-              </Card>
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Historia clinica</p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Razas</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Productos</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Clientes</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Turnos</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Categorias</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Sucursales</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <Link to="">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Mascotas</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+            </Col>
+
           </Row>
         </Col>
       </Row>
