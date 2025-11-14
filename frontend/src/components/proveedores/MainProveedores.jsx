@@ -91,7 +91,7 @@ const MainProveedores = () => {
 
     return (
         <>
-            <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5" style={{ backgroundColor: "#d9cffa" }} >
+            <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5" >
                 <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
                     <Form.Control
                         type="text"

@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
 import { Navbar, Container, Offcanvas, Nav, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logovet from '../assets/logovet.svg';
 import { useEmpleadoStore } from '../zustand/empleado';
 import { FaUser, FaHome, FaMapMarkerAlt, FaBox, FaUserShield, FaUsers, FaPaw} from 'react-icons/fa';
+import axios from 'axios';
+import { empleados } from '../endpoints/endpoints';
 const Header = () => {
     const empleado = useEmpleadoStore((state) => state.empleado);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const { logout } = useEmpleadoStore();
+    const navigate = useNavigate()
+
+    const cerrarSesion = async()=>{
+        try {
+            const {data} = await axios(`${empleados}/logout`, { withCredentials: true })
+            console.log(data);
+            logout()
+            navigate("/login")
+        } catch (error) {
+            console.log(error);
+            
+        }
+    }
 
     return (
         <>
@@ -85,6 +101,7 @@ const Header = () => {
                         <Nav.Link as={Link} to="/especies"> <FaPaw className="me-2" /> Especies</Nav.Link>
                     </Nav>
                 </Offcanvas.Body>
+                <button onClick={cerrarSesion}>Cerrar Sesión</button>
             </Offcanvas>
         </>
     );

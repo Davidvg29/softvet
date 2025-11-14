@@ -2,6 +2,17 @@ const { connection } = require('../config/bd/dataBase');
 const { createToken } = require('../middlewares/jwt');
 const { encriptarContraseña, compararContraseña } = require('../service/bcrypt');
 
+const logout = (req, res)=>{
+    res.clearCookie("TOKEN_AUTH_SOFTVET", {
+        path: "/",
+        secure: false,  
+        httpOnly: true,
+        sameSite: 'strict',
+    });
+    res.status(200).json("Sesion cerrada con exito")
+}
+
+
 const autenticarEmpleado = (req, res) => {
     const { usuario, contrasena } = req.body;
     if (!usuario || !contrasena) {
@@ -112,6 +123,7 @@ const mostrarEmpleadoPorId = (req, res) => {
 
 // Agregar un nuevo empleado
 const crearEmpleado = (req, res) => {
+console.log("asd");
 
     const { usuario, contrasena, nombre_empleado, dni_empleado, direccion_empleado, telefono_empleado, mail_empleado,id_rol } = req.body;
         if (!usuario || !contrasena || !nombre_empleado || !dni_empleado || !direccion_empleado || !telefono_empleado || !mail_empleado || !id_rol) {
@@ -237,5 +249,6 @@ module.exports = {
     editarEmpleado,
     eliminarEmpleado,
     autenticarEmpleado,
-    obtenerInfoEmpleadoAutenticado
+    obtenerInfoEmpleadoAutenticado,
+    logout
 };

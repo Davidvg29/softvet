@@ -68,7 +68,8 @@ if (validation.length !== 0) {
 console.log("🟣 Datos enviados:", formData);
     try {
       const response = await axios.post(`${empleados}/crear`, formData, { withCredentials: true });
-
+      console.log(response.data);
+      
       if (response.status === 200 || response.status === 201) {
 
         await Swal.fire({
