@@ -9,7 +9,8 @@ import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD } from './routers/router';
+import Razas from './pages/Razas';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD,RAZAS } from './routers/router';
 import DashboardPage from './pages/DashboardPage.jsx';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path={EMPLEADOS} element={<Empleados/>} />
         <Route path={ESPECIES} element={<Especies/>} />
         <Route path={DASHBOARD} element={<DashboardPage/>}/>
+        <Route path={RAZAS} element={<Razas/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>
