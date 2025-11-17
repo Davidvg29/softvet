@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import Swal from "sweetalert2";
 import axios from 'axios';
-import { proveedores } from '../../endpoints/endpoints';
+import { razas } from '../../endpoints/endpoints';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/esm/Button';
-import VerProveedor from './VerProveedor';
-import CrearProveedor from './CrearProveedor';
-import EditarProveedor from './EditarProveedor';
+import VerRaza from './VerRaza';
+import CrearRaza from './CrearRaza';
+import EditarRaza from './EditarRaza';
 
-const MainProveedores = () => {
-
+const MainRaza = () => {
+  
 
     //state de busqueda
     const [busqueda, setBusqueda] = useState("");
 
-    const [proveedor, setProveedor] = useState([]);
+    const [raza, setRaza] = useState([]);
 
-    const [proveedorId, setProveedorId] = useState(null);
+    const [razaId, setRazaId] = useState(null);
 
     const [showModal, setShowModal] = useState(false);
     const [fromType, setFromType] = useState("");
@@ -26,7 +26,7 @@ const MainProveedores = () => {
     //funcion de apertura modal
     const handleOpenModal = (type, id = null) => {
         setFromType(type);
-        setProveedorId(id);
+        setRazaId(id);
         setShowModal(true);
     };
 
@@ -38,35 +38,34 @@ const MainProveedores = () => {
 
     const TITULOS = {
 
-        crearProveedor: "Crear Proveedor",
-        verProveedor: "Ver Proveedor",
-        editarProveedor: "Editar Proveedor",
+        crearRaza: "Crear Raza",
+        verRaza: "Ver Raza",
+        editarRaza: "Editar Raza",
     };
 
-    const cargarProveedores = async () => {
+    const cargarRazas = async () => {
         try {
 
-            const { data } = await axios.get(`${proveedores}/ver`, { withCredentials: true });
+            const { data } = await axios.get(`${razas}/ver`, { withCredentials: true });
             console.log(data);
-            setProveedor(data);
+            setRaza(data);
         } catch (error) {
-            console.error("Error al cargar los proveedores:", error);
+            console.error("Error al cargar las razas:", error);
         }
     };
 
     useEffect(() => {
-        cargarProveedores();
+        cargarRazas();
     }, []);
 
-    const proveedoresFiltrados = proveedor.filter((proveedor) =>
-        proveedor.nombre_proveedor.toLowerCase().includes(busqueda.toLowerCase()) ||
-        proveedor.mail_proveedor.toLowerCase().includes(busqueda.toLowerCase())
+    const razasFiltradas = raza.filter((raza) =>
+        raza.nombre_raza.toLowerCase().includes(busqueda.toLowerCase()) 
 
     );
 
-    const borrar = async (id_proveedor) => {
+    const borrar = async (id_raza) => {
         const result = await Swal.fire({
-            title: "¿Eliminar proveedor?",
+            title: "¿Eliminar raza?",
             text: "Esta acción no se puede deshacer.",
             icon: "warning",
             showCancelButton: true,
@@ -79,11 +78,11 @@ const MainProveedores = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.delete(`${proveedores}/eliminar/${id_proveedor}`, { withCredentials: true });
-            Swal.fire("Eliminado", "El proveedor fue eliminado correctamente.", "success");
-            cargarProveedores();
+            await axios.delete(`${razas}/eliminar/${id_raza}`, { withCredentials: true });
+            Swal.fire("Eliminado", "La raza fue liminada correctamente.", "success");
+            cargarRazas();
         } catch (error) {
-            Swal.fire("Error", "No se pudo eliminar el proveedor.", "error");
+            Swal.fire("Error", "No se pudo eliminar la raza.", "error");
             console.error(error);
         }
     };
@@ -94,14 +93,14 @@ const MainProveedores = () => {
                 <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
                     <Form.Control
                         type="text"
-                        placeholder="Buscar por nombre o DNI"
+                        placeholder="Buscar por nombre"
                         className=" w-50 mx-3"
                         style={{ width: '700px' }}
                         value={busqueda}
                         onChange={(e) => setBusqueda(e.target.value)}
                     />
                     <Button
-                        onClick={() => handleOpenModal("crearProveedor")}
+                        onClick={() => handleOpenModal("crearRaza")}
                         style={{
                             backgroundColor: "#6f42c1",
                             border: "none",
@@ -128,7 +127,7 @@ const MainProveedores = () => {
                             e.target.style.boxShadow = "0 6px 0 #6f42c1";
                         }}
                     >
-                        Crear un nuevo Proveedor
+                        Crear una nueva raza
                     </Button>
 
                 </div>
@@ -168,18 +167,15 @@ const MainProveedores = () => {
                                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
                                     Nombre
                                 </th>
-                                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-                                    Mail
-                                </th>
                                 <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
                                     Acciones
                                 </th>
                             </tr>
                         </thead>
                         <tbody className=''>
-                            {proveedoresFiltrados.length > 0 ? (
-                                proveedoresFiltrados.reverse().map((proveedor) => (
-                                    <tr key={proveedor.id_proveedor}
+                            {razasFiltradas.length > 0 ? (
+                                razasFiltradas.reverse().map((raza) => (
+                                    <tr key={raza.id_raza}
                                         style={{
                                             backgroundColor: "#fff",
                                             boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
@@ -204,16 +200,8 @@ const MainProveedores = () => {
                                                 color: "#333",
                                                 border: "none",
                                             }}
-                                        >{proveedor.nombre_proveedor}</td>
-                                        <td
-                                            style={{
-                                                padding: "14px 20px",
-                                                fontWeight: "500",
-                                                textAlign: "center",
-                                                color: "#333",
-                                                border: "none",
-                                            }}
-                                        >{proveedor.mail_proveedor}</td>
+                                        >{raza.nombre_raza}</td>
+                                        
                                         <td
                                             style={{
                                                 display: "flex",
@@ -241,8 +229,7 @@ const MainProveedores = () => {
                                                     e.target.style.transform = "translateY(0)";
                                                     e.target.style.boxShadow = "0 3px 0 #138a28";
                                                 }}
-                                                onClick={() => handleOpenModal("verProveedor", proveedor.id_proveedor)}>Ver</Button>
-                                      
+                                                onClick={() => handleOpenModal("verRaza", raza.id_raza)}>Ver</Button>
                                         
                                             <Button
                                                 style={{
@@ -261,10 +248,8 @@ const MainProveedores = () => {
                                                     e.target.style.transform = "translateY(0)";
                                                     e.target.style.boxShadow = "0 3px 0 #d39e00";
                                                 }}
-                                                onClick={() => handleOpenModal("editarProveedor", proveedor.id_proveedor)} >Editar</Button>
-                                    
-
-                                       
+                                                onClick={() => handleOpenModal("editarRaza", raza.id_raza)} >Editar</Button>
+                                      
                                             <Button
                                                 style={{
                                                     backgroundColor: "#dc3545",
@@ -282,7 +267,7 @@ const MainProveedores = () => {
                                                     e.target.style.transform = "translateY(0)";
                                                     e.target.style.boxShadow = "0 3px 0 #a71d2a";
                                                 }}
-                                                onClick={() => { borrar(proveedor.id_proveedor) }} >Eliminar</Button>
+                                                onClick={() => { borrar(raza.id_raza) }} >Eliminar</Button>
                                         </td>
 
                                     </tr>
@@ -290,7 +275,7 @@ const MainProveedores = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="2" style={{ textAlign: "center", padding: "20px" }}>
-                                        No se encontraron Proveedores.
+                                        No se encontraron razas.
                                     </td>
                                 </tr>
                             )}
@@ -361,9 +346,9 @@ const MainProveedores = () => {
                         </h4>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            {fromType === "crearProveedor" && <CrearProveedor onClose={handleCloseModal} onUpdated={cargarProveedores} />}
-                            {fromType === "verProveedor" && <VerProveedor id={proveedorId} />}{/*paso el id por prop */}
-                            {fromType === "editarProveedor" && <EditarProveedor id={proveedorId} onClose={handleCloseModal} onUpdated={cargarProveedores} />}
+                            {fromType === "crearRaza" && <CrearRaza onClose={handleCloseModal} onUpdated={cargarRazas} />}
+                            {fromType === "verRaza" && <VerRaza id={razaId} />}{/*paso el id por prop */}
+                            {fromType === "editarRaza" && <EditarRaza id={razaId} onClose={handleCloseModal} onUpdated={cargarRazas} />}
                         </div>
                     </div>
                 </div>
@@ -374,4 +359,4 @@ const MainProveedores = () => {
     )
 }
 
-export default MainProveedores
+export default MainRaza
