@@ -230,8 +230,7 @@ const MainRaza = () => {
                                                     e.target.style.boxShadow = "0 3px 0 #138a28";
                                                 }}
                                                 onClick={() => handleOpenModal("verRaza", raza.id_raza)}>Ver</Button>
-                                        </td>
-                                        <td className="text-center">
+                                        
                                             <Button
                                                 style={{
                                                     backgroundColor: "#ffc107",
@@ -250,9 +249,7 @@ const MainRaza = () => {
                                                     e.target.style.boxShadow = "0 3px 0 #d39e00";
                                                 }}
                                                 onClick={() => handleOpenModal("editarRaza", raza.id_raza)} >Editar</Button>
-                                        </td>
-
-                                        <td className="text-center">
+                                      
                                             <Button
                                                 style={{
                                                     backgroundColor: "#dc3545",

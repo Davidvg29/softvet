@@ -242,8 +242,8 @@ const MainProveedores = () => {
                                                     e.target.style.boxShadow = "0 3px 0 #138a28";
                                                 }}
                                                 onClick={() => handleOpenModal("verProveedor", proveedor.id_proveedor)}>Ver</Button>
-                                        </td>
-                                        <td className="text-center">
+                                      
+                                        
                                             <Button
                                                 style={{
                                                     backgroundColor: "#ffc107",
@@ -262,9 +262,9 @@ const MainProveedores = () => {
                                                     e.target.style.boxShadow = "0 3px 0 #d39e00";
                                                 }}
                                                 onClick={() => handleOpenModal("editarProveedor", proveedor.id_proveedor)} >Editar</Button>
-                                        </td>
+                                    
 
-                                        <td className="text-center">
+                                       
                                             <Button
                                                 style={{
                                                     backgroundColor: "#dc3545",
