@@ -9,8 +9,9 @@ import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS } from './routers/router';
 import DashboardPage from './pages/DashboardPage.jsx';
+import Ventas from './pages/Ventas.jsx';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path={EMPLEADOS} element={<Empleados/>} />
         <Route path={ESPECIES} element={<Especies/>} />
         <Route path={DASHBOARD} element={<DashboardPage/>}/>
+        <Route path={VENTAS} element={<Ventas/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>

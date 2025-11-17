@@ -154,7 +154,7 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Link to="">
+              <Link to="/ventas">
                 <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
                   <Card.Body>
                     <People size={40} />
