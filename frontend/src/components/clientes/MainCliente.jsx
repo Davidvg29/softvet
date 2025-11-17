@@ -5,27 +5,29 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import { empleados } from '../../endpoints/endpoints';
-import CrearEmpleado from './CrearEmpleado';
-import VerEmpleado from './VerEmpleado';
-import EditEmpleado from './EditEmpleado';
+import { clientes } from '../../endpoints/endpoints';
+import CrearCliente from './CrearCliente';
+import VerCliente from './VerCliente';
+import EditCliente from './EditCliente';
+import CrearMascota from '../mascotas/CrearMascota'
 
-const MainEmpleado = () => {
-  const [empleado, setEmpleado] = useState([]);
-  const [empleadoId, setEmpleadoId] = useState(null);
+const MainCliente = () => {
+  const [cliente, setCliente] = useState([]);
+  const [clienteId, setClienteId] = useState(null);
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
 
   const TITULOS = {
-    crear: 'Nuevo Empleado',
-    ver: 'Ver Empleado',
-    editar: 'Editar Empleado',
+    crear: 'Nuevo Cliente',
+    ver: 'Ver Cliente',
+    editar: 'Editar Cliente',
+    agregarMascota: 'Agregar Mascota'
   };
 
   const handleOpenModal = (type, id = null) => {
     setFromType(type);
-    setEmpleadoId(id);
+    setClienteId(id);
     setShowModal(true);
   };
 
@@ -35,27 +37,29 @@ const MainEmpleado = () => {
     setFromType('');
   };
 
-  const cargarEmpleados = async () => {
+  const cargarCLientes = async () => {
     try {
-      const response = await axios.get(`${empleados}/ver`, { withCredentials: true });
-      setEmpleado(response.data);
+      const response = await axios.get(`${clientes}/ver`, { withCredentials: true });
+      console.log("Respuesta del backend:", response.data);
+      setCliente(response.data);
     } catch (error) {
-      console.error('Error al cargar los empleados:', error);
+      console.error('Error al cargar los CLientes:', error);
     }
   };
 
   useEffect(() => {
-    cargarEmpleados();
+    cargarCLientes();
   }, []);
 
-  const empleadosFiltrados = empleado.filter((empleado) =>
-    empleado.nombre_empleado.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const clientesFiltrados = cliente.filter((cliente) =>
+  cliente.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
+  cliente.dni_cliente.toString().includes(busqueda)
+);
 
-  const borrarEmpleados = async (id) => {
+  const borrarClientes = async (id) => {
 
     const confirmacion = await Swal.fire({
-      title: '¿Eliminar Empleado?',
+      title: '¿Eliminar Cliente?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
@@ -69,30 +73,30 @@ const MainEmpleado = () => {
 
     try {
 
-      const response = await axios.delete(`${empleados}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${clientes}/eliminar/${id}`, { withCredentials: true });
 
       if (response.status === 200) {
 
         await Swal.fire({
           icon: 'success',
           title: 'Eliminado correctamente',
-          text: 'El empleado ha sido eliminado con éxito.',
+          text: 'El cliente ha sido eliminado con éxito.',
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#6f42c1',
         });
 
-        cargarEmpleados();
+        cargarCLientes();
       } else {
         throw new Error('Respuesta inesperada del servidor.');
       }
     } catch (error) {
-      console.error('Error al eliminar el empleado:', error);
+      console.error('Error al eliminar el Cliente:', error);
 
 
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo eliminar el empleado. Inténtalo nuevamente.',
+        text: 'No se pudo eliminar el Cliente. Inténtalo nuevamente.',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#6f42c1',
       });
@@ -105,7 +109,7 @@ const MainEmpleado = () => {
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
             type="text"
-            placeholder="Buscar por nombre de empleado"
+            placeholder="Buscar por nombre o DNI de Cliente"
             className="w-50 mx-3"
             style={{ width: '700px' }}
             value={busqueda}
@@ -140,7 +144,7 @@ const MainEmpleado = () => {
             }}
           >
 
-            Crear un nuevo Empleado
+            Crear un nuevo Cliente
           </Button>
         </div>
 
@@ -176,7 +180,10 @@ const MainEmpleado = () => {
         }}
       >
         <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-          Nombre Empleado
+          Nombre Cliente
+        </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px "}}>
+            Dni Cliente
         </th>
         <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
           Acciones
@@ -185,10 +192,10 @@ const MainEmpleado = () => {
     </thead>
 
     <tbody>
-      {empleadosFiltrados.length > 0 ? (
-        empleadosFiltrados.map((empleado) => (
+      {clientesFiltrados.length > 0 ? (
+        clientesFiltrados.map((cliente) => (
           <tr
-            key={empleado.id_empleado}
+            key={cliente.id_cliente}
             style={{
               backgroundColor: "#fff",
               boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
@@ -214,7 +221,18 @@ const MainEmpleado = () => {
                 border: "none",
               }}
             >
-              {empleado.nombre_empleado}
+              {cliente.nombre_cliente}
+            </td>
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {cliente.dni_cliente}
             </td>
 
             <td
@@ -245,7 +263,7 @@ const MainEmpleado = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #138a28";
                 }}
-                onClick={() => handleOpenModal("ver", empleado.id_empleado)}
+                onClick={() => handleOpenModal("ver", cliente.id_cliente)}
               >
                 Ver
               </Button>
@@ -268,9 +286,32 @@ const MainEmpleado = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #d39e00";
                 }}
-                onClick={() => handleOpenModal("editar", empleado.id_empleado)}
+                onClick={() => handleOpenModal("editar", cliente.id_cliente)}
               >
                 Editar
+              </Button>
+
+              {/* Botón Agregar Mascota */}
+              <Button
+                style={{
+                  backgroundColor: "#606fe4ff",
+                  border: "none",
+                  fontWeight: "bold",
+                  color: "#fff",
+                  boxShadow: "0 3px 0 #4857cdff",
+                  transition: "all 0.1s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow = "0 5px 0 #4857cdff";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 3px 0 #4857cdff";
+                }}
+                onClick={() => handleOpenModal("agregarMascota", cliente.id_cliente)}
+              >
+                Agregar Mascota
               </Button>
 
               {/* Botón ELIMINAR */}
@@ -291,7 +332,7 @@ const MainEmpleado = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #a71d2a";
                 }}
-                onClick={() => borrarEmpleados(empleado.id_empleado)}
+                onClick={() => borrarClientes(cliente.id_cliente)}
               >
                 Eliminar
               </Button>
@@ -301,7 +342,7 @@ const MainEmpleado = () => {
       ) : (
         <tr>
           <td colSpan="2" style={{ textAlign: "center", padding: "20px" }}>
-            No se encontraron Empleados.
+            No se encontraron Clientes.
           </td>
         </tr>
       )}
@@ -375,14 +416,13 @@ const MainEmpleado = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {fromType === 'crear' && (
-          <CrearEmpleado onClose={handleCloseModal} onUpdate={cargarEmpleados} />
+          <CrearCliente onClose={handleCloseModal} onUpdate={cargarCLientes} />
         )}
-        {fromType === 'ver' && <VerEmpleado id_empleado={empleadoId} />}
-        {fromType === 'editar' && (
-          <EditEmpleado
-            id_empleado={empleadoId}
-            onClose={handleCloseModal}
-            onUpdate={cargarEmpleados}
+        {fromType === 'ver' && <VerCliente id_cliente={clienteId} />}
+        {fromType === 'editar' && (<EditCliente id_cliente={clienteId} onClose={handleCloseModal} onUpdate={cargarCLientes}
+          />
+        )}
+        {fromType === 'agregarMascota' && (<CrearMascota id_cliente={clienteId} onClose={handleCloseModal} onUpdate={cargarCLientes}
           />
         )}
       </div>
@@ -393,5 +433,5 @@ const MainEmpleado = () => {
   );
 };
 
-export default MainEmpleado;
+export default MainCliente;
 

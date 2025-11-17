@@ -8,8 +8,10 @@ import Prueba from './components/Prueba.jsx';
 import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
-import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD } from './routers/router';
+import Empleados from './pages/Empleados';
+import Clientes from './pages/Clientes';
+import Mascotas from './pages/Mascotas.jsx'
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, CLIENTES, MASCOTAS } from './routers/router';
 import DashboardPage from './pages/DashboardPage.jsx';
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
         <Route path={EMPLEADOS} element={<Empleados/>} />
         <Route path={ESPECIES} element={<Especies/>} />
         <Route path={DASHBOARD} element={<DashboardPage/>}/>
+        <Route path={CLIENTES} element={<Clientes/>} />
+        <Route path={MASCOTAS} element={<Mascotas/>} />
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>

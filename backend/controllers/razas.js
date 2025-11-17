@@ -149,6 +149,23 @@ const editarRaza = (req, res) => {
     });
 };
 
+
+// Obtener razas por id de especie
+const obtenerRazasPorEspecie = (req, res) => {
+  const { id_especie } = req.params;
+
+  connection.query(
+    'SELECT * FROM razas WHERE id_especie = ? AND is_active = TRUE',
+    [id_especie],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error al obtener razas por especie.' });
+      }
+      res.json(results);
+    }
+  );
+};
+
 const eliminarRaza = (req, res) => {
     const { id } = req.params;
 
@@ -177,5 +194,6 @@ module.exports = {
     mostrarRazaId,
     crearRaza,
     editarRaza,
+    obtenerRazasPorEspecie,
     eliminarRaza
 }

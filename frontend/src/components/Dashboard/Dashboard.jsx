@@ -118,12 +118,12 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Link to="/roles">
+              <Link to="/clientes">
                 <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
                   <Card.Body>
                     <People size={40} />
                     {/* <h2>{cliente?.length || 3}</h2> */}
-                    <p>Roles</p>
+                    <p>Clientes</p>
                   </Card.Body>
                 </Card>
               </Link>
