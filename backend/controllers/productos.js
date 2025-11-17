@@ -3,10 +3,12 @@ const {connection} = require('../config/bd/dataBase');
 //mostrar todos los productos
 const mostrarProductos = (req, res) => {
     const sql = `
-        SELECT p.*, c.nombre_categoria 
+        SELECT p.*, c.nombre_categoria, stock.*, sucursales.*
         FROM productos p
         LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
-        WHERE p.is_active = TRUE
+        LEFT JOIN stock ON stock.id_producto = p.id_producto
+        left join sucursales on sucursales.id_sucursal = stock.id_sucursal
+        WHERE p.is_active = TRUE;
     `;
     connection.query(sql, (error, results) => {
         if (error) {

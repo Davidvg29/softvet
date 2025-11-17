@@ -7,7 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { VENTAS } from '../../endpoints/endpoints';
 import VerVenta from './VerVenta';
-// import CrearVenta from './CrearVenta';
+import CrearVenta from './CrearVenta';
 // import EditVenta from './EditVenta';
 
 const MainVentas = () => {
@@ -355,8 +355,7 @@ const MainVentas = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {fromType === 'crear' && (
                 // Descomenta si tenés el componente CrearVenta
-                // <CrearVenta onClose={handleCloseModal} onUpdate={cargarVentas} />
-                <div>Nueva venta (componente CrearVenta aquí)</div>
+                <CrearVenta onClose={handleCloseModal} onUpdate={cargarVentas} />
               )}
 
               {fromType === 'ver' && <VerVenta venta={ventaSelect} />}
