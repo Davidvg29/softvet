@@ -3,7 +3,7 @@ const {connection} = require('../config/bd/dataBase');
 // Obtener todos los clientes
 const mostrarClientes = (req, res) => {
 
-    connection.query('SELECT * FROM clientes WHERE clientes.is_active = TRUE', (error, results) => {
+    connection.query('SELECT * FROM clientes WHERE is_active = TRUE', (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener los clientes.' });
         }

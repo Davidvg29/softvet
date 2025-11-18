@@ -10,3 +10,4 @@ export const detallesVentas = 'http://localhost:8000/detallesVentas';
 export const PRODUCTOS = 'http://localhost:8000/productos'
 export const clientes = 'http://localhost:8000/clientes';
 export const razas = 'http://localhost:8000/razas';
+export const mascotas = 'http://localhost:8000/mascotas'

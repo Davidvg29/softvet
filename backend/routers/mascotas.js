@@ -1,9 +1,10 @@
 const express = require('express');
-const { mostrarMascotas, crearMascota, editarMasctoa, borrarMascota, activarMascota } = require('../controllers/mascotas');
+const { mostrarMascotas, mostrarMascotaId, crearMascota, editarMasctoa, borrarMascota, activarMascota } = require('../controllers/mascotas');
 const { verifyToken } = require('../middlewares/jwt');
 const router = express.Router();
 
 router.get('/ver', verifyToken, mostrarMascotas);
+router.get('/ver/:id', verifyToken, mostrarMascotaId)
 router.post('/crear', verifyToken, crearMascota);
 router.put('/editar/:id', verifyToken, editarMasctoa);
 router.put('/borrar/:id', verifyToken, borrarMascota);
