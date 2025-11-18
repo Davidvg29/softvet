@@ -1,153 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import Swal from "sweetalert2";
-import axios from 'axios';
-import { historiasClinicas } from '../../endpoints/endpoints';
+import { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/esm/Button';
-import VerHistoriaClinica from './VerHistoriaClinica';
-import CrearHistoriaClinica from './CrearHistoriaClinica';
-import EditarHistoriaClinica from './EditarHistoriaClinica';
-const MainHistoriaClinica = () => {
+import Button from 'react-bootstrap/Button';
+import { VENTAS } from '../../endpoints/endpoints';
+import VerVenta from './VerVenta';
+import CrearVenta from './CrearVenta';
+// import EditVenta from './EditVenta';
 
-
-  //state de busqueda
-  const [busqueda, setBusqueda] = useState("");
-
-
-  const [historiaClinica, setHistoriaClinica] = useState([]);
-
-  const [historiaClinicaId, setHistoriaClinicaId] = useState(null);
-
+const MainVentas = () => {
+  const [ventas, setVentas] = useState([]);
+  const [ventaId, setVentaId] = useState(null);
+  const [ventaSelect, setVentaSelect] = useState(null);
+  const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [fromType, setFromType] = useState("");
+  const [fromType, setFromType] = useState('');
 
-  //funcion de apertura modal
-  const handleOpenModal = (type, id = null) => {
+  const TITULOS = {
+    crear: 'Nueva Venta',
+    ver: 'Ver Venta',
+    editar: 'Editar Venta',
+  };
+
+  const handleOpenModal = (type, id = null, venta) => {
     setFromType(type);
-    setHistoriaClinicaId(id);
+    setVentaId(id);
+    setVentaSelect(venta)
     setShowModal(true);
   };
 
-  //funcion de cierre de la modal
-  const handleCloseModal = (type) => {
+  const handleCloseModal = () => {
+    console.log('cerrar modal');
     setShowModal(false);
-    setFromType("");
+    setFromType('');
+    setVentaId(null);
+    setVentaSelect(null)
   };
 
-  const TITULOS = {
-
-    crearhistoriaClinica: "Crear Historia Clinica",
-    verhistoriaClinica: "Ver Historia Clinica",
-    editarhistoriaClinica: "Editar Historia Clinica",
-  };
-
-  const cargarHistoriaClinica = async () => {
+  const cargarVentas = async () => {
     try {
-
-      const { data } = await axios.get(`${historiasClinicas}/ver`, { withCredentials: true });
-      console.log(data);
-      setHistoriaClinica(data);
+      const {data} = await axios.get(`${VENTAS}/ver`, { withCredentials: true });
+      const ventasFilter = data.filter((v)=>(v.is_active == 1))
+      setVentas(ventasFilter || []);
     } catch (error) {
-      console.error("Error al cargar las Historia Clinica:", error);
+      console.error('Error al cargar las ventas:', error);
+      setVentas([]);
     }
   };
 
   useEffect(() => {
-    cargarHistoriaClinica();
+    cargarVentas();
   }, []);
 
+  const ventasFiltrados = ventas.filter((venta) =>
+    (venta.nombre_cliente || '').toLowerCase().includes(busqueda.toLowerCase())
+  );
 
-  const normalize = (text) =>
-    text
-      ?.toString()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .replace(/\s+/g, "")
-      .trim();
-
-  const q = normalize(busqueda);
-
-  const historiaClinicaFiltrados = historiaClinica.filter((h) => {
-    const nombre = normalize(h.nombre_cliente);
-    const dni = normalize(h.dni_cliente);
-    const observaciones = normalize(h.observaciones_generales);
-
-    return (
-      nombre.includes(q) ||
-      dni.includes(q) ||
-      observaciones.includes(q)
-
-    );
-  });
-
-historiaClinicaFiltrados.sort((a, b) => {
-  const na = normalize(a.nombre_cliente);
-  const nb = normalize(b.nombre_cliente);
-  const da = normalize(a.dni_cliente);
-  const db = normalize(b.dni_cliente);
-
-  // PRIORIDAD 1: Nombre coincide EXACTO
-  if (na === q && nb !== q) return -1;
-  if (nb === q && na !== q) return 1;
-
-  // PRIORIDAD 2: Nombre coincide PARCIAL
-  if (na.startsWith(q) && !nb.startsWith(q)) return -1;
-  if (nb.startsWith(q) && !na.startsWith(q)) return 1;
-
-  // PRIORIDAD 3: DNI coincide EXACTO
-  if (da === q && db !== q) return -1;
-  if (db === q && da !== q) return 1;
-
-  // PRIORIDAD 4: DNI coincide parcial
-  if (da.startsWith(q) && !db.startsWith(q)) return -1;
-  if (db.startsWith(q) && !da.startsWith(q)) return 1;
-
-  // PRIORIDAD 5: Lo demás queda igual
-  return 0;
-});
-
-
-  const borrar = async (id_historia_clinica) => {
-    const result = await Swal.fire({
-      title: "¿Eliminar Historia clinica?",
-      text: "Esta acción no se puede deshacer.",
-      icon: "warning",
+  const borrarVentas = async (id_venta) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Eliminar Venta?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
     });
 
-    if (!result.isConfirmed) return;
+    if (!confirmacion.isConfirmed) return;
 
     try {
-      await axios.delete(`${historiasClinicas}/eliminar/${id_historia_clinica}`, { withCredentials: true });
-      Swal.fire("Eliminado", "La Historia Clinica fue eliminada correctamente.", "success");
-      cargarHistoriaClinica();
+      // Usar la constante VENTAS (antes había `${ventas}` que es incorrecto)
+      const response = await axios.put(`${VENTAS}/borrar/${id_venta}`, {},{ withCredentials: true });
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Eliminado correctamente',
+          text: 'La venta ha sido eliminada con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+
+        cargarVentas();
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
     } catch (error) {
-      Swal.fire("Error", "No se pudo eliminar la Historia Clinica.", "error");
-      console.error(error);
+      console.error('Error al eliminar venta:', error);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo eliminar la venta. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
     }
   };
 
   return (
     <>
-      <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5" >
-        <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
+      <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
+        <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
             type="text"
-            placeholder="Buscar por nombre o DNI"
-            className=" w-50 mx-3"
+            placeholder="Buscar por nombre de cliente"
+            className="w-50 mx-3"
             style={{ width: '700px' }}
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
           />
           <Button
-            onClick={() => handleOpenModal("crearhistoriaClinica")}
+            onClick={() => handleOpenModal('crear')}
             style={{
               backgroundColor: "#6f42c1",
               border: "none",
@@ -174,11 +142,9 @@ historiaClinicaFiltrados.sort((a, b) => {
               e.target.style.boxShadow = "0 6px 0 #6f42c1";
             }}
           >
-            Crear un nuevo Detalle de Historia Clinica
+            Crear nueva venta
           </Button>
-
         </div>
-
 
         <div
           style={{
@@ -190,7 +156,8 @@ historiaClinicaFiltrados.sort((a, b) => {
             width: "85%",
             maxWidth: "950px",
             marginTop: "30px",
-          }}>
+          }}
+        >
           <Table
             hover
             responsive
@@ -199,7 +166,6 @@ historiaClinicaFiltrados.sort((a, b) => {
               borderCollapse: "separate",
               borderSpacing: "0 12px",
             }}
-
           >
             <thead>
               <tr
@@ -211,24 +177,20 @@ historiaClinicaFiltrados.sort((a, b) => {
                   borderRadius: "10px",
                 }}
               >
-                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-                  Nombre
-                </th>
-                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-                  DNI Cliente
-                </th>
-                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-                  Observaciones
-                </th>
-                <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
-                  Acciones
-                </th>
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Fecha</th>
+                <th style={{ padding: "14px" }}>Hora</th>
+                <th style={{ padding: "14px" }}>Cliente</th>
+                <th style={{ padding: "14px" }}>Total</th>
+                <th style={{ padding: "14px" }}>Empleado</th>
+                <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>Acciones</th>
               </tr>
             </thead>
-            <tbody className=''>
-              {historiaClinicaFiltrados.length > 0 ? (
-                historiaClinicaFiltrados.reverse().map((historiaClinica) => (
-                  <tr key={historiaClinica.id_historia_clinica}
+
+            <tbody>
+              {ventasFiltrados.length > 0 ? (
+                ventasFiltrados.map((venta) => (
+                  <tr
+                    key={venta.id_venta}
                     style={{
                       backgroundColor: "#fff",
                       boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
@@ -245,43 +207,22 @@ historiaClinicaFiltrados.sort((a, b) => {
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
-                    <td
-                      style={{
-                        padding: "14px 20px",
-                        fontWeight: "500",
-                        textAlign: "center",
-                        color: "#333",
-                        border: "none",
-                      }}
-                    >{historiaClinica.nombre_cliente}</td>
-                    <td
-                      style={{
-                        padding: "14px 20px",
-                        fontWeight: "500",
-                        textAlign: "center",
-                        color: "#333",
-                        border: "none",
-                      }}
-                    >{historiaClinica.dni_cliente}</td>
-                    <td
-                      style={{
-                        padding: "14px 20px",
-                        fontWeight: "500",
-                        textAlign: "center",
-                        color: "#333",
-                        border: "none",
-                      }}
-                    >{historiaClinica.observaciones_generales}</td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        gap: "10px",
-                        padding: "12px",
-                        border: "none",
-                      }}
-                    >
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      {venta.fecha_hora?.slice(0, 10) ?? ''}
+                    </td>
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      {venta.fecha_hora?.slice(11, 16) ?? ''}
+                    </td>
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      {venta.nombre_cliente}
+                    </td>
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      $ {venta.total}
+                    </td>
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      {venta.nombre_empleado}
+                    </td>
+                    <td style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", padding: "12px", border: "none" }}>
                       <Button
                         style={{
                           backgroundColor: "#1ab637",
@@ -299,8 +240,10 @@ historiaClinicaFiltrados.sort((a, b) => {
                           e.target.style.transform = "translateY(0)";
                           e.target.style.boxShadow = "0 3px 0 #138a28";
                         }}
-                        onClick={() => handleOpenModal("verhistoriaClinica", historiaClinica.id_historia_clinica)}>Ver</Button>
-
+                        onClick={() => handleOpenModal("ver", venta.id_venta, venta)}
+                      >
+                        Ver
+                      </Button>
 
                       <Button
                         style={{
@@ -319,9 +262,10 @@ historiaClinicaFiltrados.sort((a, b) => {
                           e.target.style.transform = "translateY(0)";
                           e.target.style.boxShadow = "0 3px 0 #d39e00";
                         }}
-                        onClick={() => handleOpenModal("editarhistoriaClinica", historiaClinica.id_historia_clinica)} >Editar</Button>
-
-
+                        onClick={() => handleOpenModal("editar", venta.id_venta, venta)}
+                      >
+                        Editar
+                      </Button>
 
                       <Button
                         style={{
@@ -340,15 +284,17 @@ historiaClinicaFiltrados.sort((a, b) => {
                           e.target.style.transform = "translateY(0)";
                           e.target.style.boxShadow = "0 3px 0 #a71d2a";
                         }}
-                        onClick={() => { borrar(historiaClinica.id_historia_clinica) }} >Eliminar</Button>
+                        onClick={() => borrarVentas(venta.id_venta)}
+                      >
+                        Eliminar
+                      </Button>
                     </td>
-
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="2" style={{ textAlign: "center", padding: "20px" }}>
-                    No se encontraron Historias Clinicas.
+                  <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                    No se encontraron Ventas.
                   </td>
                 </tr>
               )}
@@ -356,12 +302,8 @@ historiaClinicaFiltrados.sort((a, b) => {
           </Table>
         </div>
       </div>
-      <Modal show={showModal}
-        onHide={handleCloseModal}
-        centered
-        backdrop="static"
-        size="lg">
 
+      <Modal show={showModal} onHide={handleCloseModal} centered backdrop="static" size="lg">
         <div
           style={{
             background: 'linear-gradient(135deg, #FFD700, #32CD32)',
@@ -370,7 +312,6 @@ historiaClinicaFiltrados.sort((a, b) => {
             position: 'relative',
           }}
         >
-          {/* Botón de cerrar (cruz roja más chica y cuadrada) */}
           <button
             onClick={handleCloseModal}
             aria-label="Cerrar"
@@ -396,40 +337,40 @@ historiaClinicaFiltrados.sort((a, b) => {
             ✕
           </button>
 
-          {/* Caja interior del modal */}
           <div
             style={{
               backgroundColor: '#cfcfcf',
-              padding: '30px 60px',
+              padding: '30px 20px',
               textAlign: 'center',
-              width: '700px',
+              width: '100%',
               margin: 'auto',
               boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
               borderRadius: '12px',
             }}
           >
-            <h4
-              style={{
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                marginBottom: '25px',
-              }}
-            >
-              {TITULOS[fromType]}
+            <h4 style={{ fontWeight: 'bold', textDecoration: 'underline', marginBottom: '0px' }}>
+              {TITULOS[fromType] || ''}
             </h4>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {fromType === "crearhistoriaClinica" && <CrearHistoriaClinica onClose={handleCloseModal} onUpdated={cargarHistoriaClinica} />}
-              {fromType === "verhistoriaClinica" && <VerHistoriaClinica id={historiaClinicaId} />}{/*paso el id por prop */}
-              {fromType === "editarhistoriaClinica" && <EditarHistoriaClinica id={historiaClinicaId} onClose={handleCloseModal} onUpdated={cargarHistoriaClinica} />}
+              {fromType === 'crear' && (
+                // Descomenta si tenés el componente CrearVenta
+                <CrearVenta onClose={handleCloseModal} onUpdate={cargarVentas} />
+              )}
+
+              {fromType === 'ver' && <VerVenta venta={ventaSelect} />}
+
+              {fromType === 'editar' && (
+                // Descomenta si tenés el componente EditVenta
+                // <EditVenta id_venta={ventaId} onClose={handleCloseModal} onUpdate={cargarVentas} />
+                <div>Editar venta (componente EditVenta aquí)</div>
+              )}
             </div>
           </div>
         </div>
-
-
       </Modal>
     </>
-  )
-}
+  );
+};
 
-export default MainHistoriaClinica
+export default MainVentas;

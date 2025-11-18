@@ -1,4 +1,4 @@
-const {connection} = require('../config/bd/dataBase');
+const { connection } = require('../config/bd/dataBase');
 
 
 // Obtener todas las historias clínicas
@@ -6,34 +6,54 @@ const {connection} = require('../config/bd/dataBase');
 const mostrarHistoriasClinicas = (req, res) => {
 
     const querymostrarHC = `SELECT 
-  hc.id_historia_clinica,
-  hc.fecha_apertura,
-  hc.observaciones_generales,
-  m.nombre_mascota AS nombre_mascota,
-  e.nombre_empleado AS veterinario
-FROM historia_clinica hc
-LEFT JOIN mascotas m ON m.id_historia_clinica = hc.id_historia_clinica
-LEFT JOIN (
-    SELECT dhc2.*
-    FROM detalle_historia_clinica dhc2
-    JOIN (
-        SELECT id_historia_clinica, MAX(fecha_hora) AS max_fecha
-        FROM detalle_historia_clinica
-        GROUP BY id_historia_clinica
-    ) ult ON dhc2.id_historia_clinica = ult.id_historia_clinica
-          AND dhc2.fecha_hora = ult.max_fecha
-) dhc ON hc.id_historia_clinica = dhc.id_historia_clinica
-LEFT JOIN empleados e ON dhc.id_empleado = e.id_empleado
-ORDER BY hc.fecha_apertura DESC;
+            hc.id_historia_clinica,
+            hc.fecha_apertura,
+            hc.observaciones_generales,
+
+            m.nombre_mascota,
+            
+            c.id_cliente,
+            c.nombre_cliente,
+            c.dni_cliente,
+
+            e.nombre_empleado AS veterinario
+        FROM historia_clinica hc
+        
+        LEFT JOIN mascotas m 
+            ON m.id_historia_clinica = hc.id_historia_clinica
+
+        LEFT JOIN clientes c
+            ON m.id_cliente = c.id_cliente
+
+        LEFT JOIN (
+            SELECT dhc2.*
+            FROM detalle_historia_clinica dhc2
+            JOIN (
+                SELECT id_historia_clinica, MAX(fecha_hora) AS max_fecha
+                FROM detalle_historia_clinica
+                GROUP BY id_historia_clinica
+            ) ult
+            ON dhc2.id_historia_clinica = ult.id_historia_clinica
+            AND dhc2.fecha_hora = ult.max_fecha
+        ) dhc
+        ON hc.id_historia_clinica = dhc.id_historia_clinica
+
+        LEFT JOIN empleados e 
+            ON dhc.id_empleado = e.id_empleado
+
+        ORDER BY hc.fecha_apertura DESC
     `;
+
 
     connection.query(querymostrarHC, (error, results) => {
         if (error) {
+            console.log("Error SQL:", error);
             return res.status(500).json({ error: 'Error al obtener las historias clínicas.' });
         }
         res.json(results);
     });
 }
+
 
 
 // Obtener una historia clínica por ID
@@ -98,7 +118,7 @@ const editarHistoriaClinica = (req, res) => {
 
     const queryActualizarHC = 'UPDATE historia_clinica SET fecha_apertura = now(), observaciones_generales = ? WHERE id_historia_clinica = ?';
 
-    connection.query(queryActualizarHC, [ observaciones_generales, id], (error, results) => {
+    connection.query(queryActualizarHC, [observaciones_generales, id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al actualizar la historia clínica', detalle: error.message });
         }
