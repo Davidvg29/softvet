@@ -3,12 +3,12 @@ const { validationsCrearStock } = require("../validations/stock");
 
 const verStock = (req, res) => {
     const queryGetStock = `select 
-        stock.id_stock, stock.cantidad, stock.fecha_ingreso, stock.observaciones_stock, 
         productos.id_producto, productos.nombre_producto, productos.codigo_producto, productos.precio_producto, productos.is_active as producto_is_active,
+        stock.id_stock, stock.cantidad, stock.fecha_ingreso, stock.observaciones_stock, 
         categorias.nombre_categoria,
         sucursales.id_sucursal, sucursales.nombre_sucursal, sucursales.direccion_sucursal, sucursales.celular_sucursal, sucursales.is_active as sucursal_is_active
-        from stock
-        left join productos on productos.id_producto = stock.id_producto
+        from productos
+        left join stock on productos.id_producto = stock.id_producto
         left join categorias on productos.id_categoria = categorias.id_categoria
         left join sucursales on stock.id_sucursal = sucursales.id_sucursal;`
     connection.query(queryGetStock, (error, results) => {

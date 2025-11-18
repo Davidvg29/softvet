@@ -3,29 +3,38 @@ import { Container, Row, Col, Card, Form, Badge, } from "react-bootstrap";
 import { People, Calendar2Check, Clock, CalendarX, EyeSlash, Capsule, PersonFill, Scissors, Globe, Hospital, } from "react-bootstrap-icons";
 import { useEmpleadoStore } from "../../zustand/empleado";
 import { useClientesStore } from "../../zustand/cliente";
-import { clientes } from "../../endpoints/endpoints";
 import axios from "axios";
 import { Link } from 'react-router-dom';
+import { CLIENTES, PRODUCTOS } from "../../endpoints/endpoints";
+import { useProductosStore } from "../../zustand/productos";
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
-  const { cliente, setCliente } = useClientesStore();
-
-
+  const { clientes, setClientes } = useClientesStore();
+  const {productos, setProductos} = useProductosStore()
 
   useEffect(() => {
-
-    const response = async () => {
+    const getClientes = async () => {
       try {
-        const res = await axios.get(`${clientes}/ver`, { withCredentials: true });
-        console.log("Datos obtenidos del backend:", res.data);
-        setCliente(res.data);
+        const {data} = await axios.get(`${CLIENTES}/ver`, { withCredentials: true });
+        setClientes(data);
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
       }
     };
+    const getProductos = async () => {
+      try {
+        const {data} = await axios.get(`${PRODUCTOS}/ver`, { withCredentials: true });
+        console.log(data);
+        
+        setProductos(data);
+      } catch (error) {
+        console.error("Error al obtener los productos:", error);
+      }
+    };
 
-    response();
-  }, [setCliente]);
+    getClientes();
+    getProductos();
+  }, [setClientes, setProductos]);
 
   return (
     <Container fluid className="p-0" style={{ minHeight: "100vh" }}>
@@ -154,7 +163,7 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Link to="">
+              <Link to="/ventas">
                 <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
                   <Card.Body>
                     <People size={40} />
