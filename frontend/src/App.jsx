@@ -10,7 +10,8 @@ import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
 import Empleados from './pages/Empleados'
 import Razas from './pages/Razas';
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD,RAZAS } from './routers/router';
+import DetalleHistoriaClinica from './pages/DetalleHistoriaClinica.jsx';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD,RAZAS,DETALLE_HISTORIAS_CLINICAS } from './routers/router';
 import DashboardPage from './pages/DashboardPage.jsx';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path={ESPECIES} element={<Especies/>} />
         <Route path={DASHBOARD} element={<DashboardPage/>}/>
         <Route path={RAZAS} element={<Razas/>}/>
+        <Route path={DETALLE_HISTORIAS_CLINICAS} element={<DetalleHistoriaClinica/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>
