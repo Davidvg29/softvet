@@ -8,3 +8,5 @@ export const CLIENTES = 'http://localhost:8000/clientes';
 export const VENTAS = 'http://localhost:8000/ventas';
 export const detallesVentas = 'http://localhost:8000/detallesVentas';
 export const PRODUCTOS = 'http://localhost:8000/productos'
+export const clientes = 'http://localhost:8000/clientes';
+export const razas = 'http://localhost:8000/razas';
