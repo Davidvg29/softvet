@@ -1,4 +1,4 @@
-const {connection} = require('../config/bd/dataBase');
+const { connection } = require('../config/bd/dataBase');
 
 // Obtener todos los clientes
 const mostrarClientes = (req, res) => {
@@ -80,16 +80,16 @@ const editarCliente = (req, res) => {
             });
         }
 
-    const clienteActualizado = { nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente };
-    connection.query('UPDATE clientes SET ? WHERE id_cliente = ?', [clienteActualizado, id], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error: 'Error al actualizar el cliente.' });
-        }
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: 'Cliente no encontrado.' });
-        }
-        res.json({ message: 'Cliente actualizado correctamente.' });
-    });
+        const clienteActualizado = { nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente };
+        connection.query('UPDATE clientes SET ? WHERE id_cliente = ?', [clienteActualizado, id], (error, results) => {
+            if (error) {
+                return res.status(500).json({ error: 'Error al actualizar el cliente.' });
+            }
+            if (results.affectedRows === 0) {
+                return res.status(404).json({ error: 'Cliente no encontrado.' });
+            }
+            res.json({ message: 'Cliente actualizado correctamente.' });
+        });
     });
 }
 
@@ -107,10 +107,41 @@ const eliminarCliente = (req, res) => {
     });
 }
 
+// Buscar clientes por nombre o DNI
+const buscarClientes = (req, res) => {
+    const { query } = req.query;
+
+    if (!query) {
+        return res.json([]);
+    }
+
+    const sql = `
+        SELECT * 
+        FROM clientes 
+        WHERE is_active = TRUE 
+        AND (
+            nombre_cliente LIKE ? 
+            OR dni_cliente LIKE ?
+        ) 
+        LIMIT 20
+    `;
+
+    const busqueda = `%${query}%`;
+
+    connection.query(sql, [busqueda, busqueda], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: 'Error en la búsqueda de clientes.' });
+        }
+        res.json(results);
+    });
+};
+
+
 module.exports = {
     mostrarClientes,
     mostrarClientePorId,
     crearCliente,
     editarCliente,
-    eliminarCliente
+    eliminarCliente,
+    buscarClientes
 };

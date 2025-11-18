@@ -60,8 +60,8 @@ const MainHistoriaClinica = () => {
 
 
   const normalize = (text) =>
-    text
-      ?.toString()
+    // Usa un string vacío si 'text' es null o undefined, luego aplícale el resto de los métodos.
+    String(text || "")
       .toLowerCase()
       .normalize("NFD")
       .replace(/\p{Diacritic}/gu, "")
@@ -74,40 +74,41 @@ const MainHistoriaClinica = () => {
     const nombre = normalize(h.nombre_cliente);
     const dni = normalize(h.dni_cliente);
     const observaciones = normalize(h.observaciones_generales);
+    // Si necesitas más campos, haz lo mismo:
+    // const veterinario = normalize(h.veterinario); // Si lo tienes
 
     return (
-      nombre.includes(q) ||
-      dni.includes(q) ||
-      observaciones.includes(q)
-
+      (nombre || '').includes(q) || // Asegura que 'nombre' es un string
+      (dni || '').includes(q) ||     // Asegura que 'dni' es un string
+      (observaciones || '').includes(q) // Asegura que 'observaciones' es un string
     );
   });
 
-historiaClinicaFiltrados.sort((a, b) => {
-  const na = normalize(a.nombre_cliente);
-  const nb = normalize(b.nombre_cliente);
-  const da = normalize(a.dni_cliente);
-  const db = normalize(b.dni_cliente);
+  historiaClinicaFiltrados.sort((a, b) => {
+    const na = normalize(a.nombre_cliente);
+    const nb = normalize(b.nombre_cliente);
+    const da = normalize(a.dni_cliente);
+    const db = normalize(b.dni_cliente);
 
-  // PRIORIDAD 1: Nombre coincide EXACTO
-  if (na === q && nb !== q) return -1;
-  if (nb === q && na !== q) return 1;
+    // PRIORIDAD 1: Nombre coincide EXACTO
+    if (na === q && nb !== q) return -1;
+    if (nb === q && na !== q) return 1;
 
-  // PRIORIDAD 2: Nombre coincide PARCIAL
-  if (na.startsWith(q) && !nb.startsWith(q)) return -1;
-  if (nb.startsWith(q) && !na.startsWith(q)) return 1;
+    // PRIORIDAD 2: Nombre coincide PARCIAL
+    if (na.startsWith(q) && !nb.startsWith(q)) return -1;
+    if (nb.startsWith(q) && !na.startsWith(q)) return 1;
 
-  // PRIORIDAD 3: DNI coincide EXACTO
-  if (da === q && db !== q) return -1;
-  if (db === q && da !== q) return 1;
+    // PRIORIDAD 3: DNI coincide EXACTO
+    if (da === q && db !== q) return -1;
+    if (db === q && da !== q) return 1;
 
-  // PRIORIDAD 4: DNI coincide parcial
-  if (da.startsWith(q) && !db.startsWith(q)) return -1;
-  if (db.startsWith(q) && !da.startsWith(q)) return 1;
+    // PRIORIDAD 4: DNI coincide parcial
+    if (da.startsWith(q) && !db.startsWith(q)) return -1;
+    if (db.startsWith(q) && !da.startsWith(q)) return 1;
 
-  // PRIORIDAD 5: Lo demás queda igual
-  return 0;
-});
+    // PRIORIDAD 5: Lo demás queda igual
+    return 0;
+  });
 
 
   const borrar = async (id_historia_clinica) => {
