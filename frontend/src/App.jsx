@@ -8,8 +8,10 @@ import Prueba from './components/Prueba.jsx';
 import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
+import Clientes from './pages/Clientes';
+import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS,HISTORIAS_CLINICAS  } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS, HISTORIAS_CLINICAS } from './routers/router';
 import Razas from './pages/Razas';
 import HistoriaClinica from './pages/HistoriaClinica.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
@@ -29,6 +31,8 @@ function App() {
         <Route path={EMPLEADOS} element={<Empleados/>} />
         <Route path={ESPECIES} element={<Especies/>} />
         <Route path={DASHBOARD} element={<DashboardPage/>}/>
+        <Route path={CLIENTES} element={<Clientes/>} />
+        <Route path={MASCOTAS} element={<Mascotas/>} />
         <Route path={VENTAS} element={<Ventas/>}/>
         <Route path={RAZAS} element={<Razas/>}/>
         <Route path={HISTORIAS_CLINICAS} element={<HistoriaClinica/>}/>

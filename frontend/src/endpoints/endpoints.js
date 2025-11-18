@@ -12,3 +12,4 @@ export const clientes = 'http://localhost:8000/clientes';
 export const razas = 'http://localhost:8000/razas';
 export const historiasClinicas = 'http://localhost:8000/historiaClinica';
 export const detalleHistoriasClinicas = 'http://localhost:8000/detalleHistoriaClinica';
+export const mascotas = 'http://localhost:8000/mascotas'
