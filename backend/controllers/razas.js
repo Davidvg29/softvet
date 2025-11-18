@@ -159,8 +159,11 @@ const editarRaza = (req, res) => {
 const obtenerRazasPorEspecie = (req, res) => {
   const { id_especie } = req.params;
 
+  console.log("ID recibido:", id_especie);
+
+
   connection.query(
-    'SELECT * FROM razas WHERE id_especie = ? AND is_active = TRUE',
+    'SELECT * FROM razas WHERE id_especie = ?',
     [id_especie],
     (error, results) => {
       if (error) {

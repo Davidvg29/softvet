@@ -24,6 +24,35 @@ const mostrarMascotas = (req, res) => {
     });
 }
 
+const mostrarMascotaId = (req, res) => {
+    const id_mascota = req.params.id;
+
+    const query = `
+        SELECT mascotas.id_mascota, mascotas.nombre_mascota, mascotas.edad_mascota, mascotas.sexo_mascota,
+               razas.nombre_raza,
+               especies.nombre_especie,
+               clientes.nombre_cliente, clientes.dni_cliente
+        FROM mascotas
+        LEFT JOIN razas ON razas.id_raza = mascotas.id_raza
+        LEFT JOIN especies ON razas.id_especie = especies.id_especie
+        LEFT JOIN clientes ON clientes.id_cliente = mascotas.id_cliente
+        WHERE mascotas.id_mascota = ? AND mascotas.is_active = true;
+    `;
+
+    connection.query(query, [id_mascota], (error, results) => {
+        if (error) {
+            console.error("Error al obtener mascota:", error);
+            return res.status(500).json({ error: "Error al obtener mascota" });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Mascota no encontrada" });
+        }
+
+        return res.status(200).json(results[0]); // ← devolvemos solo un objeto
+    });
+};
+
 const crearMascota = (req, res) => {
     const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente, id_historia_clinica } = req.body;
     const validation = crearMascotaValidacion(req.body);
@@ -46,25 +75,79 @@ const crearMascota = (req, res) => {
 
 const editarMasctoa = (req, res) => {
     const id_mascota = req.params.id;
-    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente, id_historia_clinica } = req.body;
 
-    const validation = crearMascotaValidacion(req.body);
-    
-    if(validation !== null){
-        return res.status(400).json({error: validation});
+    // Solo campos editables
+    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_historia_clinica } = req.body;
+
+    const validation = crearMascotaValidacion({
+        nombre_mascota,
+        edad_mascota,
+        sexo_mascota,
+        id_raza,
+        id_cliente: 1 // truco para pasar validación
+    });
+
+    if (validation !== null) {
+        return res.status(400).json({ error: validation });
     }
 
-    const queryUpdateMascota = `UPDATE mascotas SET nombre_mascota = ?, edad_mascota = ?, sexo_mascota = ?, id_raza = ?, id_cliente = ?, id_historia_clinica = ? WHERE id_mascota = ?;`
-    connection.query(queryUpdateMascota, [nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente?id_cliente:null, id_historia_clinica?id_historia_clinica:null, id_mascota], (error, results) => {
-        if(error) {
-            return res.status(500).json({error: 'Error al editar mascota.'});
+    // 1) Obtener cliente actual
+    const queryGetCliente = `
+        SELECT id_cliente 
+        FROM mascotas 
+        WHERE id_mascota = ?
+    `;
+
+    connection.query(queryGetCliente, [id_mascota], (error, results) => {
+        if (error) {
+            console.error("Error obteniendo cliente:", error);
+            return res.status(500).json({ error: "Error interno." });
         }
-        if (results.affectedRows === 0) {
+
+        if (results.length === 0) {
             return res.status(404).json({ error: "Mascota no encontrada." });
         }
-        return res.status(200).json("Mascota editada exitosamente.");
-    })
-}
+
+        const id_cliente_actual = results[0].id_cliente;
+
+        // 2) UPDATE
+        const queryUpdate = `
+            UPDATE mascotas
+            SET nombre_mascota = ?, 
+                edad_mascota = ?, 
+                sexo_mascota = ?, 
+                id_raza = ?, 
+                id_cliente = ?,        -- ← se mantiene igual
+                id_historia_clinica = ?
+            WHERE id_mascota = ?
+        `;
+
+        connection.query(
+            queryUpdate,
+            [
+                nombre_mascota,
+                edad_mascota,
+                sexo_mascota,
+                id_raza,
+                id_cliente_actual,         // ← siempre el mismo cliente
+                id_historia_clinica ?? null,
+                id_mascota
+            ],
+            (error, results) => {
+                if (error) {
+                    console.error("Error al editar mascota:", error);
+                    return res.status(500).json({ error: "Error al editar mascota." });
+                }
+
+                if (results.affectedRows === 0) {
+                    return res.status(404).json({ error: "Mascota no encontrada." });
+                }
+
+                return res.status(200).json("Mascota editada exitosamente.");
+            }
+        );
+    });
+};
 
 const borrarMascota = (req, res) => {
     const id_mascota = req.params.id;
@@ -98,6 +181,7 @@ const activarMascota = (req, res) => {
 
 module.exports = {
     mostrarMascotas,
+    mostrarMascotaId,
     crearMascota,
     editarMasctoa,
     borrarMascota,
