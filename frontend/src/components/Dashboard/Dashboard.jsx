@@ -238,12 +238,12 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Link to="">
+              <Link to="/roles">
                 <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
                   <Card.Body>
                     <People size={40} />
                     {/* <h2>{cliente?.length || 2}</h2> */}
-                    <p>Clientes</p>
+                    <p>Roles</p>
                   </Card.Body>
                 </Card>
               </Link>
@@ -286,7 +286,7 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <Link to="">
+              <Link to="/mascotas">
                 <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
                   <Card.Body>
                     <People size={40} />

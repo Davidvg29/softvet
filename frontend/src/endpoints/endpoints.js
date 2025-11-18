@@ -6,3 +6,4 @@ export const empleados = 'http://localhost:8000/empleados'
 export const proveedores = 'http://localhost:8000/proveedores';
 export const clientes = 'http://localhost:8000/clientes';
 export const razas = 'http://localhost:8000/razas';
+export const mascotas = 'http://localhost:8000/mascotas'

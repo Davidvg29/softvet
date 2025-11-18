@@ -8,7 +8,6 @@ import Prueba from './components/Prueba.jsx';
 import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
-import Empleados from './pages/Empleados';
 import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
