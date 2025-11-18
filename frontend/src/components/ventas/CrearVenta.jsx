@@ -4,84 +4,74 @@ import Table from 'react-bootstrap/Table';
 import { useState } from 'react';
 import { useClientesStore } from "../../zustand/cliente";
 import { useProductosStore } from '../../zustand/productos';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 const CrearVenta = ({ onClose, onUpdate }) => {
   const { clientes } = useClientesStore();
   const { productos } = useProductosStore();
+  const { empleado } = useEmpleadoStore();
 
-  const [formData, setFormData] = useState({
+  const [detalleVenta, setDetalleVenta] = useState({
+    cantidad: "",
+    precio_unitario: "",
+    sub_total: "",
+    id_producto: ""
+  });
+
+  const [venta, setVenta] = useState({
+    total: "",
     id_cliente: "",
-    id_producto: "",
-    cantidad: 1,
+    id_empleado: empleado.id_empleado
   });
 
   const [items, setItems] = useState([]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleVenta = (e) => {
+    setVenta({ ...venta, [e.target.name]: e.target.value });
   };
 
-  // ➕ AÑADIR ITEM
-  const handleAddItem = () => {
-    if (!formData.id_producto || !formData.cantidad) return;
+  const handleDetalleVenta = (e) => {
+    setDetalleVenta({ ...detalleVenta, [e.target.name]: e.target.value });
+  };
 
-    const prod = productos.find(
-      (p) => p.id_producto === parseInt(formData.id_producto)
+  const handleCantidad = (e) => {
+    setDetalleVenta({ ...detalleVenta, cantidad: e.target.value });
+  };
+
+  const agregarItem = () => {
+    if (!detalleVenta.id_producto || !detalleVenta.cantidad) return;
+
+    const productoSeleccionado = productos.find(
+      (p) => p.id_producto === Number(detalleVenta.id_producto)
     );
 
-    const nuevo = {
-      id_producto: prod.id_producto,
-      nombre_producto: prod.nombre_producto,
-      precio: parseFloat(prod.precio_producto),
-      cantidad: parseInt(formData.cantidad),
-      subtotal:
-        parseFloat(prod.precio_producto) * parseInt(formData.cantidad),
+    const precio = productoSeleccionado?.precio || 0;
+
+    const nuevoItem = {
+      ...detalleVenta,
+      precio_unitario: precio,
+      sub_total: precio * detalleVenta.cantidad
     };
 
-    setItems([...items, nuevo]);
+    setItems([...items, nuevoItem]);
 
-    // 🔹 Limpiar inputs después de añadir
-    setFormData({
-      ...formData,
-      id_producto: "",
-      cantidad: 1,
+    // limpiar
+    setDetalleVenta({
+      cantidad: "",
+      precio_unitario: "",
+      sub_total: "",
+      id_producto: ""
     });
   };
 
-  // ❌ ELIMINAR ITEM
-  const handleDeleteItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
+console.log(venta);
+console.log(detalleVenta);
 
-  // 🔄 ACTUALIZAR CANTIDAD DESDE LA TABLA
-  const handleUpdateCantidad = (index, nuevaCantidad) => {
-    const updated = [...items];
-    updated[index].cantidad = parseInt(nuevaCantidad);
-    updated[index].subtotal =
-      updated[index].precio * updated[index].cantidad;
 
-    setItems(updated);
-  };
-
-  // Total general
-  const totalGeneral = items.reduce((acc, item) => acc + item.subtotal, 0);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log("VENTA FINAL:", {
-      cliente: formData.id_cliente,
-      items,
-      totalGeneral
-    });
-  };
 
   return (
     <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={""}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px 20px", textAlign: "left" }}>
 
           {/* CLIENTE */}
@@ -89,8 +79,8 @@ const CrearVenta = ({ onClose, onUpdate }) => {
             <Form.Label><strong>Cliente:</strong></Form.Label>
             <Form.Select
               name="id_cliente"
-              value={formData.id_cliente}
-              onChange={handleChange}
+              value={venta.id_cliente}
+              onChange={handleVenta}
               style={{ borderRadius: "8px" }}
             >
               <option value="">Selecciona un cliente</option>
@@ -107,8 +97,8 @@ const CrearVenta = ({ onClose, onUpdate }) => {
             <Form.Label><strong>Producto:</strong></Form.Label>
             <Form.Select
               name="id_producto"
-              value={formData.id_producto}
-              onChange={handleChange}
+              value={detalleVenta.id_producto}
+              onChange={handleDetalleVenta}
               style={{ borderRadius: "8px" }}
             >
               <option value="">Selecciona un producto</option>
@@ -126,7 +116,7 @@ const CrearVenta = ({ onClose, onUpdate }) => {
             <Form.Control
               type="number"
               name="cantidad"
-              value={formData.cantidad}
+              value={detalleVenta.cantidad}
               min="1"
               onChange={handleChange}
               style={{ borderRadius: "8px", width: "80px" }}
@@ -136,7 +126,7 @@ const CrearVenta = ({ onClose, onUpdate }) => {
           {/* BOTÓN AÑADIR */}
           <Button
             type="button"
-            onClick={handleAddItem}
+            onClick={agregarItem}
             style={{
               width: "50px",
               height: "50px",
@@ -157,59 +147,9 @@ const CrearVenta = ({ onClose, onUpdate }) => {
         </div>
 
         {/* TABLA DE ITEMS */}
-        {items.length > 0 && (
-          <div style={{ marginTop: "25px" }}>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Precio</th>
-                  <th>Cantidad</th>
-                  <th>Subtotal</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item, idx) => (
-                  <tr key={idx}>
-                    <td>{item.nombre_producto}</td>
-                    <td>${item.precio}</td>
-
-                    {/* CAMBIAR CANTIDAD */}
-                    <td>
-                      <Form.Control
-                        type="number"
-                        min="1"
-                        value={item.cantidad}
-                        onChange={(e) =>
-                          handleUpdateCantidad(idx, e.target.value)
-                        }
-                        style={{ width: "80px" }}
-                      />
-                    </td>
-
-                    <td>${item.subtotal}</td>
-
-                    {/* ELIMINAR */}
-                    <td>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDeleteItem(idx)}
-                      >
-                        X
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-
-            <h4 style={{ textAlign: "right", marginRight: "10px" }}>
-              <strong>Total:</strong> ${totalGeneral}
-            </h4>
-          </div>
-        )}
+        
+            
+            
 
         {/* BOTONES */}
         <div style={{ textAlign: "center", marginTop: "25px" }}>
