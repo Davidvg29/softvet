@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import logovet from '../assets/logovet.svg';
 import { useEmpleadoStore } from '../zustand/empleado';
 import { FaUser, FaHome, FaMapMarkerAlt, FaBox, FaUserShield, FaUsers, FaPaw} from 'react-icons/fa';
+import { MdPets } from "react-icons/md";
 import axios from 'axios';
 import { empleados } from '../endpoints/endpoints';
 const Header = () => {
@@ -99,6 +100,8 @@ const Header = () => {
                         <Nav.Link as={Link} to="/roles"> <FaUserShield className="me-2" /> Roles</Nav.Link>
                         <Nav.Link as={Link} to="/empleados"> <FaUsers className="me-2" /> Empleados</Nav.Link>
                         <Nav.Link as={Link} to="/especies"> <FaPaw className="me-2" /> Especies</Nav.Link>
+                        <Nav.Link as={Link} to="/razas"> <MdPets  className="me-2" /> Razas</Nav.Link>
+
                     </Nav>
                 </Offcanvas.Body>
                 <button onClick={cerrarSesion}>Cerrar Sesión</button>
