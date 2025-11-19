@@ -12,7 +12,8 @@ import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
 import Razas from './pages/Razas';
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, RAZAS, CLIENTES, MASCOTAS } from './routers/router';
+import Productos from './pages/Productos.jsx'
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, RAZAS, CLIENTES, MASCOTAS, PRODUCTOS } from './routers/router';
 import DashboardPage from './pages/DashboardPage.jsx';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path={CLIENTES} element={<Clientes/>} />
         <Route path={MASCOTAS} element={<Mascotas/>} />
         <Route path={RAZAS} element={<Razas/>}/>
+        <Route path={PRODUCTOS} element={<Productos/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>

@@ -4,6 +4,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 import { mascotas } from "../../endpoints/endpoints";
 import VerMascota from "./VerMascota";
@@ -56,11 +57,11 @@ const MainMascota = () => {
   const borrarMascotas = async (id) => {
 
     const confirmacion = await Swal.fire({
-      title: '¿Eliminar Mascota?',
+      title: '¿Dar de baja Mascota?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
+      confirmButtonText: 'Sí, dar Baja',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#d33',
       cancelButtonColor: '#6c757d',
@@ -76,8 +77,8 @@ const MainMascota = () => {
 
         await Swal.fire({
           icon: 'success',
-          title: 'Eliminado correctamente',
-          text: 'Las Mascota ha sido eliminada con éxito.',
+          title: 'Se dió Baja Correctamente',
+          text: 'Las Mascota ha sido dada de Baja.',
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#6f42c1',
         });
@@ -87,13 +88,13 @@ const MainMascota = () => {
         throw new Error('Respuesta inesperada del servidor.');
       }
     } catch (error) {
-      console.error('Error al eliminar la Mascota:', error);
+      console.error('Error al dar de Baja la Mascota:', error);
 
 
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo eliminar la Mascota. Inténtalo nuevamente.',
+        text: 'No se pudo dar Baja la Mascota. Inténtalo nuevamente.',
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#6f42c1',
       });
@@ -246,6 +247,28 @@ const MainMascota = () => {
 
                         <Button
                           style={{
+                            backgroundColor: "#6f42c1",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #5428a5ff",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #5428a5ff";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #5428a5ff";
+                          }}
+                          // onClick={() => borrarMascotas(m.id_mascota)}
+                        >
+                          Historia Clinica
+                        </Button>
+
+                        <Button
+                          style={{
                             backgroundColor: "#dc3545",
                             border: "none",
                             fontWeight: "bold",
@@ -263,7 +286,7 @@ const MainMascota = () => {
                           }}
                           onClick={() => borrarMascotas(m.id_mascota)}
                         >
-                          Eliminar
+                          Dar Baja
                         </Button>
 
                       </td>
