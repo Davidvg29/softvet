@@ -225,6 +225,7 @@ const eliminarHistoriaClinica = (req, res) => {
 };
 
 
+
 module.exports = {
     mostrarHistoriasClinicas,
     mostrarHistoriaClinicaPorId,

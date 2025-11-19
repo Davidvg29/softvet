@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Swal from "sweetalert2";
 import axios from 'axios';
 import { historiasClinicas } from '../../endpoints/endpoints';
+import { useEmpleadoStore } from "../../zustand/empleado";
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/esm/Button';
 import VerHistoriaClinica from './VerHistoriaClinica';
+import DetalleHistoriaClinica from './DetalleHistoriaClinica';
 import CrearHistoriaClinica from './CrearHistoriaClinica';
 import EditarHistoriaClinica from './EditarHistoriaClinica';
 const MainHistoriaClinica = () => {
-
+  const empleado = useEmpleadoStore((state) => state.empleado);
+  const rolUsuario = empleado?.nombre_rol || "";
 
   //state de busqueda
   const [busqueda, setBusqueda] = useState("");
@@ -41,6 +44,7 @@ const MainHistoriaClinica = () => {
     crearhistoriaClinica: "Crear Historia Clinica",
     verhistoriaClinica: "Ver Historia Clinica",
     editarhistoriaClinica: "Editar Historia Clinica",
+    detalleHistoriaClinica: "Detalle Historia Clinica",
   };
 
   const cargarHistoriaClinica = async () => {
@@ -60,7 +64,7 @@ const MainHistoriaClinica = () => {
 
 
   const normalize = (text) =>
-    // Usa un string vacío si 'text' es null o undefined, luego aplícale el resto de los métodos.
+
     String(text || "")
       .toLowerCase()
       .normalize("NFD")
@@ -74,8 +78,7 @@ const MainHistoriaClinica = () => {
     const nombre = normalize(h.nombre_cliente);
     const dni = normalize(h.dni_cliente);
     const observaciones = normalize(h.observaciones_generales);
-    // Si necesitas más campos, haz lo mismo:
-    // const veterinario = normalize(h.veterinario); // Si lo tienes
+
 
     return (
       (nombre || '').includes(q) || // Asegura que 'nombre' es un string
@@ -112,8 +115,17 @@ const MainHistoriaClinica = () => {
 
 
   const borrar = async (id_historia_clinica) => {
+
+    if (rolUsuario !== "Administrador") {
+      return Swal.fire({
+        icon: "error",
+        title: "Acceso denegado",
+        text: "Solo los usuarios con rol 'Administrador' pueden eliminar historias clínicas."
+      });
+    }
+
     const result = await Swal.fire({
-      title: "¿Eliminar Historia clinica?",
+      title: "¿Eliminar Historia clínica?",
       text: "Esta acción no se puede deshacer.",
       icon: "warning",
       showCancelButton: true,
@@ -127,10 +139,10 @@ const MainHistoriaClinica = () => {
 
     try {
       await axios.delete(`${historiasClinicas}/eliminar/${id_historia_clinica}`, { withCredentials: true });
-      Swal.fire("Eliminado", "La Historia Clinica fue eliminada correctamente.", "success");
+      Swal.fire("Eliminado", "La historia clínica fue eliminada correctamente.", "success");
       cargarHistoriaClinica();
     } catch (error) {
-      Swal.fire("Error", "No se pudo eliminar la Historia Clinica.", "error");
+      Swal.fire("Error", "No se pudo eliminar la historia clínica.", "error");
       console.error(error);
     }
   };
@@ -175,7 +187,7 @@ const MainHistoriaClinica = () => {
               e.target.style.boxShadow = "0 6px 0 #6f42c1";
             }}
           >
-            Crear un nuevo Detalle de Historia Clinica
+            Dar de Alta Historia Clinica
           </Button>
 
         </div>
@@ -302,6 +314,25 @@ const MainHistoriaClinica = () => {
                         }}
                         onClick={() => handleOpenModal("verhistoriaClinica", historiaClinica.id_historia_clinica)}>Ver</Button>
 
+                      <Button
+                        style={{
+                          backgroundColor: "#6f42c1",
+                          border: "none",
+                          fontWeight: "bold",
+                          color: "#fff",
+                          boxShadow: "0 3px 0 #5428a5ff",
+                          transition: "all 0.1s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = "translateY(-2px)";
+                          e.target.style.boxShadow = "0 5px 0 #5428a5ff";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = "translateY(0)";
+                          e.target.style.boxShadow = "0 3px 0 #5428a5ff";
+                        }}
+                        onClick={() => handleOpenModal("detalleHistoriaClinica", historiaClinica.id_historia_clinica)}>Agregar Detalle</Button>
+
 
                       <Button
                         style={{
@@ -324,24 +355,29 @@ const MainHistoriaClinica = () => {
 
 
 
-                      <Button
-                        style={{
-                          backgroundColor: "#dc3545",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #a71d2a",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #a71d2a";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #a71d2a";
-                        }}
-                        onClick={() => { borrar(historiaClinica.id_historia_clinica) }} >Eliminar</Button>
+                      {rolUsuario === "Administrador" && (
+                        <Button
+                          style={{
+                            backgroundColor: "#dc3545",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #a71d2a",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => borrar(historiaClinica.id_historia_clinica)}
+                        >
+                          Eliminar
+                        </Button>
+                      )}
                     </td>
 
                   </tr>
@@ -422,6 +458,7 @@ const MainHistoriaClinica = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {fromType === "crearhistoriaClinica" && <CrearHistoriaClinica onClose={handleCloseModal} onUpdated={cargarHistoriaClinica} />}
               {fromType === "verhistoriaClinica" && <VerHistoriaClinica id={historiaClinicaId} />}{/*paso el id por prop */}
+              {fromType === "detalleHistoriaClinica" && <DetalleHistoriaClinica idHistoriaClinica={historiaClinicaId} onClose={handleCloseModal} onUpdated={cargarHistoriaClinica} />}
               {fromType === "editarhistoriaClinica" && <EditarHistoriaClinica id={historiaClinicaId} onClose={handleCloseModal} onUpdated={cargarHistoriaClinica} />}
             </div>
           </div>

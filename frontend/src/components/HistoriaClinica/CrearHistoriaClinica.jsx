@@ -8,14 +8,14 @@ import Swal from "sweetalert2";
 
 const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
 
-  // 👈 2. Extraer los datos del usuario logueado del store de Zustand
+  
   const empleado = useEmpleadoStore((state) => state.empleado);
 
-  // 👈 3. Variables de usuario para el campo 'veterinario'
+ 
   const nombreVeterinario = empleado?.nombre_empleado || "";
   const rolUsuario = empleado?.nombre_rol || "";
 
-  // 👈 4. Validación: Restricción del formulario para no-veterinarios
+
   useEffect(() => {
     if (rolUsuario !== "Veterinario" && rolUsuario !== "") {
       Swal.fire({
@@ -37,7 +37,6 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
 
   const [historiaClinica, setHistoriaClinica] = useState({
     observaciones_generales: "",
-    observaciones: "",
     id_cliente: "",
     id_mascota: "",
     veterinario: nombreVeterinario
@@ -100,13 +99,12 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
       );
 
       console.log("Historia clínica creada", response.data);
-      setClienteSeleccionado(null); // 👈 Es fundamental resetear este
-      setMascotasCliente([]);       // 👈 Resetear mascotas disponibles
+      setClienteSeleccionado(null); 
+      setMascotasCliente([]);       
       setBusquedaCliente("");
 
       setHistoriaClinica({
         observaciones_generales: "",
-        observaciones: "",
         id_cliente: "",
         id_mascota: ""
       });
@@ -135,7 +133,7 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
     }
   };
 
-  //  Manejador principal (con SweetAlert)
+  
   const handleConfirmAndSubmit = async (e) => {
     e.preventDefault();
 
@@ -166,7 +164,7 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
       // Si el usuario confirma, ejecuta la creación
       ejecutarCreacionHistoriaClinica();
     }
-    // 👈 Si no es un veterinario o el rol aún no se ha cargado, no renderizar el formulario
+    
     if (rolUsuario !== "veterinario") {
       // Puedes renderizar un loading screen o simplemente retornar null (ya se manejará en useEffect)
       return null;
@@ -271,22 +269,6 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
             />
           </Col>
         </Form.Group>
-
-        <Form.Group as={Row} className="mb-3 align-items-center">
-          <Form.Label column sm="3" className="text-end fw-bold">
-            Diagnóstico:
-          </Form.Label>
-          <Col sm="9">
-            <Form.Control
-              type="text"
-              name="observaciones"
-              placeholder="Diagnóstico del animal"
-              value={historiaClinica.observaciones}
-              onChange={handleChange}
-            />
-          </Col>
-        </Form.Group>
-
 
         {/* BOTONES */}
         <div style={{ textAlign: "center", marginTop: "20px" }}>
