@@ -7,23 +7,6 @@ const VerCliente = ({ id_cliente }) => {
   const [cliente, setCliente] = useState(null);
   const [error, setError] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchMascotas = async () => {
-  //     try {
-  //       const response = await axios.get(`${mascotas}/ver`, { withCredentials: true });
-  //       const mascotaData = response.data.map((m) => ({
-  //         ...m,
-  //         id_mascota: Number(r.id_mascota),
-  //       }));
-  //       setMascota(mascotaData);
-  //     } catch (error) {
-  //       console.error("Error al cargar las Mascotas:", error);
-  //       setError("Error al cargar las Mascotas.");
-  //     }
-  //   };
-  //   fetchMascotas();
-  // }, []);
-
   useEffect(() => {
   if (!id_cliente) return;
 
@@ -33,7 +16,7 @@ const VerCliente = ({ id_cliente }) => {
         withCredentials: true,
       });
 
-      setCliente(response.data); // 💥 ESTA LÍNEA FALTABA
+      setCliente(response.data);
     } catch (error) {
       console.error("Error al obtener el cliente:", error);
       setError("Error al obtener el cliente.");
@@ -102,10 +85,6 @@ const VerCliente = ({ id_cliente }) => {
             <strong style={{ color: "#6f42c1" }}>Email:</strong>{" "}
             {cliente.mail_cliente}
           </p>
-          {/* <p>
-            <strong style={{ color: "#6f42c1" }}>Mascota:</strong>{" "}
-            {cliente.nombre_mascota}
-          </p> */}
         </div>
       </Card.Body>
     </Card>

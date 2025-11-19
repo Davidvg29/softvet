@@ -11,11 +11,14 @@ import Roles from './pages/Roles';
 import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS, HISTORIAS_CLINICAS } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS } from './routers/router';
 import Razas from './pages/Razas';
 import HistoriaClinica from './pages/HistoriaClinica.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import Ventas from './pages/Ventas.jsx';
+import Productos from './pages/Productos.jsx'
+import Sucursales from './pages/Sucursales.jsx';
+import Categorias from './pages/Categorias.jsx';
 
 function App() {
   return (
@@ -36,6 +39,9 @@ function App() {
         <Route path={VENTAS} element={<Ventas/>}/>
         <Route path={RAZAS} element={<Razas/>}/>
         <Route path={HISTORIAS_CLINICAS} element={<HistoriaClinica/>}/>
+        <Route path={PRODUCTOS} element={<Productos/>}/>
+        <Route path={SUCURSALES} element={<Sucursales/>}/>
+        <Route path={CATEGORIAS} element={<Categorias/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>

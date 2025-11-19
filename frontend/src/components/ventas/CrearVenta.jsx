@@ -4,84 +4,135 @@ import Table from 'react-bootstrap/Table';
 import { useState } from 'react';
 import { useClientesStore } from "../../zustand/cliente";
 import { useProductosStore } from '../../zustand/productos';
+import { useEmpleadoStore } from '../../zustand/empleado';
+import { detallesVentas, VENTAS } from '../../endpoints/endpoints';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const CrearVenta = ({ onClose, onUpdate }) => {
+const CrearVenta = ({ onClose, onUpdate, cargarVentas}) => {
   const { clientes } = useClientesStore();
   const { productos } = useProductosStore();
+  const { empleado } = useEmpleadoStore();
+  const [productoSeleccionado, setProductoSeleccionado] = useState({})
+  const [idVentaRecienCreada, setIdVentaRecienCreada] = useState(null)
 
-  const [formData, setFormData] = useState({
+  const [detalleVenta, setDetalleVenta] = useState({
+    cantidad: "",
+    precio_unitario: productoSeleccionado.precio_producto,
+    sub_total: "",
+    id_venta: "",
+    id_producto: ""
+  });
+
+  const [venta, setVenta] = useState({
+    total: "",
     id_cliente: "",
-    id_producto: "",
-    cantidad: 1,
+    id_empleado: String(empleado.id_empleado)
   });
 
   const [items, setItems] = useState([]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleVenta = (e) => {
+    setVenta({ ...venta, [e.target.name]: e.target.value });
   };
 
-  // ➕ AÑADIR ITEM
-  const handleAddItem = () => {
-    if (!formData.id_producto || !formData.cantidad) return;
+  const handleDetalleVenta = (e) => {
+  const { name, value } = e.target;
 
-    const prod = productos.find(
-      (p) => p.id_producto === parseInt(formData.id_producto)
-    );
+  const cantidad = name === "cantidad" ? value : detalleVenta.cantidad;
+  const precio = name === "precio_unitario" ? value : detalleVenta.precio_unitario;
 
-    const nuevo = {
-      id_producto: prod.id_producto,
-      nombre_producto: prod.nombre_producto,
-      precio: parseFloat(prod.precio_producto),
-      cantidad: parseInt(formData.cantidad),
-      subtotal:
-        parseFloat(prod.precio_producto) * parseInt(formData.cantidad),
+  setDetalleVenta({
+    ...detalleVenta,
+    [name]: value,
+    sub_total: (cantidad && precio) ? cantidad * precio : ""
+  });
+};
+
+
+  const handleProductoSeleccionado = (producto) => {
+  setProductoSeleccionado(producto);
+
+  setDetalleVenta(prev => {
+    const precio = producto?.precio_producto || 0;
+    const cantidad = prev.cantidad;
+    return {
+      ...prev,
+      precio_unitario: precio,
+      sub_total: cantidad ? cantidad * precio : "",
     };
+  });
+};
 
-    setItems([...items, nuevo]);
+  const agregarItem = () => {
+  if (!detalleVenta.id_producto || !detalleVenta.cantidad) return;
 
-    // 🔹 Limpiar inputs después de añadir
-    setFormData({
-      ...formData,
-      id_producto: "",
-      cantidad: 1,
-    });
-  };
+  const producto = productos.find(
+    (p) => p.id_producto === Number(detalleVenta.id_producto)
+  );
 
-  // ❌ ELIMINAR ITEM
-  const handleDeleteItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
+  const precio = producto?.precio_producto || 0;
+  const subTotal = precio * detalleVenta.cantidad;
 
-  // 🔄 ACTUALIZAR CANTIDAD DESDE LA TABLA
-  const handleUpdateCantidad = (index, nuevaCantidad) => {
-    const updated = [...items];
-    updated[index].cantidad = parseInt(nuevaCantidad);
-    updated[index].subtotal =
-      updated[index].precio * updated[index].cantidad;
+  const nuevoItem = {
+  ...detalleVenta,
+  nombre_producto: producto.nombre_producto,
+  codigo_producto: producto.codigo_producto,
+  precio_unitario: precio,
+  sub_total: subTotal
+};
 
-    setItems(updated);
-  };
 
-  // Total general
-  const totalGeneral = items.reduce((acc, item) => acc + item.subtotal, 0);
+  setItems([...items, nuevoItem]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  setVenta(prev => ({
+    ...prev,
+    total: Number(prev.total || 0) + subTotal
+  }));
 
-    console.log("VENTA FINAL:", {
-      cliente: formData.id_cliente,
-      items,
-      totalGeneral
-    });
-  };
+  // limpiar
+  setDetalleVenta({
+    cantidad: "",
+    precio_unitario: "",
+    sub_total: "",
+    id_producto: ""
+  });
+};
+
+const sendData = async(e)=>{
+  e.preventDefault()
+  try {
+    const {data} = await axios.post(`${VENTAS}/crear`, venta, { withCredentials: true })
+    // console.log("venta creada: ", data);
+    
+    const itemsConVenta = items.map(item => ({...item, id_venta: data.id_venta}));
+
+    for (let item of itemsConVenta) {
+      await axios.post(`${detallesVentas}/crear`, item, {withCredentials: true});
+    }
+    
+    onClose()
+    await Swal.fire({
+              icon: 'success',
+              title: 'Venta creada con éxito!',
+              confirmButtonText: 'Aceptar',
+              confirmButtonColor: '#6f42c1',
+            });
+    cargarVentas()
+  } catch (error) {
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrio un error al crear Venta.",
+        confirmButtonText: "Aceptar",
+      });
+    
+  }
+}
 
   return (
     <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={sendData}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px 20px", textAlign: "left" }}>
 
           {/* CLIENTE */}
@@ -89,13 +140,13 @@ const CrearVenta = ({ onClose, onUpdate }) => {
             <Form.Label><strong>Cliente:</strong></Form.Label>
             <Form.Select
               name="id_cliente"
-              value={formData.id_cliente}
-              onChange={handleChange}
+              value={venta.id_cliente}
+              onChange={handleVenta}
               style={{ borderRadius: "8px" }}
             >
               <option value="">Selecciona un cliente</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id_cliente} value={cliente.id_cliente}>
+              {clientes.map((cliente, index) => (
+                <option key={index} value={cliente.id_cliente}>
                   {cliente.nombre_cliente}
                 </option>
               ))}
@@ -107,13 +158,17 @@ const CrearVenta = ({ onClose, onUpdate }) => {
             <Form.Label><strong>Producto:</strong></Form.Label>
             <Form.Select
               name="id_producto"
-              value={formData.id_producto}
-              onChange={handleChange}
+              value={detalleVenta.id_producto}
+              onChange={(e) => {
+                handleDetalleVenta(e);
+                const producto = productos.find(p => p.id_producto === Number(e.target.value));
+                handleProductoSeleccionado(producto);
+              }}
               style={{ borderRadius: "8px" }}
             >
               <option value="">Selecciona un producto</option>
-              {productos.map((producto) => (
-                <option key={producto.id_producto} value={producto.id_producto}>
+              {productos.map((producto, index) => (
+                <option key={index} value={producto.id_producto}>
                   {producto.nombre_producto}
                 </option>
               ))}
@@ -126,17 +181,19 @@ const CrearVenta = ({ onClose, onUpdate }) => {
             <Form.Control
               type="number"
               name="cantidad"
-              value={formData.cantidad}
+              value={detalleVenta.cantidad}
               min="1"
-              onChange={handleChange}
+              onChange={handleDetalleVenta}
               style={{ borderRadius: "8px", width: "80px" }}
             />
           </Form.Group>
 
+          
+
           {/* BOTÓN AÑADIR */}
           <Button
             type="button"
-            onClick={handleAddItem}
+            onClick={agregarItem}
             style={{
               width: "50px",
               height: "50px",
@@ -157,59 +214,91 @@ const CrearVenta = ({ onClose, onUpdate }) => {
         </div>
 
         {/* TABLA DE ITEMS */}
-        {items.length > 0 && (
-          <div style={{ marginTop: "25px" }}>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>Precio</th>
-                  <th>Cantidad</th>
-                  <th>Subtotal</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item, idx) => (
-                  <tr key={idx}>
-                    <td>{item.nombre_producto}</td>
-                    <td>${item.precio}</td>
-
-                    {/* CAMBIAR CANTIDAD */}
-                    <td>
-                      <Form.Control
-                        type="number"
-                        min="1"
-                        value={item.cantidad}
-                        onChange={(e) =>
-                          handleUpdateCantidad(idx, e.target.value)
-                        }
-                        style={{ width: "80px" }}
-                      />
+        <div className='mt-3'>
+            <Table
+            hover
+            responsive
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              borderSpacing: "0px",
+            }}
+          >
+            <thead>
+              <tr
+                style={{
+                  background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+                  color: "#fff",
+                  textAlign: "center",
+                  fontSize: "16px",
+                  borderRadius: "10px",
+                }}
+              >
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>cod. prod.</th>
+                <th style={{ padding: "14px" }}>Producto</th>
+                {/* <th style={{ padding: "14px" }}>Prec. act.</th> */}
+                <th style={{ padding: "14px" }}>Cant.</th>
+                <th style={{ padding: "14px" }}>Prec. u.</th>
+                <th style={{ padding: "14px" }}>Sub total</th>
+              </tr>
+            </thead>
+            <tbody >
+              {items.length > 0 ? (
+                items.map((item, index) => (
+                  <tr
+                    key={index}
+                    style={{
+                      backgroundColor: "#fff",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                      borderRadius: "12px",
+                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                      transform: "translateY(0)",
+                      fontSize: "14px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-3px)";
+                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                    }}
+                  >
+                    <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
+                      {item.codigo_producto}
                     </td>
-
-                    <td>${item.subtotal}</td>
-
-                    {/* ELIMINAR */}
-                    <td>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDeleteItem(idx)}
-                      >
-                        X
-                      </Button>
+                    <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
+                      {item.nombre_producto}
                     </td>
+                    <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
+                        {item.cantidad}
+                    </td>
+                    {/* <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
+                        {"Asd"}
+                    </td> */}
+                    <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
+                        $ {item.precio_unitario}
+                    </td>
+                    <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
+                        $ {item.sub_total}
+                    </td>
+                    
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: "center", padding: "20px" }}>
+                    No se encontraron Detalles de Ventas.
+                  </td>
+                </tr>
+              )}
+            </tbody>
 
-            <h4 style={{ textAlign: "right", marginRight: "10px" }}>
-              <strong>Total:</strong> ${totalGeneral}
-            </h4>
-          </div>
-        )}
+
+          </Table>
+        </div>
+            <div><p>Total: ${venta.total || 0}</p></div>
+            
 
         {/* BOTONES */}
         <div style={{ textAlign: "center", marginTop: "25px" }}>
