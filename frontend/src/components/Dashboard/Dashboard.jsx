@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import {
-  Users,
-  UserCog,
-  Truck,
-  Dna,
-  CreditCard,
-  ShoppingCart,
-  Layers,
-  Package,
-  FileText,
-  PawPrint,
-  ShieldCheck,
-  CalendarClock,
-  Tags,
-  Building2,
-  Dog
+import { Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog
 } from "lucide-react";
 
 import { useEmpleadoStore } from "../../zustand/empleado";
@@ -224,65 +209,65 @@ const Dashboard = () => {
 
         {/* ==== CONTENIDO PRINCIPAL ==== */}
         <Col className="p-4" style={{ backgroundColor: "#e4d6fa" }}>
-          <Row className="justify-content-center mb-4">
+          <Row className="g-3 mb-4 d-flex flex-wrap justify-content-center">
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/empleados" label="Empleados" Icon={UserCog} index={0} count={empleados?.length} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/clientes" label="Clientes" Icon={Users} index={1} count={clientes?.length} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/mascotas" label="Mascotas" Icon={Dog} index={15} count={mascotas?.length} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/historia-clinica" label="Historia Clínica" Icon={FileText} index={8} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/ventas" label="Ventas" Icon={CreditCard} index={4} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/compras" label="Compras" Icon={ShoppingCart} index={5} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/productos" label="Productos" Icon={Package} index={7} count={productos?.length}/>
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/stock" label="Stock" Icon={Layers} index={6} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/proveedores" label="Proveedores" Icon={Truck} index={2} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "180px", height: "160px" }}>
               <DashboardCard to="/especies" label="Especies" Icon={Dna} index={3} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/razas" label="Razas" Icon={PawPrint} index={9} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/roles" label="Roles" Icon={ShieldCheck} index={11} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/categorias" label="Categorias" Icon={Tags} index={13} />
             </Col>
 
-            <Col xs={6} md={2} className="mb-3">
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/sucursales" label="Sucursales" Icon={Building2} index={14} />
             </Col>
 
