@@ -5,7 +5,7 @@ const verVentas = (req, res) => {
     const queryGetVentas = `select 
         ventas.id_venta, ventas.fecha_hora, ventas.total, ventas.is_active,
         clientes.id_cliente, clientes.nombre_cliente, clientes.dni_cliente,
-        empleados.nombre_empleado
+        empleados.id_empleado, empleados.nombre_empleado
         from ventas
         left join clientes on clientes.id_cliente = ventas.id_cliente
         left join empleados on empleados.id_empleado = ventas.id_empleado;`

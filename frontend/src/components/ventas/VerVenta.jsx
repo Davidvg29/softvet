@@ -13,7 +13,7 @@ const VerVenta = ({ venta }) => {
       const { data } = await axios.get(`${detallesVentas}/ver`, {withCredentials: true});
       const detalleVentaFiltrado = data.filter((v) => v.id_venta == venta.id_venta);
       setDetalle_venta(detalleVentaFiltrado);
-      console.log(data);
+      // console.log(data);
       
     } catch (error) {
       console.error('Error al cargar las ventas:', error);
@@ -25,8 +25,8 @@ const VerVenta = ({ venta }) => {
   }, []);
 
 
-  console.log("VENTA:", venta);
-  console.log("DETALLE VENTA:", detalle_venta);
+  // console.log("VENTA:", venta);
+  // console.log("DETALLE VENTA:", detalle_venta);
 
   return (
     <>

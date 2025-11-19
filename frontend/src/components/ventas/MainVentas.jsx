@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import { VENTAS } from '../../endpoints/endpoints';
 import VerVenta from './VerVenta';
 import CrearVenta from './CrearVenta';
-// import EditVenta from './EditVenta';
+import EditVenta from './EditVenta';
 
 const MainVentas = () => {
   const [ventas, setVentas] = useState([]);
@@ -32,7 +32,7 @@ const MainVentas = () => {
   };
 
   const handleCloseModal = () => {
-    console.log('cerrar modal');
+    // console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
     setVentaId(null);
@@ -362,8 +362,8 @@ const MainVentas = () => {
 
               {fromType === 'editar' && (
                 // Descomenta si tenés el componente EditVenta
-                // <EditVenta id_venta={ventaId} onClose={handleCloseModal} onUpdate={cargarVentas} />
-                <div>Editar venta (componente EditVenta aquí)</div>
+                <EditVenta id_venta={ventaId} onClose={handleCloseModal} onUpdate={cargarVentas} />
+                // <div>Editar venta (componente EditVenta aquí)</div>
               )}
             </div>
           </div>
