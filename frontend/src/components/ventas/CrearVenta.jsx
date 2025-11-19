@@ -103,7 +103,7 @@ const sendData = async(e)=>{
   e.preventDefault()
   try {
     const {data} = await axios.post(`${VENTAS}/crear`, venta, { withCredentials: true })
-    console.log("venta creada: ", data);
+    // console.log("venta creada: ", data);
     
     const itemsConVenta = items.map(item => ({...item, id_venta: data.id_venta}));
 

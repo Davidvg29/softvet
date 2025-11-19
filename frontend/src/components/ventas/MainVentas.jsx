@@ -32,7 +32,7 @@ const MainVentas = () => {
   };
 
   const handleCloseModal = () => {
-    console.log('cerrar modal');
+    // console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
     setVentaId(null);

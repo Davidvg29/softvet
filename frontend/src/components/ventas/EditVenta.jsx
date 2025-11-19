@@ -22,6 +22,8 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
   });
 
   const [items, setItems] = useState([]);
+  const [itemsABorrar, setItemsABorrar] = useState([]);
+
   const [detalleVenta, setDetalleVenta] = useState({
     cantidad: "",
     precio_unitario: "",
@@ -31,42 +33,47 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
 
   const [productoSeleccionado, setProductoSeleccionado] = useState({});
 
-  // -------------------
-  // CARGAR VENTA Y DETALLE
-  // -------------------
-  const cargarVenta = async () => {
-  try {
-    // traigo ventas (para obtener la cabecera)
-    const { data: ventas } = await axios.get(`${VENTAS}/ver`, { withCredentials: true });
-    const v = ventas.find(v => Number(v.id_venta) === Number(id_venta));
+  // --- Función central: recalcular total en base al array ---
+  const calcularTotal = (itemsArray) =>
+    itemsArray.reduce((acc, item) => acc + Number(item.sub_total || 0), 0);
 
-    if (!v) {
-      console.warn(`No se encontró la venta con id_venta=${id_venta}`);
+
+  // CARGAR VENTA + DETALLES
+  const cargarVenta = async () => {
+    try {
+      const { data: ventas } = await axios.get(`${VENTAS}/ver`, { withCredentials: true });
+      const v = ventas.find(v => Number(v.id_venta) === Number(id_venta));
+
+      if (!v) {
+        setVenta({});
+        setItems([]);
+        return;
+      }
+
+      setVenta({
+        total: Number(v.total),
+        id_cliente: String(v.id_cliente),
+        id_empleado: String(v.id_empleado)
+      });
+
+      const { data: detallesAll } = await axios.get(`${detallesVentas}/ver`, { withCredentials: true });
+
+      const detallesFiltrados = detallesAll.filter(d => Number(d.id_venta) === Number(id_venta));
+
+      setItems(detallesFiltrados);
+
+      // total correcto aquí
+      setVenta(prev => ({
+        ...prev,
+        total: calcularTotal(detallesFiltrados)
+      }));
+
+    } catch (err) {
+      console.error("Error cargando venta:", err);
       setVenta({});
       setItems([]);
-      return;
     }
-
-    setVenta({
-      total: v.total,
-      id_cliente: v.id_cliente,
-      id_empleado: v.id_empleado
-    });
-
-    // traigo todos los detalles y filtro por id_venta
-    const { data: detallesAll } = await axios.get(`${detallesVentas}/ver`, { withCredentials: true });
-
-    const detallesFiltrados = detallesAll.filter(d => Number(d.id_venta) === Number(id_venta));
-
-    setItems(detallesFiltrados);
-
-  } catch (err) {
-    console.error("Error cargando venta:", err);
-    setVenta({});
-    setItems([]);
-  }
-};
-
+  };
 
   useEffect(() => {
     cargarVenta();
@@ -121,18 +128,20 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
       codigo_producto: producto.codigo_producto,
       precio_unitario: precio,
       sub_total: subTotal,
-      id_venta
+      id_venta,
+      nuevo: true
     };
 
-    setItems([...items, nuevoItem]);
+    const newItems = [...items, nuevoItem];
 
-    // Actualizar total
+    setItems(newItems);
+
+    // TOTAL CORRECTO
     setVenta(prev => ({
       ...prev,
-      total: Number(prev.total || 0) + subTotal
+      total: calcularTotal(newItems)
     }));
 
-    // limpiar
     setDetalleVenta({
       cantidad: "",
       precio_unitario: "",
@@ -146,36 +155,37 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
   // -------------------
   const eliminarItem = (index) => {
     const item = items[index];
+    setItemsABorrar(prev => [...prev, item]);
 
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+
+    // TOTAL CORRECTO
     setVenta(prev => ({
       ...prev,
-      total: prev.total - item.sub_total
+      total: calcularTotal(newItems)
     }));
-
-    setItems(items.filter((_, i) => i !== index));
   };
 
   // -------------------
-  // ACTUALIZAR CANTIDAD DE ITEM EXISTENTE
+  // EDITAR CANTIDAD
   // -------------------
   const editarCantidadItem = (index, nuevaCantidad) => {
     const updated = [...items];
     const item = updated[index];
 
-    const subAnterior = item.sub_total;
-    const nuevoSub = item.precio_unitario * nuevaCantidad;
-
     updated[index] = {
       ...item,
       cantidad: nuevaCantidad,
-      sub_total: nuevoSub
+      sub_total: item.precio_unitario * nuevaCantidad
     };
 
     setItems(updated);
 
+    // TOTAL CORRECTO
     setVenta(prev => ({
       ...prev,
-      total: prev.total - subAnterior + nuevoSub
+      total: calcularTotal(updated)
     }));
   };
 
@@ -186,13 +196,36 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
     e.preventDefault();
 
     try {
-      await axios.put(`${VENTAS}/editar/${id_venta}`, venta, { withCredentials: true });
-
-      // Enviar items
       for (let item of items) {
-        await axios.put(`${detallesVentas}/editar`, item, {
-          withCredentials: true
-        });
+        if (!item.nuevo) {
+          await axios.put(`${detallesVentas}/editar/${item.id_detalle_venta}`, {
+            cantidad: item.cantidad,
+            precio_unitario: item.precio_unitario,
+            sub_total: item.sub_total,
+            id_venta: item.id_venta,
+            id_producto: item.id_producto
+          }, { withCredentials: true });
+        }
+      }
+
+      for (let itemABorrar of itemsABorrar) {
+        if (itemABorrar.id_detalle_venta) {
+          await axios.delete(`${detallesVentas}/borrar/${itemABorrar.id_detalle_venta}`, {
+            withCredentials: true
+          });
+        }
+      }
+
+      for (let item of items) {
+        if (item.nuevo) {
+          await axios.post(`${detallesVentas}/crear`, {
+            cantidad: item.cantidad,
+            precio_unitario: item.precio_unitario,
+            sub_total: item.sub_total,
+            id_venta,
+            id_producto: item.id_producto
+          }, { withCredentials: true });
+        }
       }
 
       Swal.fire({
@@ -227,14 +260,13 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
             <Form.Label><strong>Cliente:</strong></Form.Label>
             <Form.Select
               name="id_cliente"
-              
               value={venta.id_cliente}
               onChange={handleVenta}
               style={{ borderRadius: "8px" }}
             >
               <option value="">Selecciona un cliente</option>
-              {clientes.map(c => (
-                <option key={c.id_cliente} value={c.id_cliente}>
+              {clientes.map((c, index) => (
+                <option key={index} value={c.id_cliente}>
                   {c.nombre_cliente}
                 </option>
               ))}
@@ -255,8 +287,8 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
               style={{ borderRadius: "8px" }}
             >
               <option value="">Selecciona un producto</option>
-              {productos.map(p => (
-                <option key={p.id_producto} value={p.id_producto}>
+              {productos.map((p, index) => (
+                <option key={index} value={p.id_producto}>
                   {p.nombre_producto}
                 </option>
               ))}
@@ -364,7 +396,7 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
           </Table>
         </div>
 
-        <div><p>Total: ${venta.total || 0}</p></div>
+        <div><p><strong>Total: ${venta.total || 0}</strong></p></div>
 
         <div style={{ textAlign: "center", marginTop: "25px" }}>
           <Button
