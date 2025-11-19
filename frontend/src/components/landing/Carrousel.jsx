@@ -47,6 +47,10 @@ function Carrusel() {
       }
       prevLabel=""
       nextLabel=""
+      style={{
+            marginLeft:"20px",
+        marginRight:"20px"
+          }}
     >
       <Carousel.Item className= 'position-relative'>
         <img 
