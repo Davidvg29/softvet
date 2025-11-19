@@ -15,8 +15,8 @@ const mostrarMascotas = (req, res) => {
 	where mascotas.is_active = true
     ;`;
     connection.query(queryGetMascotas, (error, results) => {
-        if(error) {
-            return res.status(500).json({error: 'Error al obtener mascotas.'});
+        if (error) {
+            return res.status(500).json({ error: 'Error al obtener mascotas.' });
         }
         else {
             return res.status(200).json(results);
@@ -56,16 +56,16 @@ const mostrarMascotaId = (req, res) => {
 const crearMascota = (req, res) => {
     const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente, id_historia_clinica } = req.body;
     const validation = crearMascotaValidacion(req.body);
-    
-    if(validation !== null){
-        return res.status(400).json({error: validation});
+
+    if (validation !== null) {
+        return res.status(400).json({ error: validation });
     }
 
     const queryInsertCrearMascota = `INSERT INTO mascotas (nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente, id_historia_clinica) VALUES (?, ?, ?, ?, ?, ?);`
-    connection.query(queryInsertCrearMascota, [nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente?id_cliente:null, id_historia_clinica?id_historia_clinica:null], (error, results) => {
-        if(error) {
+    connection.query(queryInsertCrearMascota, [nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente ? id_cliente : null, id_historia_clinica ? id_historia_clinica : null], (error, results) => {
+        if (error) {
             console.error("Error al crear mascota:", error);
-            return res.status(500).json({error: 'Error al crear mascota.'});
+            return res.status(500).json({ error: 'Error al crear mascota.' });
         }
         else {
             return res.status(200).json("Mascota creada exitosamente.");
@@ -154,8 +154,8 @@ const borrarMascota = (req, res) => {
 
     const queryDeleteMascota = `update mascotas set is_active = false where id_mascota = ?;`
     connection.query(queryDeleteMascota, [id_mascota], (error, results) => {
-        if(error) {
-            return res.status(500).json({error: 'Error al borrar mascota.'});
+        if (error) {
+            return res.status(500).json({ error: 'Error al borrar mascota.' });
         }
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Mascota no encontrada." });
@@ -169,8 +169,8 @@ const activarMascota = (req, res) => {
 
     const queryActivarMascota = `update mascotas set is_active = true where id_mascota = ?;`
     connection.query(queryActivarMascota, [id_mascota], (error, results) => {
-        if(error) {
-            return res.status(500).json({error: 'Error al activar mascota.'});
+        if (error) {
+            return res.status(500).json({ error: 'Error al activar mascota.' });
         }
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Mascota no encontrada." });
@@ -179,11 +179,28 @@ const activarMascota = (req, res) => {
     })
 }
 
+//mostrar mascotas por cliente
+const mostrarMascotasPorCliente = (req, res) => {
+    const { id_cliente } = req.params;
+
+    const query = "SELECT * FROM mascotas WHERE id_cliente = ? AND is_active = 1";
+
+    connection.query(query, [id_cliente], (error, results) => {
+        if (error) {
+            console.log("ERROR SQL en mostrarMascotasPorCliente:", error);
+            return res.status(500).json({ error: "Error al obtener las mascotas del cliente." });
+        }
+
+        res.json(results);
+    });
+};
+
 module.exports = {
     mostrarMascotas,
     mostrarMascotaId,
     crearMascota,
     editarMasctoa,
     borrarMascota,
-    activarMascota
+    activarMascota,
+    mostrarMascotasPorCliente
 }

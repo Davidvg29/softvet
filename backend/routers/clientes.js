@@ -5,13 +5,15 @@ const {
     mostrarClientePorId,
     crearCliente,
     editarCliente,
-    eliminarCliente
+    eliminarCliente,
+    buscarClientes
 } = require('../controllers/clientes');
 const { verifyToken } = require('../middlewares/jwt');
 
 // Rutas para clientes
 router.get('/ver', verifyToken, mostrarClientes);
 router.get('/ver/:id', verifyToken, mostrarClientePorId);
+router.get('/buscar', verifyToken, buscarClientes);
 router.post('/crear', verifyToken, crearCliente);
 router.put('/editar/:id', verifyToken, editarCliente);
 router.delete('/eliminar/:id', verifyToken, eliminarCliente);
