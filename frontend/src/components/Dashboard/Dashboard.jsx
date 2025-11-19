@@ -20,8 +20,8 @@ import {
 
 import { useEmpleadoStore } from "../../zustand/empleado";
 import { useClientesStore } from "../../zustand/cliente";
-import { clientes } from "../../endpoints/endpoints";
 import axios from "axios";
+<<<<<<< HEAD
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
@@ -33,13 +33,39 @@ const Dashboard = () => {
       try {
         const res = await axios.get(`${clientes}/ver`, { withCredentials: true });
         setCliente(res.data);
+=======
+import { Link } from 'react-router-dom';
+import { CLIENTES, PRODUCTOS } from "../../endpoints/endpoints";
+import { useProductosStore } from "../../zustand/productos";
+const Dashboard = () => {
+  const empleado = useEmpleadoStore((state) => state.empleado);
+  const { clientes, setClientes } = useClientesStore();
+  const {productos, setProductos} = useProductosStore()
+
+  useEffect(() => {
+    const getClientes = async () => {
+      try {
+        const {data} = await axios.get(`${CLIENTES}/ver`, { withCredentials: true });
+        setClientes(data);
+>>>>>>> 0987aaec8ca021000336a6572583798a9aa6abb5
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
       }
     };
+    const getProductos = async () => {
+      try {
+        const {data} = await axios.get(`${PRODUCTOS}/ver`, { withCredentials: true });
+        console.log(data);
+        
+        setProductos(data);
+      } catch (error) {
+        console.error("Error al obtener los productos:", error);
+      }
+    };
 
-    response();
-  }, [setCliente]);
+    getClientes();
+    getProductos();
+  }, [setClientes, setProductos]);
 
   // =============================
   // 🎨 ESTILOS DE LAS CARDS
@@ -185,7 +211,19 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
+<<<<<<< HEAD
               <DashboardCard to="" label="Ventas" Icon={CreditCard} index={4} />
+=======
+              <Link to="/ventas">
+                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
+                  <Card.Body>
+                    <People size={40} />
+                    {/* <h2>{cliente?.length || 2}</h2> */}
+                    <p>Ventas</p>
+                  </Card.Body>
+                </Card>
+              </Link>
+>>>>>>> 0987aaec8ca021000336a6572583798a9aa6abb5
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
