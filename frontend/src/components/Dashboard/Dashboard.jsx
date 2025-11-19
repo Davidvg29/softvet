@@ -204,6 +204,9 @@ const Dashboard = () => {
             <p className="text-white mt-2">
               {empleado?.nombre_empleado || "Usuario Invitado"}
             </p>
+            <p className="text-white mt-2">
+              {empleado?.nombre_rol || "Usuario Invitado"}
+            </p>
           </div>
         </Col>
 
