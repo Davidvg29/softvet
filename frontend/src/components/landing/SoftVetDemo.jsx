@@ -14,7 +14,9 @@ const Demo = () => {
         justifyContent: 'space-between',
         padding: '4rem 6rem',
         borderRadius: '20px',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        marginLeft:"20px",
+        marginRight:"20px"
       }}
     >
 
