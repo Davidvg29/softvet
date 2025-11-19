@@ -70,7 +70,7 @@ const EditEmpleado = ({ id_empleado, onClose, onUpdate }) => {
 
     try {
       const response = await axios.put(
-        `${EMPLEADOS}/editar/${id_empleado}`,
+        `${empleados}/editar/${id_empleado}`,
         formData,
         { withCredentials: true }
       );
