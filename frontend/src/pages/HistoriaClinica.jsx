@@ -5,12 +5,13 @@ import MainHistoriaClinica from '../components/HistoriaClinica/MainHistoriaClini
 
 const HistoriaClinica = () => {
     return (
-        <>
-            <HeaderApp />
-            <MainHistoriaClinica />
-            <Footer />
-
-        </>
+        <div className="d-flex flex-column min-vh-100">
+      <HeaderApp />
+      <main className="flex-grow-1">
+        <MainHistoriaClinica />
+      </main>
+      <Footer />
+    </div>
     )
 }
 
