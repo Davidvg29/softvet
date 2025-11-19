@@ -51,7 +51,7 @@ const MainHistoriaClinica = () => {
     try {
 
       const { data } = await axios.get(`${historiasClinicas}/ver`, { withCredentials: true });
-      console.log(data);
+      // console.log(data);
       setHistoriaClinica(data);
     } catch (error) {
       console.error("Error al cargar las Historia Clinica:", error);
@@ -242,8 +242,8 @@ const MainHistoriaClinica = () => {
               {historiaClinicaFiltrados.length > 0 ? (
                 [...historiaClinicaFiltrados]
                   .sort((a, b) => b.id_historia_clinica - a.id_historia_clinica)
-                  .map((historiaClinica) => (
-                    <tr key={historiaClinica.id_historia_clinica}
+                  .map((historiaClinica, index) => (
+                    <tr key={index}
                       style={{
                         backgroundColor: "#fff",
                         boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
