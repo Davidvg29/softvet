@@ -355,7 +355,7 @@ const MainVentas = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {fromType === 'crear' && (
                 // Descomenta si tenés el componente CrearVenta
-                <CrearVenta onClose={handleCloseModal} onUpdate={cargarVentas} />
+                <CrearVenta onClose={handleCloseModal} onUpdate={cargarVentas} cargarVentas={cargarVentas}/>
               )}
 
               {fromType === 'ver' && <VerVenta venta={ventaSelect} />}
