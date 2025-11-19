@@ -297,7 +297,7 @@ const sendData = async(e)=>{
 
           </Table>
         </div>
-            
+            <div><p>Total: ${venta.total || 0}</p></div>
             
 
         {/* BOTONES */}
