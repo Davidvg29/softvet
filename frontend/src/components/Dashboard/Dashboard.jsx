@@ -224,24 +224,24 @@ const Dashboard = () => {
             </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
-              <DashboardCard to="/historia-clinica" label="Historia Clínica" Icon={FileText} index={8} />
+              <DashboardCard to="/historiaClinica" label="Historia Clínica" Icon={FileText} index={8} />
             </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/ventas" label="Ventas" Icon={CreditCard} index={4} />
             </Col>
 
-            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
+            {/* <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/compras" label="Compras" Icon={ShoppingCart} index={5} />
-            </Col>
+            </Col> */}
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/productos" label="Productos" Icon={Package} index={7} count={productos?.length}/>
             </Col>
 
-            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
+            {/* <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/stock" label="Stock" Icon={Layers} index={6} />
-            </Col>
+            </Col> */}
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/proveedores" label="Proveedores" Icon={Truck} index={2} />
@@ -259,9 +259,9 @@ const Dashboard = () => {
               <DashboardCard to="/roles" label="Roles" Icon={ShieldCheck} index={11} />
             </Col>
 
-            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
+            {/* <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12} />
-            </Col>
+            </Col> */}
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/categorias" label="Categorias" Icon={Tags} index={13} />

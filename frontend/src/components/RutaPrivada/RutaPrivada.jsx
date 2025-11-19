@@ -3,6 +3,7 @@ import { useEmpleadoStore } from "../../zustand/empleado";
 import { empleados } from "../../endpoints/endpoints";
 import axios from "axios";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const RutaPrivada = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
@@ -10,13 +11,23 @@ const RutaPrivada = () => {
   const logout = useEmpleadoStore((state) => state.logout);
   const [loading, setLoading] = useState(true); 
   const location = useLocation();
+  let ruta = location.pathname
+  const [rol, setRol] = useState("")
+
+  const permisos = {
+    Administrador: ["/dashboard", "/ventas", "/empleados", "/productos", "/clientes", "/especies", "/roles", "/proveedores", "/sucursales", "/razas", "/historiaClinica", "/mascotas", "/categorias"],
+    Veterinario: ["/dashboard", "/clientes", "/especies", "/razas", "/historiaClinica", "/detalleHistoriaClinica", "/mascotas"],
+    Recepcionista: ["/dashboard", "/ventas", "/sucursales", "/clientes", "/mascotas", "/productos", "/categorias"],
+  };
+
+  const rutasPermitidas = permisos[rol] || [];
 
   useEffect(() => {
     const getInfoUser = async () => {
       try {
         const { data } = await axios.post(`${empleados}/info`, {}, { withCredentials: true });
         setEmpleado(data.empleado);
-        
+        setRol(empleado.nombre_rol)
       } catch (error) {
         logout();
       } finally {
@@ -31,6 +42,16 @@ const RutaPrivada = () => {
 
   // si no hay usuario en el store, redirige
   if (!empleado) return <Navigate to="/login" replace />;
+
+  if (!rutasPermitidas.includes(ruta)) {
+    Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No tienes permisos para acceder a este modulo.",
+        confirmButtonText: "Aceptar",
+      });
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // if (location.pathname.startsWith("/login") && empleado) {
   //   console.log(empleado);
