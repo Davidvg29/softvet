@@ -79,6 +79,7 @@ const VerMascota = ({ id_mascota }) => {
           <p><strong style={{ color: "#6f42c1" }}>SEXO:</strong> {mascota.sexo_mascota}</p>
           <p><strong style={{ color: "#6f42c1" }}>RAZA:</strong> {mascota.nombre_raza}</p>
           <p><strong style={{ color: "#6f42c1" }}>ESPECIE:</strong> {mascota.nombre_especie}</p>
+          <p><strong style={{ color: "#6f42c1" }}>NOMBRE CLIENTE:</strong> {mascota.nombre_cliente}</p>
           <p><strong style={{ color: "#6f42c1" }}>DNI CLIENTE:</strong> {mascota.dni_cliente}</p>
         </div>
       </Card.Body>

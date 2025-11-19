@@ -63,7 +63,7 @@ const Header = () => {
                         <Col xs="auto" className="text-end">
                             <Nav className="d-flex align-items-center text-white">
                                 <span className="d-flex align-items-center">
-                                    {empleado?.usuario || "Usuario Invitado"}
+                                    {empleado?.nombre_empleado || "Usuario Invitado"}
                                     <FaUser className="ms-2" size={20} />
                                 </span>
                             </Nav>
@@ -104,7 +104,53 @@ const Header = () => {
 
                     </Nav>
                 </Offcanvas.Body>
-                <button onClick={cerrarSesion}>Cerrar Sesión</button>
+                <div className="px-3 pb-3">
+  <button
+    onClick={cerrarSesion}
+    className="btn-logout w-100"
+    style={{
+      background: "linear-gradient(135deg, #8f52ea 0%, #a56bf4 100%)",
+      border: "none",
+      color: "white",
+      padding: "12px",
+      fontSize: "1rem",
+      fontWeight: "600",
+      borderRadius: "14px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "10px",
+      cursor: "pointer",
+      transition: "all 0.3s ease",
+      boxShadow: "0 6px 12px rgba(0,0,0,0.15)"
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = "translateY(-4px)";
+      e.currentTarget.style.boxShadow = "0 12px 20px rgba(138, 69, 255, 0.35)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = "translateY(0)";
+      e.currentTarget.style.boxShadow = "0 6px 12px rgba(0,0,0,0.15)";
+    }}
+  >
+    <span>Cerrar Sesión</span>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="white"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  </button>
+</div>
             </Offcanvas>
         </>
     );
