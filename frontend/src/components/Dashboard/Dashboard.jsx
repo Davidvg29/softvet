@@ -20,133 +20,165 @@ import {
 
 import { useEmpleadoStore } from "../../zustand/empleado";
 import { useClientesStore } from "../../zustand/cliente";
+import { useProductosStore } from "../../zustand/productos";
+import { useMascotasStore } from "../../zustand/mascota";
+import { useEmpleadosStore } from "../../zustand/empleados";
 import axios from "axios";
-<<<<<<< HEAD
 import { Link } from "react-router-dom";
 
-const Dashboard = () => {
-  const empleado = useEmpleadoStore((state) => state.empleado);
-  const { cliente, setCliente } = useClientesStore();
+import { clientes as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL } from "../../endpoints/endpoints";
 
-  useEffect(() => {
-    const response = async () => {
-      try {
-        const res = await axios.get(`${clientes}/ver`, { withCredentials: true });
-        setCliente(res.data);
-=======
-import { Link } from 'react-router-dom';
-import { CLIENTES, PRODUCTOS } from "../../endpoints/endpoints";
-import { useProductosStore } from "../../zustand/productos";
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
+  const { empleados, setEmpleados } = useEmpleadosStore();
   const { clientes, setClientes } = useClientesStore();
-  const {productos, setProductos} = useProductosStore()
+  const { productos, setProductos } = useProductosStore();
+  const { mascotas, setMascotas } = useMascotasStore();
 
   useEffect(() => {
-    const getClientes = async () => {
+
+    const getEmpleados = async () => {
       try {
-        const {data} = await axios.get(`${CLIENTES}/ver`, { withCredentials: true });
-        setClientes(data);
->>>>>>> 0987aaec8ca021000336a6572583798a9aa6abb5
+        const { data } = await axios.get(`${EMPLEADOS_URL}/ver`, { withCredentials: true });
+        setEmpleados(data);
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
       }
     };
+
+    const getClientes = async () => {
+      try {
+        const { data } = await axios.get(`${CLIENTES_URL}/ver`, { withCredentials: true });
+        setClientes(data);
+      } catch (error) {
+        console.error("Error al obtener los clientes:", error);
+      }
+    };
+
     const getProductos = async () => {
       try {
-        const {data} = await axios.get(`${PRODUCTOS}/ver`, { withCredentials: true });
-        console.log(data);
-        
+        const { data } = await axios.get(`${PRODUCTOS_URL}/ver`, { withCredentials: true });
         setProductos(data);
       } catch (error) {
         console.error("Error al obtener los productos:", error);
       }
     };
 
+    const getMascotas = async () => {
+  try {
+    const { data } = await axios.get(`${MASCOTAS_URL}/ver`, { withCredentials: true });
+    setMascotas(data);
+  } catch (error) {
+    console.error("Error al obtener las mascotas:", error);
+  }
+};
+    getEmpleados();
     getClientes();
     getProductos();
-  }, [setClientes, setProductos]);
+    getMascotas();
+  }, [setEmpleados, setClientes, setProductos, setMascotas]);
 
-  // =============================
-  // 🎨 ESTILOS DE LAS CARDS
-  // =============================
+  // ESTILO BASE DE LAS CARDS
   const baseCardStyle = {
     background: "linear-gradient(135deg, #8f52ea 0%, #a56bf4 100%)",
     color: "white",
     borderRadius: "22px",
     padding: "10px",
     cursor: "pointer",
-    transition: "transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+    userSelect: "none"
   };
 
   const iconStyle = {
-    transition: "transform 0.3s ease"
+    transition: "transform 0.35s ease"
   };
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
 
-  // =============================
-  // 🎯 COMPONENTE CARD REUSABLE
-  // =============================
-  const DashboardCard = ({ to, label, Icon, index }) => {
-    const handleMouseMove = (e) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
+  //  CARD REUSABLE 
+  const DashboardCard = ({ to, label, Icon, index, count }) => {
+  const isHovered = hoveredIndex === index;
 
-      setTilt({
-        rotateX: (y / 20) * -1,
-        rotateY: x / 20
-      });
-    };
+  return (
+    <Link to={to} style={{ textDecoration: "none" }}>
+      <Card
+        className="text-center shadow position-relative"
+        style={{
+          ...baseCardStyle,
+          transition: "transform 0.35s ease, box-shadow 0.35s ease",
+          transform: isHovered
+            ? "translateY(-10px) scale(1.06)"
+            : "translateY(0) scale(1)",
+          boxShadow: isHovered
+            ? "0 18px 28px rgba(0,0,0,0.25)"
+            : "0 4px 12px rgba(0,0,0,0.15)",
+          border: isHovered
+            ? "1px solid rgba(255,255,255,0.45)"
+            : "1px solid transparent",
+        }}
+        onMouseEnter={() => setHoveredIndex(index)}
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
 
-    return (
-      <Link to={to} style={{ textDecoration: "none" }}>
-        <Card
-          className="text-center shadow"
-          style={{
-            ...baseCardStyle,
-            transform:
-              hoveredIndex === index
-                ? `translateY(-8px) scale(1.06) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`
-                : "scale(1)",
-            boxShadow:
-              hoveredIndex === index
-                ? "0 18px 32px rgba(0,0,0,0.35)"
-                : "0 4px 12px rgba(0,0,0,0.15)",
-            border:
-              hoveredIndex === index
-                ? "1px solid rgba(255,255,255,0.35)"
-                : "1px solid transparent"
-          }}
-          onMouseEnter={() => setHoveredIndex(index)}
-          onMouseLeave={() => setHoveredIndex(null)}
-          onMouseMove={handleMouseMove}
-        >
-          <Card.Body>
-            <Icon
-              size={40}
-              style={{
-                ...iconStyle,
-                transform:
-                  hoveredIndex === index ? "scale(1.22) rotate(5deg)" : "scale(1)"
-              }}
-            />
-            <p style={{ marginTop: "8px", fontSize: "1.1rem", fontWeight: "600" }}>
-              {label}
-            </p>
-          </Card.Body>
-        </Card>
-      </Link>
-    );
-  };
+        {/* BADGE */}
+        {count !== undefined && (
+          <div
+            style={{
+              position: "absolute",
+              top: "-6px",
+              right: "-6px",
+              background: "#ff4d6d",
+              color: "white",
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "0.9rem",
+              fontWeight: "bold",
+              boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
+              border: "2px solid white",
+              transition: "0.3s ease",
+              transform: isHovered ? "scale(1.15)" : "scale(1)",
+            }}
+          >
+            {count}
+          </div>
+        )}
+
+        <Card.Body>
+          <Icon
+            size={42}
+            style={{
+              transition: "transform 0.35s ease",
+              transform: isHovered ? "scale(1.18)" : "scale(1)",
+            }}
+          />
+
+          <p
+            style={{
+              marginTop: "10px",
+              fontSize: "1.1rem",
+              fontWeight: "600",
+              transition: "0.3s ease",
+              transform: isHovered ? "scale(1.06)" : "scale(1)",
+            }}
+          >
+            {label}
+          </p>
+        </Card.Body>
+      </Card>
+    </Link>
+  );
+};
 
   return (
     <Container fluid className="p-0" style={{ minHeight: "100vh" }}>
       <Row className="g-0">
-        {/* ==== Sidebar ==== */}
+
+        {/* ==== SIDEBAR ==== */}
         <Col
           xs="auto"
           className="d-flex flex-column align-items-center p-3 text-white sidebar-col"
@@ -159,7 +191,7 @@ const Dashboard = () => {
           <div
             className="text-center p-3 shadow"
             style={{
-              backgroundColor: "#a0d8ff",
+              backgroundColor: "#5fb0eaff",
               borderRadius: "20px",
               width: "100%"
             }}
@@ -185,21 +217,45 @@ const Dashboard = () => {
             <h5 className="fw-bold text-white">MichiCan</h5>
 
             <p className="text-white mt-2">
-              {empleado?.usuario || "Usuario Invitado"}
+              {empleado?.nombre_empleado || "Usuario Invitado"}
             </p>
           </div>
         </Col>
 
-        {/* ============= CONTENIDO PRINCIPAL ============= */}
+        {/* ==== CONTENIDO PRINCIPAL ==== */}
         <Col className="p-4" style={{ backgroundColor: "#e4d6fa" }}>
           <Row className="justify-content-center mb-4">
 
             <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="/empleados" label="Empleados" Icon={UserCog} index={0} />
+              <DashboardCard to="/empleados" label="Empleados" Icon={UserCog} index={0} count={empleados?.length} />
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="/clientes" label="Clientes" Icon={Users} index={1} />
+              <DashboardCard to="/clientes" label="Clientes" Icon={Users} index={1} count={clientes?.length} />
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <DashboardCard to="/mascotas" label="Mascotas" Icon={Dog} index={15} count={mascotas?.length} />
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <DashboardCard to="/historia-clinica" label="Historia Clínica" Icon={FileText} index={8} />
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <DashboardCard to="/ventas" label="Ventas" Icon={CreditCard} index={4} />
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <DashboardCard to="/compras" label="Compras" Icon={ShoppingCart} index={5} />
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <DashboardCard to="/productos" label="Productos" Icon={Package} index={7} count={productos?.length}/>
+            </Col>
+
+            <Col xs={6} md={2} className="mb-3">
+              <DashboardCard to="/stock" label="Stock" Icon={Layers} index={6} />
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
@@ -211,43 +267,7 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-<<<<<<< HEAD
-              <DashboardCard to="" label="Ventas" Icon={CreditCard} index={4} />
-=======
-              <Link to="/ventas">
-                <Card className="text-center shadow" style={{ backgroundColor: "#8f52ea", color: "white", borderRadius: "20px" }}>
-                  <Card.Body>
-                    <People size={40} />
-                    {/* <h2>{cliente?.length || 2}</h2> */}
-                    <p>Ventas</p>
-                  </Card.Body>
-                </Card>
-              </Link>
->>>>>>> 0987aaec8ca021000336a6572583798a9aa6abb5
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Compras" Icon={ShoppingCart} index={5} />
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Stock" Icon={Layers} index={6} />
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Productos" Icon={Package} index={7} />
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Historia Clínica" Icon={FileText} index={8} />
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
               <DashboardCard to="/razas" label="Razas" Icon={PawPrint} index={9} />
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="/productos" label="Productos" Icon={Package} index={10} />
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
@@ -255,19 +275,15 @@ const Dashboard = () => {
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Turnos" Icon={CalendarClock} index={12} />
+              <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12} />
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Categorias" Icon={Tags} index={13} />
+              <DashboardCard to="/categorias" label="Categorias" Icon={Tags} index={13} />
             </Col>
 
             <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="" label="Sucursales" Icon={Building2} index={14} />
-            </Col>
-
-            <Col xs={6} md={2} className="mb-3">
-              <DashboardCard to="/mascotas" label="Mascotas" Icon={Dog} index={15} />
+              <DashboardCard to="/sucursales" label="Sucursales" Icon={Building2} index={14} />
             </Col>
 
           </Row>

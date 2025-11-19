@@ -11,15 +11,11 @@ import Roles from './pages/Roles';
 import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS, PRODUCTOS } from './routers/router';
 import Razas from './pages/Razas';
-<<<<<<< HEAD
-import Productos from './pages/Productos.jsx'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, RAZAS, CLIENTES, MASCOTAS, PRODUCTOS } from './routers/router';
-=======
->>>>>>> 0987aaec8ca021000336a6572583798a9aa6abb5
 import DashboardPage from './pages/DashboardPage.jsx';
 import Ventas from './pages/Ventas.jsx';
+import Productos from './pages/Productos.jsx'
 
 function App() {
   return (

@@ -63,7 +63,7 @@ const Header = () => {
                         <Col xs="auto" className="text-end">
                             <Nav className="d-flex align-items-center text-white">
                                 <span className="d-flex align-items-center">
-                                    {empleado?.usuario || "Usuario Invitado"}
+                                    {empleado?.nombre_empleado || "Usuario Invitado"}
                                     <FaUser className="ms-2" size={20} />
                                 </span>
                             </Nav>
