@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { historiasClinicas, detalleHistoriasClinicas } from '../../endpoints/endpoints';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
+import { useEmpleadoStore } from '../../zustand/empleado';
 import { Card, Button, Row, Col } from "react-bootstrap";
 import EditarDetalleHistoriaClinica  from './EditarDetalleHistoriaClinica';
 
 const VerHistoriaClinica = ({ id }) => {
+    const empleado = useEmpleadoStore((state) => state.empleado);
+    const rolUsuario = empleado?.nombre_rol || "";
 
     const [historiaClinica, setHistoriaClinica] = useState(null);
     const [detallesClinicos, setDetallesClinicos] = useState([]);
@@ -140,6 +143,8 @@ const VerHistoriaClinica = ({ id }) => {
                                     </Card.Title>
                                 </Col>
                                 <Col className="text-end">
+                                 {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+
                                     <Button
                                         variant="warning"
                                         size="sm"
@@ -148,6 +153,7 @@ const VerHistoriaClinica = ({ id }) => {
                                     >
                                         ✏️ Editar Detalle
                                     </Button>
+                                    )}
                                 </Col>
                             </Row>
                             <hr className='my-2' />

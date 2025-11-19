@@ -25,9 +25,8 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
     veterinario: nombreVeterinario
   });
 
-  // ================================
   // CARGAR DATOS DE HC POR ID
-  // ================================
+ 
   useEffect(() => {
     if (!id) return;
 
@@ -62,9 +61,9 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
     cargarDatos();
   }, [id]);
 
-  // ================================
+  
   // CONTROLAR PERMISOS
-  // ================================
+ 
   useEffect(() => {
     if (rolUsuario !== "Veterinario" && rolUsuario !== "") {
       Swal.fire({
@@ -83,9 +82,9 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
     });
   };
 
-  // ================================
+  
   // FUNCIÓN PRINCIPAL PARA EDITAR HC
-  // ================================
+ 
   const ejecutarEdicion = async () => {
     try {
       const response = await axios.put(
@@ -115,9 +114,9 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
     }
   };
 
-  // ================================
+ 
   // HANDLER SUBMIT CON CONFIRMACIÓN
-  // ================================
+  
   const handleConfirmAndSubmit = async (e) => {
     e.preventDefault();
 
@@ -145,9 +144,7 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
     if (result.isConfirmed) ejecutarEdicion();
   };
 
-  // ================================
-  // RENDER
-  // ================================
+
   return (
     <div
       style={{

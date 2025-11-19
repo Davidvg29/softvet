@@ -52,7 +52,6 @@ const creardetalleHistoriaClinica = (req, res) => {
 
    
     if (!id_historia_clinica || !id_empleado) {
-        // También puedes validar observaciones si es obligatorio
         return res.status(400).json({ error: 'Faltan datos obligatorios.' });
     }
     

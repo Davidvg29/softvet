@@ -119,9 +119,9 @@ const mostrarHistoriaClinicaPorId = (req, res) => {
 //crear historia clinica
 
 const crearHistoriaClinica = (req, res) => {
-    const { id_mascota, observaciones_generales, observaciones } = req.body;
+    const { id_mascota, observaciones_generales, observaciones,id_empleado } = req.body;
 
-    const id_empleado = req.user?.id_empleado || null; // viene del login
+   
 
     if (!id_mascota) {
         return res.status(400).json({ error: "Debe seleccionar una mascota." });
@@ -154,7 +154,6 @@ const crearHistoriaClinica = (req, res) => {
                         return res.status(500).json({ error: "La historia fue creada pero no se pudo asignar a la mascota." });
                     }
 
-                    // 🔥 Crear detalle inicial (diagnóstico)
                     const queryDetalle = `
                         INSERT INTO detalle_historia_clinica (observaciones, fecha_hora, id_empleado, id_historia_clinica)
                         VALUES (?, NOW(), ?, ?)
@@ -205,23 +204,37 @@ const editarHistoriaClinica = (req, res) => {
 };
 
 
-// Eliminar una historia clínica
 const eliminarHistoriaClinica = (req, res) => {
     const { id } = req.params;
 
-    connection.query(
-        'DELETE FROM historia_clinica WHERE id_historia_clinica = ?',
-        [id],
-        (error, results) => {
+ 
+    const queryUpdateMascota = `
+        UPDATE mascotas 
+        SET id_historia_clinica = NULL 
+        WHERE id_historia_clinica = ?
+    `;
+
+    connection.query(queryUpdateMascota, [id], (error) => {
+        if (error) {
+            return res.status(500).json({ error: "Error al desvincular la mascota de la historia clínica." });
+        }
+
+        const queryDeleteHC = `
+            DELETE FROM historia_clinica 
+            WHERE id_historia_clinica = ?
+        `;
+
+        connection.query(queryDeleteHC, [id], (error, results) => {
             if (error) {
                 return res.status(500).json({ error: "Error al eliminar la historia clínica." });
             }
             if (results.affectedRows === 0) {
                 return res.status(404).json({ error: "Historia clínica no encontrada." });
             }
-            res.json({ message: "Historia clínica eliminada correctamente." });
-        }
-    );
+
+            res.json({ message: "Historia clínica eliminada correctamente (la mascota no fue eliminada)." });
+        });
+    });
 };
 
 

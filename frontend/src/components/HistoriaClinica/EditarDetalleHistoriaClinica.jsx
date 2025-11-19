@@ -94,7 +94,7 @@ const EditarDetalleHistoriaClinica = ({ id, onClose, onUpdated }) => {
 
     
     const detalleData = {
-      id_empleado: idEmpleadoLogueado, // Enviamos el ID del veterinario logueado (quien edita)
+      id_empleado: idEmpleadoLogueado, 
       observaciones: observaciones,
     };
 

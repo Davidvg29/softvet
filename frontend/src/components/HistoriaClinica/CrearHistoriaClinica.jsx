@@ -8,16 +8,16 @@ import Swal from "sweetalert2";
 
 const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
 
-  
+
   const empleado = useEmpleadoStore((state) => state.empleado);
 
- 
+
   const nombreVeterinario = empleado?.nombre_empleado || "";
   const rolUsuario = empleado?.nombre_rol || "";
 
 
   useEffect(() => {
-    if (rolUsuario !== "Veterinario" && rolUsuario !== "") {
+    if (rolUsuario !== "Veterinario" && rolUsuario !== "Administrador") {
       Swal.fire({
         icon: "error",
         title: "Acceso Denegado",
@@ -29,6 +29,15 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
     }
   }, [rolUsuario, onClose]);
 
+  useEffect(() => {
+    if (empleado?.id_empleado) {
+      setHistoriaClinica((prev) => ({
+        ...prev,
+        id_empleado: empleado.id_empleado
+      }));
+    }
+  }, [empleado]);
+
   const [busquedaCliente, setBusquedaCliente] = useState("");
   const [clientesEncontrados, setClientesEncontrados] = useState([]);
 
@@ -37,9 +46,10 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
 
   const [historiaClinica, setHistoriaClinica] = useState({
     observaciones_generales: "",
+    observaciones: "",
     id_cliente: "",
     id_mascota: "",
-    veterinario: nombreVeterinario
+    id_empleado: empleado?.id_empleado
   });
 
   const handleChange = (e) => {
@@ -89,51 +99,91 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
     }
   };
 
+
+
+
   //Función para ejecutar la creación (antes era el cuerpo de handleSubmit)
   const ejecutarCreacionHistoriaClinica = async () => {
-    try {
-      const response = await axios.post(
-        `${historiasClinicas}/crear`,
-        historiaClinica,
-        { withCredentials: true }
-      );
+  try {
 
-      console.log("Historia clínica creada", response.data);
-      setClienteSeleccionado(null); 
-      setMascotasCliente([]);       
-      setBusquedaCliente("");
+    // VALIDAR SI LA MASCOTA YA TIENE HISTORIA CLÍNICA
+    const resCheck = await axios.get(`${historiasClinicas}/ver`, {
+      withCredentials: true
+    });
 
-      setHistoriaClinica({
-        observaciones_generales: "",
-        id_cliente: "",
-        id_mascota: ""
-      });
+    const historias = resCheck.data;
 
-      //  Mostrar alerta de éxito
-      await Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: "La historia clínica ha sido creada correctamente.",
-        showConfirmButton: false,
-        timer: 2500
-      });
+    const yaTieneHistoria = historias.some(
+      (h) => h.id_mascota === Number(historiaClinica.id_mascota)
+    );
 
-      if (response) {
-        onUpdated();
-        onClose();
-      }
-    } catch (error) {
-      console.error("Error al crear historia clínica:", error);
-      //  Mostrar alerta de error
-      Swal.fire({
-        icon: "error",
-        title: "Error al Guardar",
-        text: "Hubo un problema al intentar crear la historia clínica."
+    if (yaTieneHistoria) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Mascota con historia existente",
+        text: "Esta mascota ya tiene una historia clínica asociada. No puede crear otra.",
       });
     }
-  };
 
-  
+    // Crear historia clínica (ahora sí)
+    const response = await axios.post(
+      `${historiasClinicas}/crear`,
+      historiaClinica,
+      { withCredentials: true }
+    );
+
+   
+    const resMascotas = await axios.get(`${mascotas}/cliente/${historiaClinica.id_cliente}`, {
+      withCredentials: true
+    });
+
+    const mascotasClienteActualizadas = resMascotas.data.map((m) => {
+      const tieneHistoria = historias.some((h) => h.id_mascota === m.id_mascota);
+      return { ...m, tieneHistoria };
+    });
+
+    setMascotasCliente(mascotasClienteActualizadas);
+
+    
+    console.log("Historia clínica creada", response.data);
+
+    setClienteSeleccionado(null);
+    setMascotasCliente([]);
+    setBusquedaCliente("");
+
+    setHistoriaClinica({
+      observaciones_generales: "",
+      observaciones: "",
+      id_cliente: "",
+      id_mascota: "",
+      id_empleado: empleado?.id_empleado
+    });
+
+    await Swal.fire({
+      icon: "success",
+      title: "¡Éxito!",
+      text: "La historia clínica ha sido creada correctamente.",
+      showConfirmButton: false,
+      timer: 2500
+    });
+
+    if (response) {
+      onUpdated();
+      onClose();
+    }
+
+  } catch (error) {
+    console.error("Error al crear historia clínica:", error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Error al Guardar",
+      text: "Hubo un problema al intentar crear la historia clínica."
+    });
+  }
+};
+
+
   const handleConfirmAndSubmit = async (e) => {
     e.preventDefault();
 
@@ -164,7 +214,7 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
       // Si el usuario confirma, ejecuta la creación
       ejecutarCreacionHistoriaClinica();
     }
-    
+
     if (rolUsuario !== "veterinario") {
       // Puedes renderizar un loading screen o simplemente retornar null (ya se manejará en useEffect)
       return null;
@@ -241,13 +291,33 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
             <Form.Select
               name="id_mascota"
               value={historiaClinica.id_mascota}
-              onChange={handleChange}
+              onChange={(e) => {
+                const idSeleccionado = Number(e.target.value);
+
+                const mascota = mascotasCliente.find(m => m.id_mascota === idSeleccionado);
+
+                if (mascota?.tieneHistoria) {
+                  Swal.fire({
+                    icon: "warning",
+                    title: "Mascota con historia clínica",
+                    text: "Esta mascota ya tiene una historia clínica cargada.",
+                  });
+
+                  return; // No permitir selección
+                }
+
+                handleChange(e);
+              }}
               disabled={!clienteSeleccionado}
             >
               <option value="">Seleccione una mascota</option>
               {mascotasCliente.map((m) => (
-                <option key={m.id_mascota} value={m.id_mascota}>
-                  {m.nombre_mascota} ({m.sexo_mascota})
+                <option
+                  key={m.id_mascota}
+                  value={m.id_mascota}
+                  disabled={m.tieneHistoria}
+                >
+                  {m.nombre_mascota} {m.tieneHistoria ? "(ya tiene historia)" : ""}
                 </option>
               ))}
             </Form.Select>
@@ -265,6 +335,21 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
               name="observaciones_generales"
               placeholder="Detalle general"
               value={historiaClinica.observaciones_generales}
+              onChange={handleChange}
+            />
+          </Col>
+        </Form.Group>
+        {/* DIAGNÓSTICO INICIAL */}
+        <Form.Group as={Row} className="mb-3 align-items-center">
+          <Form.Label column sm="3" className="text-end fw-bold">
+            Diagnóstico Inicial:
+          </Form.Label>
+          <Col sm="9">
+            <Form.Control
+              type="text"
+              name="observaciones"  // <-- ESTE ES EL CAMPO QUE BACKEND ESPERA
+              placeholder="Detalle inicial del diagnóstico"
+              value={historiaClinica.observaciones}
               onChange={handleChange}
             />
           </Col>

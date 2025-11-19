@@ -116,11 +116,11 @@ const MainHistoriaClinica = () => {
 
   const borrar = async (id_historia_clinica) => {
 
-    if (rolUsuario !== "Administrador") {
+    if (rolUsuario !== "Administrador" && rolUsuario !== "Veterinario") {
       return Swal.fire({
         icon: "error",
         title: "Acceso denegado",
-        text: "Solo los usuarios con rol 'Administrador' pueden eliminar historias clínicas."
+        text: "Solo los usuarios con rol 'Administrador' o 'Veterinario' pueden eliminar historias clínicas."
       });
     }
 
@@ -240,148 +240,150 @@ const MainHistoriaClinica = () => {
             </thead>
             <tbody className=''>
               {historiaClinicaFiltrados.length > 0 ? (
-                historiaClinicaFiltrados.reverse().map((historiaClinica) => (
-                  <tr key={historiaClinica.id_historia_clinica}
-                    style={{
-                      backgroundColor: "#fff",
-                      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                      borderRadius: "12px",
-                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                      transform: "translateY(0)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-3px)";
-                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
-                    }}
-                  >
-                    <td
+                [...historiaClinicaFiltrados]
+                  .sort((a, b) => b.id_historia_clinica - a.id_historia_clinica)
+                  .map((historiaClinica) => (
+                    <tr key={historiaClinica.id_historia_clinica}
                       style={{
-                        padding: "14px 20px",
-                        fontWeight: "500",
-                        textAlign: "center",
-                        color: "#333",
-                        border: "none",
+                        backgroundColor: "#fff",
+                        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                        borderRadius: "12px",
+                        transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                        transform: "translateY(0)",
                       }}
-                    >{historiaClinica.nombre_cliente}</td>
-                    <td
-                      style={{
-                        padding: "14px 20px",
-                        fontWeight: "500",
-                        textAlign: "center",
-                        color: "#333",
-                        border: "none",
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-3px)";
+                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)";
                       }}
-                    >{historiaClinica.dni_cliente}</td>
-                    <td
-                      style={{
-                        padding: "14px 20px",
-                        fontWeight: "500",
-                        textAlign: "center",
-                        color: "#333",
-                        border: "none",
-                      }}
-                    >{historiaClinica.observaciones_generales}</td>
-                    <td
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        gap: "10px",
-                        padding: "12px",
-                        border: "none",
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                       }}
                     >
-                      <Button
+                      <td
                         style={{
-                          backgroundColor: "#1ab637",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #138a28",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #138a28";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #138a28";
-                        }}
-                        onClick={() => handleOpenModal("verhistoriaClinica", historiaClinica.id_historia_clinica)}>Ver</Button>
-
-                      <Button
-                        style={{
-                          backgroundColor: "#6f42c1",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #5428a5ff",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #5428a5ff";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #5428a5ff";
-                        }}
-                        onClick={() => handleOpenModal("detalleHistoriaClinica", historiaClinica.id_historia_clinica)}>Agregar Detalle</Button>
-
-
-                      <Button
-                        style={{
-                          backgroundColor: "#ffc107",
-                          border: "none",
-                          fontWeight: "bold",
+                          padding: "14px 20px",
+                          fontWeight: "500",
+                          textAlign: "center",
                           color: "#333",
-                          boxShadow: "0 3px 0 #d39e00",
-                          transition: "all 0.1s ease",
+                          border: "none",
                         }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #d39e00";
+                      >{historiaClinica.nombre_cliente}</td>
+                      <td
+                        style={{
+                          padding: "14px 20px",
+                          fontWeight: "500",
+                          textAlign: "center",
+                          color: "#333",
+                          border: "none",
                         }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #d39e00";
+                      >{historiaClinica.dni_cliente}</td>
+                      <td
+                        style={{
+                          padding: "14px 20px",
+                          fontWeight: "500",
+                          textAlign: "center",
+                          color: "#333",
+                          border: "none",
                         }}
-                        onClick={() => handleOpenModal("editarhistoriaClinica", historiaClinica.id_historia_clinica)} >Editar</Button>
-
-
-
-                      {rolUsuario === "Administrador" && (
+                      >{historiaClinica.observaciones_generales}</td>
+                      <td
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "12px",
+                          border: "none",
+                        }}
+                      >
                         <Button
                           style={{
-                            backgroundColor: "#dc3545",
+                            backgroundColor: "#1ab637",
                             border: "none",
                             fontWeight: "bold",
                             color: "#fff",
-                            boxShadow: "0 3px 0 #a71d2a",
+                            boxShadow: "0 3px 0 #138a28",
                             transition: "all 0.1s ease",
                           }}
                           onMouseEnter={(e) => {
                             e.target.style.transform = "translateY(-2px)";
-                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                            e.target.style.boxShadow = "0 5px 0 #138a28";
                           }}
                           onMouseLeave={(e) => {
                             e.target.style.transform = "translateY(0)";
-                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                            e.target.style.boxShadow = "0 3px 0 #138a28";
                           }}
-                          onClick={() => borrar(historiaClinica.id_historia_clinica)}
-                        >
-                          Eliminar
-                        </Button>
-                      )}
-                    </td>
+                          onClick={() => handleOpenModal("verhistoriaClinica", historiaClinica.id_historia_clinica)}>Ver</Button>
+                        {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+                        <Button
+                          style={{
+                            backgroundColor: "#6f42c1",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #5428a5ff",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #5428a5ff";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #5428a5ff";
+                          }}
+                          onClick={() => handleOpenModal("detalleHistoriaClinica", historiaClinica.id_historia_clinica)}>Agregar Detalle</Button>
 
-                  </tr>
-                ))
+                        )}
+                        <Button
+                          style={{
+                            backgroundColor: "#ffc107",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#333",
+                            boxShadow: "0 3px 0 #d39e00",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #d39e00";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #d39e00";
+                          }}
+                          onClick={() => handleOpenModal("editarhistoriaClinica", historiaClinica.id_historia_clinica)} >Editar</Button>
+
+
+
+                        {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+                          <Button
+                            style={{
+                              backgroundColor: "#dc3545",
+                              border: "none",
+                              fontWeight: "bold",
+                              color: "#fff",
+                              boxShadow: "0 3px 0 #a71d2a",
+                              transition: "all 0.1s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.transform = "translateY(-2px)";
+                              e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.transform = "translateY(0)";
+                              e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                            }}
+                            onClick={() => borrar(historiaClinica.id_historia_clinica)}
+                          >
+                            Eliminar
+                          </Button>
+                        )}
+                      </td>
+
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan="2" style={{ textAlign: "center", padding: "20px" }}>

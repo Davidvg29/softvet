@@ -26,10 +26,10 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
     }
 
     const detalleData = {
-        id_historia_clinica: idHistoriaClinica, // ID de la HC que recibimos por props
-        observaciones: observaciones, // El diagnóstico/tratamiento
-        id_empleado: idEmpleado, // ID del veterinario logueado
-        // Nota: Si tu backend requiere id_sucursal, agrégalo aquí también.
+        id_historia_clinica: idHistoriaClinica, 
+        observaciones: observaciones,
+        id_empleado: idEmpleado, 
+        
     };
     
     try {
@@ -48,7 +48,7 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
       });
 
       if (response) {
-        onUpdated(); // Refrescar el Main (para que se actualice la vista)
+        onUpdated(); 
         onClose();
       }
     } catch (error) {
