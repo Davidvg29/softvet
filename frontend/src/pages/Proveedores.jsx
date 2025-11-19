@@ -1,12 +1,12 @@
 import React from 'react'
 import MainProveedores from '../components/proveedores/MainProveedores'
 import Footer from '../components/landing/Footer'
-import Header from '../components/landing/Header'
+import HeaderApp from '../components/HeaderApp'
 
 const Proveedores = () => {
   return (
      <div className="d-flex flex-column min-vh-100">
-      <Header/>
+      <HeaderApp/>
         <main className="flex-grow-1">
           <MainProveedores/>
         </main>

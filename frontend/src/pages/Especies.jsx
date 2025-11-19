@@ -1,14 +1,16 @@
 import React from 'react'
 import MainEspecies from '../components/especies/MainEspecies';
 import Footer from '../components/landing/Footer';
-import Header from '../components/landing/Header';
+import HeaderApp from '../components/HeaderApp';
 
 const Especies = () => {
   return (
-    <div>
-       <Header/>
-      <MainEspecies/>
-       <Footer/>
+    <div className="d-flex flex-column min-vh-100">
+      <HeaderApp/>
+        <main className="flex-grow-1">
+          <MainEspecies/>
+        </main>
+      <Footer/>
     </div>
   )
 }

@@ -8,10 +8,15 @@ import Prueba from './components/Prueba.jsx';
 import Login from './pages/Login.jsx';
 import Proveedores from './pages/Proveedores';
 import Roles from './pages/Roles';
-import Empleados from './pages/Empleados';
-import Sucursales from './pages/Sucursales';
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, SUCURSALES } from './routers/router';
+import Clientes from './pages/Clientes';
+import Mascotas from './pages/Mascotas.jsx'
+import Empleados from './pages/Empleados'
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS, SUCURSALES, CATEGORIAS } from './routers/router';
+import Razas from './pages/Razas';
 import DashboardPage from './pages/DashboardPage.jsx';
+import Ventas from './pages/Ventas.jsx';
+import Sucursales from './pages/Sucursales.jsx';
+import Categorias from './pages/Categorias.jsx';
 
 function App() {
   return (
@@ -27,7 +32,12 @@ function App() {
         <Route path={EMPLEADOS} element={<Empleados/>} />
         <Route path={ESPECIES} element={<Especies/>} />
         <Route path={DASHBOARD} element={<DashboardPage/>}/>
+        <Route path={CLIENTES} element={<Clientes/>} />
+        <Route path={MASCOTAS} element={<Mascotas/>} />
+        <Route path={VENTAS} element={<Ventas/>}/>
+        <Route path={RAZAS} element={<Razas/>}/>
         <Route path={SUCURSALES} element={<Sucursales/>}/>
+        <Route path={CATEGORIAS} element={<Categorias/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>

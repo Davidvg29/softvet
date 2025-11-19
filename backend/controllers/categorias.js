@@ -43,8 +43,8 @@ const crearCategoria = (req, res) => {
             });
         }
 
-        const nuevaCategoria = { nombre_categoria, is_active: true };
-        connection.query('INSERT INTO categorias SET ?', nuevaCategoria, (error, results) => {
+        const nuevaCategoria = { nombre_categoria } // is_active: true //};
+        connection.query('INSERT INTO categorias (nombre_categoria) values(?)', [nombre_categoria], (error, results) => {
             if (error) {
                 return res.status(500).json({ error: 'Error al crear la categoría.', detalle: error.message });
             }

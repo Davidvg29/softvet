@@ -22,11 +22,16 @@ const mostrarRazaId = (req, res) => {
 
     const { id } = req.params;
     const queryMostrarRazaId = `
-        SELECT r.id_raza, r.nombre_raza, e.nombre_especie
+        SELECT 
+            r.id_raza, 
+            r.nombre_raza, 
+            r.id_especie,
+            e.nombre_especie
         FROM razas r
         INNER JOIN especies e ON r.id_especie = e.id_especie
         WHERE r.id_raza = ?;
     `;
+
     connection.query(queryMostrarRazaId, [id], (error, results) => {
         if (error) {
             console.error(error);
@@ -97,7 +102,7 @@ const crearRaza = (req, res) => {
 
 const editarRaza = (req, res) => {
     const { id } = req.params;
-    const { nombre_raza, id_especie } = req.body;   
+    const { nombre_raza, id_especie } = req.body;
 
     // Validaciones 
     if (nombre_raza && nombre_raza.trim() === '') {
@@ -149,6 +154,26 @@ const editarRaza = (req, res) => {
     });
 };
 
+
+// Obtener razas por id de especie
+const obtenerRazasPorEspecie = (req, res) => {
+  const { id_especie } = req.params;
+
+  console.log("ID recibido:", id_especie);
+
+
+  connection.query(
+    'SELECT * FROM razas WHERE id_especie = ?',
+    [id_especie],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error al obtener razas por especie.' });
+      }
+      res.json(results);
+    }
+  );
+};
+
 const eliminarRaza = (req, res) => {
     const { id } = req.params;
 
@@ -158,15 +183,15 @@ const eliminarRaza = (req, res) => {
     }
     const eliminarRazaQuery = 'DELETE FROM razas WHERE id_raza = ?';
 
-    connection.query(eliminarRazaQuery, [id], (error, results) => {   
+    connection.query(eliminarRazaQuery, [id], (error, results) => {
         if (error) {
             console.error(error);
 
             return res.status(500).json({ error: 'Error al eliminar la raza' });
-        }   
+        }
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: 'Raza no encontrada' });
-        }   
+        }
         return res.json({ message: 'Raza eliminada correctamente' });
     });
 };
@@ -177,5 +202,6 @@ module.exports = {
     mostrarRazaId,
     crearRaza,
     editarRaza,
+    obtenerRazasPorEspecie,
     eliminarRaza
 }

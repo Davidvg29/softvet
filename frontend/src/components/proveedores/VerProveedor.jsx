@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { proveedores } from '../../endpoints/endpoints';
 import axios from 'axios';
-import { Card} from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 const VerProveedor = ({ id }) => {
   //se recibe el id como prop
@@ -26,7 +26,14 @@ const VerProveedor = ({ id }) => {
 
   return (
     <>
-      <Card className="m-4 p-4 shadow">
+      <Card className="m-4 p-4 shadow"
+        style={{
+          backgroundColor: "#cfcfcf",
+          borderRadius: "10px",
+          padding: "25px 40px",
+          color: "#000",
+        }}
+      >
         <Card.Body>
           <Card.Title className="mb-3">{proveedor.nombre_proveedor}</Card.Title>
           <Card.Text><strong>Dirección:</strong> {proveedor.direccion_proveedor}</Card.Text>

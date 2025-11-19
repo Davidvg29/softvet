@@ -40,7 +40,7 @@ const MainEmpleado = () => {
       const response = await axios.get(`${empleados}/ver`, { withCredentials: true });
       setEmpleado(response.data);
     } catch (error) {
-      console.error('Error al cargar los roles:', error);
+      console.error('Error al cargar los empleados:', error);
     }
   };
 

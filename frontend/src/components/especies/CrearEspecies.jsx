@@ -82,7 +82,7 @@ const handleSubmit = async (e) => {
     <Form.Control
       type="text"
       name="nombre_especie"
-      value={formData.nombre_rol}
+      value={formData.nombre_especie}
       onChange={handleChange}
       placeholder="Nombre de la especie"
       style={{ borderRadius: "8px", flex: 1 }}
