@@ -3,14 +3,16 @@ import Button from 'react-bootstrap/Button';
 import { useState, useEffect } from 'react';
 import axios from "axios";
 import Swal from 'sweetalert2';
-import { ESPECIES } from '../../endpoints/endpoints';
-import validationCrearEspecies from '../../validations/validationCrearEspecies';
+import { categorias } from '../../endpoints/endpoints';
+import validationCrearCategorias from '../../validations/validationCrearCategorias';
 
-function CrearEspecies ({onClose, onUpdate}) {
+function CrearCategorias ({onClose, onUpdate}) {
   const initialState = {
-        nombre_especie: ""  
+        nombre_categoria: ""  
     };
-    const [formData, setFormdata] = useState(initialState);
+    const [formData, setFormdata] = useState({
+       nombre_categoria: "" 
+    });
 
     const handleChange = (e) => {
   const { name, value } = e.target;
@@ -22,9 +24,8 @@ function CrearEspecies ({onClose, onUpdate}) {
 
 const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("🟣 handleSubmit ejecutado");
 
-        const validation = validationCrearEspecies(formData.nombre_especie);
+        const validation = validationCrearCategorias(formData.nombre_categoria);
         if (validation.length !== 0) {
       return Swal.fire({
         icon: 'warning',
@@ -35,28 +36,29 @@ const handleSubmit = async (e) => {
     }
 
         try {
-      const response = await axios.post(`${ESPECIES}/crear`, formData, { withCredentials: true });
+      const response = await axios.post(`${categorias}/crear`, formData, { withCredentials: true });
+console.log(response);
 
       if (response.status === 200 || response.status === 201) {
       
         await Swal.fire({
           icon: 'success',
-          title: 'Especie guardada con éxito!',
+          title: 'Categoria guardada con éxito!',
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#6f42c1',
         });
 
-        setFormdata(initialState);
+        setFormdata({ nombre_categoria: "" });
         if (onUpdate) onUpdate();
         if (onClose) onClose();
       }
     } catch (error) {
-      console.error("Error al guardar Especie", error);
+      console.error("Error al guardar Categoria", error);
 
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Hubo un problema al guardar la especie.',
+        text: 'Hubo un problema al guardar la categoria.',
         confirmButtonText: 'Aceptar',
       });
     }
@@ -81,10 +83,10 @@ const handleSubmit = async (e) => {
     </Form.Label>
     <Form.Control
       type="text"
-      name="nombre_especie"
-      value={formData.nombre_especie}
+      name="nombre_categoria"
+      value={formData.nombre_categoria}
       onChange={handleChange}
-      placeholder="Nombre de la especie"
+      placeholder="Nombre de la categoria"
       style={{ borderRadius: "8px", flex: 1 }}
     />
   </div>
@@ -163,4 +165,4 @@ const handleSubmit = async (e) => {
   );
 }
 
-export default CrearEspecies
+export default CrearCategorias

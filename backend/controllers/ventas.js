@@ -31,7 +31,10 @@ const crearVenta = (req, res) => {
         if (error) {
             return res.status(500).json({ error: 'Error al crear la venta' });
         }else {
-            return res.status(201).json('Venta creada exitosamente');
+            return res.status(201).json({
+                message: 'Venta creada exitosamente',
+                id_venta: results.insertId
+            });
         }
     })  
 }
