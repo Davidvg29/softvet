@@ -262,9 +262,9 @@ const Dashboard = () => {
               <DashboardCard to="/roles" label="Roles" Icon={ShieldCheck} index={11} />
             </Col>
 
-            {/* <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12} />
-            </Col> */}
+            </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/categorias" label="Categorias" Icon={Tags} index={13} />

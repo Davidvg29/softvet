@@ -14,3 +14,7 @@ export const DETALLE_HISTORIAS_CLINICAS = "/detalleHistoriaClinica"
 export const MASCOTAS = "/mascotas"
 export const PRODUCTOS = "/productos"
 export const CATEGORIAS = "/categorias"
+export const COMPRAS = "/compras"
+export const TURNOS = "/turnos"
+
+
