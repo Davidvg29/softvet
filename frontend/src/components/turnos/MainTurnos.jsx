@@ -96,6 +96,9 @@ const MainTurnos = () => {
     }
   };
 
+console.log(turnos);
+
+
   return (
     <>
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
@@ -173,7 +176,16 @@ const MainTurnos = () => {
         }}
       >
         <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-          Nombre Empleado
+          Nombre Cliente
+        </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+          Fecha
+        </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+          Hora
+        </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+          Estado
         </th>
         <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
           Acciones
@@ -213,7 +225,39 @@ const MainTurnos = () => {
             >
               {turno.nombre_cliente}
             </td>
-
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {turno.fecha_hora.slice(0, 10)}
+            </td>
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {turno.fecha_hora.slice(11, 16)}
+            </td>
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {turno.estado}
+            </td>
             <td
               style={{
                 display: "flex",
