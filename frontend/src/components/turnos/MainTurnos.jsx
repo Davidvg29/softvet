@@ -6,6 +6,8 @@ import Swal from 'sweetalert2';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { empleados, TURNOS } from '../../endpoints/endpoints';
+import VerTurno from './VerTurno';
+import CrearTurno from './CrearTurno';
 
 const MainTurnos = () => {
   const [turnos, setTurnos] = useState([]);
@@ -22,7 +24,7 @@ const MainTurnos = () => {
 
   const handleOpenModal = (type, id = null) => {
     setFromType(type);
-    // setEmpleadoId(id);
+    setTurnoId(id);
     setShowModal(true);
   };
 
@@ -95,8 +97,6 @@ const MainTurnos = () => {
       });
     }
   };
-
-console.log(turnos);
 
 
   return (
@@ -332,7 +332,7 @@ console.log(turnos);
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #a71d2a";
                 }}
-                onClick={() => borrarEmpleados(turno.id_turno)}
+                onClick={() => borrarTurnos(turno.id_turno)}
               >
                 Eliminar
               </Button>
@@ -418,7 +418,7 @@ console.log(turnos);
         {fromType === 'crear' && (
           <CrearTurno onClose={handleCloseModal} onUpdate={cargarTurnos} />
         )}
-        {fromType === 'ver' && <VerTurno id_empleado={turnoId} />}
+        {fromType === 'ver' && <VerTurno id_turno={turnoId} />}
         {fromType === 'editar' && (
           <EditTurno
             id_turno={turnoId}

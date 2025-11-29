@@ -1,5 +1,5 @@
 import Footer from '../components/landing/Footer';
-import Header from '../components/landing/Header';
+import Header from '../components/HeaderApp';
 import MainTurnos from '../components/turnos/MainTurnos';
 
 const Turnos = () => {
