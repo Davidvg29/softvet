@@ -42,7 +42,7 @@ const IniciarSesion = () => {
     <div 
       className="d-flex justify-content-center align-items-center"
       style={{
-        minHeight: '100vh',
+        minHeight: '80vh',
         background: 'linear-gradient(135deg, #8f52ea 0%, #a56bf4 100%)',
         padding: "20px",
       }}
