@@ -11,7 +11,7 @@ import Roles from './pages/Roles';
 import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS, TURNOS } from './routers/router';
 import Razas from './pages/Razas';
 import HistoriaClinica from './pages/HistoriaClinica.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
@@ -19,6 +19,8 @@ import Ventas from './pages/Ventas.jsx';
 import Productos from './pages/Productos.jsx'
 import Sucursales from './pages/Sucursales.jsx';
 import Categorias from './pages/Categorias.jsx';
+import Turnos from './pages/Turnos.jsx';
+// import Compras from './pages/Compras.jsx';
 
 function App() {
   return (
@@ -37,11 +39,13 @@ function App() {
         <Route path={CLIENTES} element={<Clientes/>} />
         <Route path={MASCOTAS} element={<Mascotas/>} />
         <Route path={VENTAS} element={<Ventas/>}/>
+        {/* <Route path={COMPRAS} element={<Compras/>}/> */}
         <Route path={RAZAS} element={<Razas/>}/>
         <Route path={HISTORIAS_CLINICAS} element={<HistoriaClinica/>}/>
         <Route path={PRODUCTOS} element={<Productos/>}/>
         <Route path={SUCURSALES} element={<Sucursales/>}/>
         <Route path={CATEGORIAS} element={<Categorias/>}/>
+        <Route path={TURNOS} element={<Turnos/>}/>
       </Route>
       {/* fin grupo de rutas privadas */}
     </Routes>

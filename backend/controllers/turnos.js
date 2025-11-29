@@ -2,7 +2,15 @@ const { connection } = require('../config/bd/dataBase');
 
 // Obtener todos los turnos (soporta filtros por fecha, cliente, mascota, empleado y estado)
 const mostrarTurnos = (req, res) => {
-    let sql = 'SELECT * FROM turnos';
+    let sql = `select 
+turnos.*,
+clientes.*,
+mascotas.*,
+empleados.id_empleado, empleados.nombre_empleado
+from turnos
+left join clientes on turnos.id_cliente = clientes.id_cliente
+left join mascotas on turnos.id_mascota = mascotas.id_mascota
+left join empleados on turnos.id_empleado = empleados.id_empleado`;
     const conditions = [];
     const params = [];
 
@@ -43,7 +51,15 @@ const mostrarTurnos = (req, res) => {
 // Obtener un turno por id
 const mostrarTurnoId = (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM turnos WHERE id_turno = ?', [id], (error, results) => {
+    connection.query(`select 
+turnos.*,
+clientes.*,
+mascotas.*,
+empleados.id_empleado, empleados.nombre_empleado
+from turnos
+left join clientes on turnos.id_cliente = clientes.id_cliente
+left join mascotas on turnos.id_mascota = mascotas.id_mascota
+left join empleados on turnos.id_empleado = empleados.id_empleado WHERE id_turno = ?`, [id], (error, results) => {
         if (error) {
             console.error(error);
             return res.status(500).json({ error: 'Error al obtener el turno' });
