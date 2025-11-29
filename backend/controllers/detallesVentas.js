@@ -35,6 +35,20 @@ const crearDetalleVenta = (req, res) => {
         if (error) {
             return res.status(500).json({ error: 'Error al crear detalle de venta, verifique que exista venta y que exista el producto seleccionado.' });
         }else{
+            const stockProducto = `select * from stock where id_producto = ?;`
+            connection.query(stockProducto, [id_producto], (errorStock, resultsStock) => {
+                if (errorStock) {
+                    return res.status(500).json({ error: 'Error al actualizar el stock del producto.' });
+                }else{
+                    const nuevaCantidad = resultsStock[0].cantidad - cantidad;
+                    const actualizarStock = `update stock set cantidad = ? where id_producto = ?;`
+                    connection.query(actualizarStock, [nuevaCantidad, id_producto], (errorActualizarStock, resultsActualizarStock) => {
+                        if (errorActualizarStock) {
+                            return res.status(500).json({ error: 'Error al actualizar el stock del producto.' });
+                        }
+                    })
+                }
+            })
             return res.status(201).json('Detalle de venta creado correctamente.');
         }
     })
