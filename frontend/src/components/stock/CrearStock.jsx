@@ -25,8 +25,9 @@ const CrearStock = ({ onClose, onUpdate }) => {
           withCredentials: true,
         });
 
-        const productosSinStock = data.filter(p => p.cantidad === 0);
-
+        const productosSinStock = data.filter(p =>
+          p.cantidad === 0 || p.cantidad == null
+        );
         setListaProductos(productosSinStock);
       } catch (error) {
         console.error("Error al cargar los productos:", error);
@@ -95,8 +96,8 @@ const CrearStock = ({ onClose, onUpdate }) => {
         });
 
         setFormData(initialState);
-        if (onUpdate) onUpdate(); 
-        if (onClose) onClose();   
+        if (onUpdate) onUpdate();
+        if (onClose) onClose();
       } else {
         throw new Error("Respuesta inesperada del servidor.");
       }
