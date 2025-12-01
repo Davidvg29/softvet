@@ -16,5 +16,6 @@ export const PRODUCTOS = "/productos"
 export const CATEGORIAS = "/categorias"
 export const COMPRAS = "/compras"
 export const TURNOS = "/turnos"
+export const STOCK = "/stock"
 
 

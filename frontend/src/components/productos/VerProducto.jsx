@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { productos, categorias } from "../../endpoints/endpoints";
+import { productos, categorias, STOCK } from "../../endpoints/endpoints";
 import axios from "axios";
 import { Card, Spinner } from "react-bootstrap";
 
@@ -7,6 +7,7 @@ const VerProducto = ({ id_producto }) => {
     const [producto, setProducto] = useState(null);
     const [categoria, setCategorias] = useState([]);
     const [error, setError] = useState(null);
+    const [stockProducto, setStockProducto] = useState(null);
 
     useEffect(() => {
         const fetchCategorias = async () => {
@@ -44,6 +45,27 @@ const VerProducto = ({ id_producto }) => {
         getProducto();
     }, [id_producto]);
 
+    useEffect(() => {
+        if (!id_producto) return;
+
+        const fetchStockProducto = async () => {
+            try {
+                const response = await axios.get(
+                    `${STOCK}/ver/producto/${id_producto}`,
+                    { withCredentials: true }
+                );
+
+                // response.data.cantidad_total según lo que devolvimos en el back
+                setStockProducto(response.data.cantidad_total);
+            } catch (error) {
+                console.error("Error al obtener el stock del producto:", error);
+                setStockProducto(0); // si hay error, que muestre 0
+            }
+        };
+
+        fetchStockProducto();
+    }, [id_producto]);
+
     if (error)
         return (
             <p style={{ color: "#e74c3c", textAlign: "center", fontWeight: "bold" }}>
@@ -55,7 +77,7 @@ const VerProducto = ({ id_producto }) => {
         return (
             <div style={{ textAlign: "center", padding: "2rem" }}>
                 <Spinner animation="border" variant="primary" />
-                <p style={{ marginTop: "10px", color: "#555" }}>Cargando Cliente...</p>
+                <p style={{ marginTop: "10px", color: "#555" }}>Cargando Producto...</p>
             </div>
         );
 
@@ -96,6 +118,10 @@ const VerProducto = ({ id_producto }) => {
                     <p>
                         <strong style={{ color: "#6f42c1" }}>Precio:</strong>{" "}
                         {producto.precio_producto}
+                    </p>
+                    <p>
+                        <strong style={{ color: "#6f42c1" }}>Stock:</strong>{" "}
+                        {stockProducto !== null ? stockProducto : "Cargando..."}
                     </p>
                     <p>
                         <strong style={{ color: "#6f42c1" }}>Categoría:</strong>{" "}

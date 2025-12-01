@@ -242,9 +242,9 @@ const Dashboard = () => {
               <DashboardCard to="/productos" label="Productos" Icon={Package} index={7} count={productos?.length}/>
             </Col>
 
-            {/* <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/stock" label="Stock" Icon={Layers} index={6} />
-            </Col> */}
+            </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/proveedores" label="Proveedores" Icon={Truck} index={2} />

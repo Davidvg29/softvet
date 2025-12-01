@@ -183,6 +183,9 @@ const MainProducto = () => {
         <th style={{ padding: "14px", borderTopLeftRadius: "10px "}}>
             Código Producto
         </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px "}}>
+            Stock Disponible
+        </th>
         <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
           Acciones
         </th>
@@ -231,6 +234,18 @@ const MainProducto = () => {
               }}
             >
               {producto.codigo_producto}
+            </td>
+
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {producto.cantidad}
             </td>
 
             <td
@@ -308,7 +323,7 @@ const MainProducto = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #a71d2a";
                 }}
-                onClick={() => borrarClientes(producto.id_producto)}
+                onClick={() => borrarProductos(producto.id_producto)}
               >
                 Dar Baja
               </Button>
