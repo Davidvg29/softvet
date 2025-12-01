@@ -6,7 +6,7 @@ import validationCrearTurnos from "../../validations/validationCrearTurnos";
 import { TURNOS, clientes, mascotas } from "../../endpoints/endpoints";
 import Swal from "sweetalert2";
 
-const CrearTurno = ({ onClose, onUpdate }) => {
+const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
     const empleado = useEmpleadoStore((state) => state.empleado);
     const nombreVeterinario = empleado?.nombre_empleado || "";
     const rolUsuario = empleado?.nombre_rol || "";
@@ -32,7 +32,7 @@ const CrearTurno = ({ onClose, onUpdate }) => {
             Swal.fire({
                 icon: "error",
                 title: "Acceso Denegado",
-                text: "Solo los usuarios con rol 'veterinario' pueden crear turnos.",
+                text: "Solo los usuarios con rol 'veterinario' pueden editar turnos.",
                 showConfirmButton: true,
             }).then(() => {
                 onClose();
@@ -40,12 +40,47 @@ const CrearTurno = ({ onClose, onUpdate }) => {
         }
     }, [rolUsuario, onClose]);
 
-    // Set empleado en el turno
+    // Cargar datos del turno a editar
     useEffect(() => {
-        if (empleado?.id_empleado) {
-            setTurno(prev => ({ ...prev, id_empleado: empleado.id_empleado }));
-        }
-    }, [empleado]);
+        const cargarTurno = async () => {
+            try {
+                const res = await axios.get(`${TURNOS}/ver/${id_turno}`, { withCredentials: true });
+                const data = res.data;
+
+                setTurno({
+                    motivo_turno: data.motivo_turno,
+                    id_cliente: data.id_cliente,
+                    id_mascota: data.id_mascota,
+                    id_empleado: empleado?.id_empleado
+                });
+
+                setFecha(data.fecha_hora.substring(0, 10)); // YYYY-MM-DD
+                setHorario(data.fecha_hora.substring(11, 16)); // HH:mm
+
+                // Cliente seleccionado
+                const cliente = { id_cliente: data.id_cliente, nombre_cliente: data.nombre_cliente };
+                setClienteSeleccionado(cliente);
+                setBusquedaCliente(cliente.nombre_cliente);
+
+                // Cargar mascotas del cliente
+                const resMascotas = await axios.get(`${mascotas}/cliente/${data.id_cliente}`, { withCredentials: true });
+                setMascotasCliente(resMascotas.data);
+
+                // Cargar horarios disponibles para esa fecha
+                buscarHorarios(data.fecha_hora.substring(0, 10), data.fecha_hora.substring(11, 16));
+
+            } catch (error) {
+                console.error("Error cargando turno:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo cargar la información del turno."
+                }).then(() => onClose());
+            }
+        };
+
+        cargarTurno();
+    }, [id_turno, empleado]);
 
     // Buscar clientes
     const buscarCliente = async (texto) => {
@@ -78,10 +113,8 @@ const CrearTurno = ({ onClose, onUpdate }) => {
     };
 
     // Buscar horarios disponibles según fecha
-    const buscarHorarios = async (fechaSeleccionada) => {
+    const buscarHorarios = async (fechaSeleccionada, horarioActual = null) => {
         setFecha(fechaSeleccionada);
-        setHorario(""); // resetear horario seleccionado
-
         if (!fechaSeleccionada) {
             setHorariosDisponibles([]);
             return;
@@ -92,7 +125,12 @@ const CrearTurno = ({ onClose, onUpdate }) => {
                 params: { fecha: fechaSeleccionada },
                 withCredentials: true
             });
-            setHorariosDisponibles(res.data);
+            let disponibles = res.data;
+            // Si el turno actual tiene un horario, agregarlo para permitir mantenerlo
+            if (horarioActual && !disponibles.includes(horarioActual)) {
+                disponibles.push(horarioActual);
+            }
+            setHorariosDisponibles(disponibles);
         } catch (error) {
             console.error("Error cargando horarios:", error);
         }
@@ -102,38 +140,28 @@ const CrearTurno = ({ onClose, onUpdate }) => {
         setTurno({ ...turno, [e.target.name]: e.target.value });
     };
 
-    const ejecutarCreacionTurno = async (fecha_hora) => {
+    const ejecutarEdicionTurno = async (fecha_hora) => {
         try {
-            const nuevoTurno = { ...turno, fecha_hora };
-
-            await axios.post(`${TURNOS}/crear`, nuevoTurno, { withCredentials: true });
+            const turnoEditado = { ...turno, fecha_hora };
+            await axios.put(`${TURNOS}/editar/${id_turno}`, turnoEditado, { withCredentials: true });
 
             Swal.fire({
                 icon: "success",
-                title: "Turno creado",
-                text: "El turno ha sido creado correctamente.",
+                title: "Turno actualizado",
+                text: "El turno ha sido actualizado correctamente.",
                 showConfirmButton: false,
                 timer: 2000
             });
-
-            // Resetear formulario
-            setTurno({ motivo_turno: "", id_cliente: "", id_mascota: "", id_empleado: empleado?.id_empleado });
-            setClienteSeleccionado(null);
-            setMascotasCliente([]);
-            setBusquedaCliente("");
-            setFecha("");
-            setHorario("");
-            setHorariosDisponibles([]);
 
             onUpdate();
             onClose();
 
         } catch (error) {
-            console.error("Error al crear turno:", error);
+            console.error("Error al actualizar turno:", error);
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: error.response?.data?.error || "Hubo un problema al crear el turno."
+                text: error.response?.data?.error || "Hubo un problema al actualizar el turno."
             });
         }
     };
@@ -143,13 +171,7 @@ const CrearTurno = ({ onClose, onUpdate }) => {
 
         const fecha_hora = fecha && horario ? `${fecha} ${horario}` : "";
 
-        const dataValidar = {
-            ...turno,
-            fecha,
-            horario,
-            fecha_hora
-        };
-
+        const dataValidar = { ...turno, fecha, horario, fecha_hora };
         const validation = validationCrearTurnos(dataValidar);
 
         if (validation.length !== 0) {
@@ -162,22 +184,22 @@ const CrearTurno = ({ onClose, onUpdate }) => {
         }
 
         const result = await Swal.fire({
-            title: "¿Desea crear el turno?",
-            text: `Se creará el turno para ${clienteSeleccionado.nombre_cliente}`,
+            title: "¿Desea actualizar el turno?",
+            text: `Se actualizará el turno para ${clienteSeleccionado.nombre_cliente}`,
             icon: "question",
             showCancelButton: true,
-            confirmButtonText: "Sí, crear",
+            confirmButtonText: "Sí, actualizar",
             cancelButtonText: "No, cancelar"
         });
 
         if (result.isConfirmed) {
-            ejecutarCreacionTurno(fecha_hora);
+            ejecutarEdicionTurno(fecha_hora);
         }
     };
 
     return (
         <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
-            <h3 className="text-center mb-4">Crear Turno</h3>
+            <h3 className="text-center mb-4">Editar Turno</h3>
 
             <Form className="px-5" onSubmit={handleConfirmAndSubmit}>
                 {/* Veterinario */}
@@ -283,4 +305,4 @@ const CrearTurno = ({ onClose, onUpdate }) => {
     );
 };
 
-export default CrearTurno;
+export default EditarTurno;
