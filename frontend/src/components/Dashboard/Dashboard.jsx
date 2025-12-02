@@ -8,10 +8,11 @@ import { useClientesStore } from "../../zustand/cliente";
 import { useProductosStore } from "../../zustand/productos";
 import { useMascotasStore } from "../../zustand/mascota";
 import { useEmpleadosStore } from "../../zustand/empleados";
+import { useHCStore } from "../../zustand/historiasClinicas";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { clientes as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL } from "../../endpoints/endpoints";
+import { clientes as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL } from "../../endpoints/endpoints";
 
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
@@ -19,6 +20,7 @@ const Dashboard = () => {
   const { clientes, setClientes } = useClientesStore();
   const { productos, setProductos } = useProductosStore();
   const { mascotas, setMascotas } = useMascotasStore();
+  const { hc: historiasClinicas, setHistoriasClinicas: setHistoriasClinicas } = useHCStore();
 
   useEffect(() => {
 
@@ -57,11 +59,20 @@ const Dashboard = () => {
     console.error("Error al obtener las mascotas:", error);
   }
 };
+const getHC = async () => {
+  try {
+    const { data } = await axios.get(`${HISTORIASCLINICAS_URL}/ver`, { withCredentials: true });
+    setHistoriasClinicas(data);
+  } catch (error) {
+    console.error("Error al obtener las Historias Clinicas:", error);
+  }
+};
     getEmpleados();
     getClientes();
     getProductos();
     getMascotas();
-  }, [setEmpleados, setClientes, setProductos, setMascotas]);
+    getHC();
+  }, [setEmpleados, setClientes, setProductos, setMascotas, setHistoriasClinicas]);
 
   // ESTILO BASE DE LAS CARDS
   const baseCardStyle = {
@@ -227,7 +238,7 @@ const Dashboard = () => {
             </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
-              <DashboardCard to="/historiaClinica" label="Historia Clínica" Icon={FileText} index={8} />
+              <DashboardCard to="/historiaClinica" label="Historia Clínica" Icon={FileText} index={8} count={historiasClinicas?.length}/>
             </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
