@@ -24,11 +24,16 @@ const EditStock = ({ id_stock, onClose, onUpdate }) => {
           withCredentials: true,
         });
 
+        const nombreProducto = await axios.get(`${productos}/ver/${data.id_producto}`, {
+        withCredentials: true,
+      });
+
         setFormData({
           id_producto: data.id_producto,
           cantidad: data.cantidad,
           observaciones_stock: data.observaciones_stock || "",
           id_sucursal: data.id_sucursal,
+          nombre_producto: nombreProducto.data.nombre_producto
         });
       } catch (error) {
         console.error("Error al cargar el stock:", error);
@@ -133,7 +138,7 @@ const EditStock = ({ id_stock, onClose, onUpdate }) => {
             </Form.Label>
             <Form.Control
               type="text"
-              value={formData.id_producto}
+              value={formData.nombre_producto || "Cargando..."}
               disabled
               style={{ borderRadius: "8px", background: "#e9ecef" }}
             />

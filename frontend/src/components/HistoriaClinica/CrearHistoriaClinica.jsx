@@ -230,7 +230,6 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
         color: "#000"
       }}
     >
-      <h3 className="text-center mb-4">Crear Historia Clínica</h3>
 
       {/* Cambiar onSubmit a la nueva función con SweetAlert */}
       <Form className="px-5" onSubmit={handleConfirmAndSubmit}>
@@ -331,6 +330,7 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
           </Form.Label>
           <Col sm="9">
             <Form.Control
+              as="textarea"
               type="text"
               name="observaciones_generales"
               placeholder="Detalle general"
@@ -346,6 +346,7 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
           </Form.Label>
           <Col sm="9">
             <Form.Control
+              as="textarea"
               type="text"
               name="observaciones"  // <-- ESTE ES EL CAMPO QUE BACKEND ESPERA
               placeholder="Detalle inicial del diagnóstico"
