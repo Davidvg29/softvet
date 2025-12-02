@@ -55,7 +55,8 @@ const MainVentas = () => {
   }, []);
 
   const ventasFiltrados = ventas.filter((venta) =>
-    (venta.nombre_cliente || '').toLowerCase().includes(busqueda.toLowerCase())
+    venta.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
+    venta.dni_cliente.toString().includes(busqueda)
   );
 
   const borrarVentas = async (id_venta) => {
@@ -108,7 +109,7 @@ const MainVentas = () => {
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
             type="text"
-            placeholder="Buscar por nombre de cliente"
+            placeholder="Buscar por nombre o DNI del cliente"
             className="w-50 mx-3"
             style={{ width: '700px' }}
             value={busqueda}
@@ -142,7 +143,7 @@ const MainVentas = () => {
               e.target.style.boxShadow = "0 6px 0 #6f42c1";
             }}
           >
-            Crear nueva venta
+            Crear Nueva Venta
           </Button>
         </div>
 

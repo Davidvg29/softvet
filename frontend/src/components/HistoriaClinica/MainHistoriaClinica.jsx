@@ -153,7 +153,7 @@ const MainHistoriaClinica = () => {
         <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
           <Form.Control
             type="text"
-            placeholder="Buscar por nombre o DNI"
+            placeholder="Buscar por nombre del Cliente o DNI"
             className=" w-50 mx-3"
             style={{ width: '700px' }}
             value={busqueda}
@@ -225,13 +225,13 @@ const MainHistoriaClinica = () => {
                 }}
               >
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-                  Nombre
+                  Nombre Cliente
                 </th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
                   DNI Cliente
                 </th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
-                  Observaciones
+                  Mascota
                 </th>
                 <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
                   Acciones
@@ -286,7 +286,7 @@ const MainHistoriaClinica = () => {
                           color: "#333",
                           border: "none",
                         }}
-                      >{historiaClinica.observaciones_generales}</td>
+                      >{historiaClinica.nombre_mascota}</td>
                       <td
                         style={{
                           display: "flex",
