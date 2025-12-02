@@ -69,7 +69,7 @@ const MainStock = () => {
 
     try {
 
-      const response = await axios.delete(`${STOCK}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${STOCK}/borrar/${id}`, { withCredentials: true });
 
       if (response.status === 200) {
 

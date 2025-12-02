@@ -3,14 +3,20 @@ const { connection } = require('../config/bd/dataBase');
 // Obtener todos los turnos (soporta filtros por fecha, cliente, mascota, empleado y estado)
 const mostrarTurnos = (req, res) => {
     let sql = `select 
-turnos.*,
-clientes.*,
-mascotas.*,
-empleados.id_empleado, empleados.nombre_empleado
-from turnos
-left join clientes on turnos.id_cliente = clientes.id_cliente
-left join mascotas on turnos.id_mascota = mascotas.id_mascota
-left join empleados on turnos.id_empleado = empleados.id_empleado`;
+        turnos.id_turno, 
+        DATE_FORMAT(turnos.fecha_hora, '%Y-%m-%d %H:%i') AS fecha_hora, 
+        turnos.motivo_turno, 
+        turnos.estado, 
+        turnos.id_cliente, 
+        turnos.id_mascota, 
+        turnos.id_empleado,
+        clientes.*,
+        mascotas.*,
+        empleados.id_empleado, empleados.nombre_empleado
+        from turnos
+        left join clientes on turnos.id_cliente = clientes.id_cliente
+        left join mascotas on turnos.id_mascota = mascotas.id_mascota
+        left join empleados on turnos.id_empleado = empleados.id_empleado`;
     const conditions = [];
     const params = [];
 
@@ -52,14 +58,20 @@ left join empleados on turnos.id_empleado = empleados.id_empleado`;
 const mostrarTurnoId = (req, res) => {
     const { id } = req.params;
     connection.query(`select 
-turnos.*,
-clientes.*,
-mascotas.*,
-empleados.id_empleado, empleados.nombre_empleado
-from turnos
-left join clientes on turnos.id_cliente = clientes.id_cliente
-left join mascotas on turnos.id_mascota = mascotas.id_mascota
-left join empleados on turnos.id_empleado = empleados.id_empleado WHERE id_turno = ?`, [id], (error, results) => {
+        turnos.id_turno,
+        DATE_FORMAT(turnos.fecha_hora, '%Y-%m-%d %H:%i') AS fecha_hora, -- 👈 CAMBIO CLAVE AQUÍ
+        turnos.motivo_turno,
+        turnos.estado,
+        turnos.id_cliente,
+        turnos.id_mascota,
+        turnos.id_empleado,
+        clientes.*,
+        mascotas.*,
+        empleados.id_empleado, empleados.nombre_empleado
+        from turnos
+        left join clientes on turnos.id_cliente = clientes.id_cliente
+        left join mascotas on turnos.id_mascota = mascotas.id_mascota
+        left join empleados on turnos.id_empleado = empleados.id_empleado WHERE id_turno = ?`, [id], (error, results) => {
         if (error) {
             console.error(error);
             return res.status(500).json({ error: 'Error al obtener el turno' });
@@ -75,35 +87,31 @@ left join empleados on turnos.id_empleado = empleados.id_empleado WHERE id_turno
 const crearTurno = (req, res) => {
     const { fecha_hora, motivo_turno, estado, id_cliente, id_mascota, id_empleado } = req.body;
 
+    // Validaciones básicas
     if (!fecha_hora || !id_cliente || !id_mascota || !id_empleado) {
         return res.status(400).json({ error: 'fecha_hora, id_cliente, id_mascota e id_empleado son obligatorios' });
     }
 
-    if (isNaN(Date.parse(fecha_hora))) {
-        return res.status(400).json({ error: 'Formato de fecha inválido' });
+    const regexFechaHora = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/; // formato "YYYY-MM-DD HH:mm"
+    if (!regexFechaHora.test(fecha_hora)) {
+        return res.status(400).json({ error: 'Formato de fecha y hora inválido. Debe ser YYYY-MM-DD HH:mm' });
     }
 
-
-    //convierto la fecha a formato compatible con MySQL
-    const fechaFormateada = new Date(fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
-
+    // Validar estado
     const estadosPermitidos = ['Pendiente', 'Confirmado', 'Cancelado', 'Atendido'];
     const estadoFinal = estado ? estado.trim() : 'Pendiente';
-
     if (!estadosPermitidos.includes(estadoFinal)) {
-        return res.status(400).json({ 
-            error: `Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`
-        });
+        return res.status(400).json({ error: `Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}` });
     }
 
-    
     const motivo = motivo_turno ? motivo_turno.trim() : null;
 
+    // Validar duplicados
     const checkSql = `
         SELECT * FROM turnos
-        WHERE fecha_hora = ?  AND id_cliente = ? AND id_mascota = ? AND id_empleado =?
+        WHERE fecha_hora = ? AND id_cliente = ? AND id_mascota = ? AND id_empleado = ?
     `;
-    connection.query(checkSql, [fechaFormateada, id_cliente, id_mascota, id_empleado], (checkError, results) => {
+    connection.query(checkSql, [fecha_hora, id_cliente, id_mascota, id_empleado], (checkError, results) => {
         if (checkError) {
             console.error(checkError);
             return res.status(500).json({ error: 'Error al verificar turno existente' });
@@ -113,14 +121,12 @@ const crearTurno = (req, res) => {
             return res.status(409).json({ error: 'Ya existe un turno con la misma fecha, cliente, mascota y empleado' });
         }
 
-        // Si no existe, insertar
+        // Insertar turno
         const insertSql = `
             INSERT INTO turnos (fecha_hora, motivo_turno, estado, id_cliente, id_mascota, id_empleado)
             VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const params = [fechaFormateada, motivo, estadoFinal, id_cliente, id_mascota, id_empleado];
-
-        connection.query(insertSql, params, (error, results) => {
+        connection.query(insertSql, [fecha_hora, motivo, estadoFinal, id_cliente, id_mascota, id_empleado], (error, results) => {
             if (error) {
                 console.error(error);
                 if (error.code === 'ER_NO_REFERENCED_ROW_2' || error.code === 'ER_NO_REFERENCED_ROW') {
@@ -128,11 +134,13 @@ const crearTurno = (req, res) => {
                 }
                 return res.status(500).json({ error: 'Error al crear el turno' });
             }
+
             return res.status(201).json({ message: 'Turno creado', id_turno: results.insertId });
         });
     });
-
 };
+
+
 
 // editar un turno
 const editarTurno = (req, res) => {
@@ -151,14 +159,32 @@ const editarTurno = (req, res) => {
         const existing = rows[0];
         // Validar y formatear fecha
         let newFecha = existing.fecha_hora;
+
+        // INICIO DE CORRECCIÓN DE ZONA HORARIA EXISTENTE
+        // Esta parte es compleja, pero si ya la tienes para manejar datos antiguos sin fecha_hora nueva, la mantenemos.
+        if (newFecha instanceof Date && !fecha_hora) {
+            // El driver la devuelve 3 horas DESFASADA (asumiendo que está en UTC), compensamos para obtener el valor guardado.
+            const timeMs = newFecha.getTime();
+            const offsetMinutes = newFecha.getTimezoneOffset();
+            const correctedMs = timeMs - (offsetMinutes * 60000); 
+            newFecha = new Date(correctedMs).toISOString().slice(0, 19).replace('T', ' ');
+        }
+        // FIN DE CORRECCIÓN DE ZONA HORARIA
+
+        // CORRECCIÓN CLAVE: Usamos la hora local enviada por el cliente.
         if (fecha_hora) {
             if (isNaN(Date.parse(fecha_hora))) {
                 return res.status(400).json({ error: 'Formato de fecha inválido' });
             }
-            newFecha = new Date(fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
+            
+            // ANTES (Error: Convierte a UTC, añade 3 horas):
+            // newFecha = new Date(fecha_hora).toISOString().slice(0, 19).replace('T', ' ');
+            
+            //  AHORA (Solución: Usa la cadena de hora local tal cual la envió React)
+            newFecha = fecha_hora;
         }
 
-         // Validar estado permitido
+        // Validar estado permitido
         const estadosPermitidos = ['Pendiente', 'Confirmado', 'Cancelado', 'Atendido'];
         const newEstado = estado ? estado.trim() : existing.estado;
 
@@ -179,7 +205,7 @@ const editarTurno = (req, res) => {
             SELECT * FROM turnos
             WHERE fecha_hora = ? AND id_cliente = ? AND id_mascota = ? AND id_empleado = ? AND id_turno != ? 
         `;
-        connection.query(checkSql, [newFecha, newCliente, newMascota,newEmpleado, id], (dupErr, dupRows) => {
+        connection.query(checkSql, [newFecha, newCliente, newMascota, newEmpleado, id], (dupErr, dupRows) => {
             if (dupErr) {
                 console.error(dupErr);
                 return res.status(500).json({ error: 'Error al validar duplicados' });
@@ -225,10 +251,50 @@ const eliminarTurno = (req, res) => {
     });
 };
 
+// Obtener horarios disponibles por fecha
+// Obtener horarios disponibles por fecha
+const horariosDisponibles = (req, res) => {
+    const { fecha } = req.query;
+
+    if (!fecha) {
+        return res.status(400).json({ error: "Debe proporcionar una fecha" });
+    }
+
+    // Horarios base de atención
+    const horariosBase = [
+        "09:00", "10:00", "11:00", "12:00",
+        "14:00", "15:00", "16:00", "17:00"
+    ];
+
+    // Obtener turnos ocupados para esa fecha
+    const sql = `
+        SELECT TIME(fecha_hora) AS hora
+        FROM turnos
+        WHERE DATE(fecha_hora) = ?
+    `;
+
+    connection.query(sql, [fecha], (error, results) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Error al obtener horarios ocupados" });
+        }
+
+        // Extraer horas ocupadas en formato HH:mm
+        const ocupados = results.map(r => r.hora.substring(0, 5));
+
+        // Filtrar horarios disponibles
+        const disponibles = horariosBase.filter(h => !ocupados.includes(h));
+
+        return res.json(disponibles);
+    });
+};
+
+
 module.exports = {
     mostrarTurnos,
     mostrarTurnoId,
     crearTurno,
     editarTurno,
-    eliminarTurno
+    eliminarTurno,
+    horariosDisponibles
 };

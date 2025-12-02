@@ -2,23 +2,46 @@ const { connection } = require("../config/bd/dataBase");
 const { validationsCrearStock } = require("../validations/stock");
 
 const verStock = (req, res) => {
-    const queryGetStock = `select 
-        productos.id_producto, productos.nombre_producto, productos.codigo_producto, productos.precio_producto, productos.is_active as producto_is_active,
-        stock.id_stock, stock.cantidad, stock.fecha_ingreso, stock.observaciones_stock, 
-        categorias.nombre_categoria,
-        sucursales.id_sucursal, sucursales.nombre_sucursal, sucursales.direccion_sucursal, sucursales.celular_sucursal, sucursales.is_active as sucursal_is_active
-        from productos
-        left join stock on productos.id_producto = stock.id_producto
-        left join categorias on productos.id_categoria = categorias.id_categoria
-        left join sucursales on stock.id_sucursal = sucursales.id_sucursal;`
+    const queryGetStock = `
+        SELECT 
+            productos.id_producto, 
+            productos.nombre_producto, 
+            productos.codigo_producto, 
+            productos.precio_producto, 
+            productos.is_active AS producto_is_active,
+
+            stock.id_stock, 
+            stock.cantidad, 
+            stock.fecha_ingreso, 
+            stock.observaciones_stock, 
+
+            categorias.nombre_categoria,
+
+            sucursales.id_sucursal, 
+            sucursales.nombre_sucursal, 
+            sucursales.direccion_sucursal, 
+            sucursales.celular_sucursal, 
+            sucursales.is_active AS sucursal_is_active
+
+        FROM productos
+        LEFT JOIN stock ON productos.id_producto = stock.id_producto
+        LEFT JOIN categorias ON productos.id_categoria = categorias.id_categoria
+        LEFT JOIN sucursales ON stock.id_sucursal = sucursales.id_sucursal
+
+        WHERE productos.is_active = 1
+          AND (sucursales.is_active = 1 OR sucursales.is_active IS NULL);
+    `;
+
     connection.query(queryGetStock, (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener el stock' });
-        }else {
-            return  res.status(200).json(results);
+        } else {
+            return res.status(200).json(results);
         }
-    })
-}
+    });
+};
+
+
 
 const crearStock = (req, res) => {
   const { cantidad, fecha_ingreso, observaciones_stock, id_producto, id_sucursal } = req.body;
@@ -174,6 +197,35 @@ const verStockPorProducto = (req, res) => {
   });
 };
 
+const verStockPorID = (req, res) => {
+    const id_stock = req.params.id_stock;
+
+    const query = `
+        SELECT 
+            s.id_stock,
+            s.cantidad,
+            s.observaciones_stock,
+            s.id_producto,
+            s.id_sucursal,
+            p.nombre_producto,
+            p.codigo_producto
+        FROM stock s
+        LEFT JOIN productos p ON s.id_producto = p.id_producto
+        WHERE s.id_stock = ?;
+    `;
+
+    connection.query(query, [id_stock], (error, results) => {
+        if (error) {
+            return res.status(500).json({ error: "Error al obtener el stock" });
+        }
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Stock no encontrado" });
+        }
+
+        res.status(200).json(results[0]);
+    });
+};
+
 
 
 module.exports = {
@@ -181,5 +233,6 @@ module.exports = {
     crearStock,
     editarStock,
     eliminarStock,
-    verStockPorProducto
+    verStockPorProducto,
+    verStockPorID
 }

@@ -8,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import { empleados, TURNOS } from '../../endpoints/endpoints';
 import VerTurno from './VerTurno';
 import CrearTurno from './CrearTurno';
+import EditarTurno from './EditarTurno';
 
 const MainTurnos = () => {
   const [turnos, setTurnos] = useState([]);
@@ -420,7 +421,7 @@ const MainTurnos = () => {
         )}
         {fromType === 'ver' && <VerTurno id_turno={turnoId} />}
         {fromType === 'editar' && (
-          <EditTurno
+          <EditarTurno
             id_turno={turnoId}
             onClose={handleCloseModal}
             onUpdate={cargarTurnos}
