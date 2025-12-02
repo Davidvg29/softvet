@@ -318,6 +318,8 @@ const MainHistoriaClinica = () => {
                         {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
                         <Button
                           style={{
+                            whiteSpace: "nowrap",
+                            padding: "6px 12px",
                             backgroundColor: "#6f42c1",
                             border: "none",
                             fontWeight: "bold",
