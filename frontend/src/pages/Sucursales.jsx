@@ -1,7 +1,8 @@
 import React from 'react'
 import MainSucursales from '../components/sucursales/MainSucursales'
+import Header from '../components/HeaderApp';
 import Footer from '../components/landing/Footer';
-import Header from '../components/landing/Header';
+
 
 const Sucursales = () => {
   return (
