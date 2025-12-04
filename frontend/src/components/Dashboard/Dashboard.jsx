@@ -287,7 +287,7 @@ const getHC = async () => {
             </Col>
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
-              <DashboardCard to="/informe" label="Informes" Icon={LineChart} index={15} />
+              <DashboardCard to="/informe" label="Informes" Icon={LineChart} index={16} />
             </Col>
 
           </Row>

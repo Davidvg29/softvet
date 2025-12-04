@@ -13,14 +13,14 @@ const InformeTurnos = () => {
   const [fechaFin, setFechaFin] = useState("");
   const [idCliente, setIdCliente] = useState("");
   const [idEmpleado, setIdEmpleado] = useState("");
-  
+
   const [estadoTurno, setEstadoTurno] = useState("");
 
-  
+
   const [listaClientes, setListaClientes] = useState([]);
   const [listaEmpleados, setListaEmpleados] = useState([]);
 
-  
+
 
   const [turnos, setTurnos] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,7 +35,7 @@ const InformeTurnos = () => {
     { value: "Cancelado", label: "Cancelado" }
   ];
 
-  
+
   const cargarFiltros = async () => {
     try {
       // Cargar Clientes
@@ -50,12 +50,12 @@ const InformeTurnos = () => {
     }
   };
 
-  
+
   useEffect(() => {
     cargarFiltros();
   }, []);
 
-  
+
   const generarInforme = async () => {
     if (!fechaInicio || !fechaFin) {
       setError("Debes seleccionar ambas fechas.");
@@ -66,7 +66,7 @@ const InformeTurnos = () => {
     setLoading(true);
 
     try {
-      
+
       const res = await axios.post(
         `${informes}/turnos-fecha`,
         {
@@ -74,11 +74,11 @@ const InformeTurnos = () => {
           fechaFin,
           idCliente: idCliente || null,
           idEmpleado: idEmpleado || null,
-          estadoTurno: estadoTurno || null 
+          estadoTurno: estadoTurno || null
         },
         { withCredentials: true }
       );
-      
+
       setTurnos(res.data);
     } catch (err) {
       setError("No se pudo obtener el informe de turnos.");
@@ -88,7 +88,7 @@ const InformeTurnos = () => {
     }
   };
 
- 
+
   const descargarPDF = async () => {
     if (turnos.length === 0 || !tableRef.current) {
       setError("No hay datos cargados para generar el PDF.");
@@ -112,14 +112,14 @@ const InformeTurnos = () => {
       // Obtener nombres para el PDF usando los IDs seleccionados
       const clienteFiltro = listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || 'Todos';
       const empleadoFiltro = listaEmpleados.find(e => String(e.id_empleado) === idEmpleado)?.nombre_empleado || 'Todos';
-      const estadoFiltro = estadoTurno || 'Todos'; 
+      const estadoFiltro = estadoTurno || 'Todos';
 
       pdf.setFontSize(14);
-     
+
       pdf.text("Informe de Turnos por Fecha", 10, 15);
       pdf.setFontSize(10);
       pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, 10, 22);
-      
+
       pdf.text(`Cliente: ${clienteFiltro} | Empleado: ${empleadoFiltro} | Estado: ${estadoFiltro}`, 10, 29);
 
       position = 35;
@@ -134,7 +134,7 @@ const InformeTurnos = () => {
         heightLeft -= pageHeight;
       }
 
-     
+
       pdf.save(`Informe_Turnos_${fechaInicio}_a_${fechaFin}.pdf`);
 
     } catch (err) {
@@ -151,7 +151,7 @@ const InformeTurnos = () => {
       <h5 className="mb-3">Generar Informe de Turnos</h5>
 
       <Form className="mb-4">
-        
+
         <Row className="mb-3">
           <Col md={6}>
             <Form.Group>
@@ -175,7 +175,7 @@ const InformeTurnos = () => {
           </Col>
         </Row>
 
-       
+
         <Row className="mb-3">
           <Col md={4}>
             <Form.Group>
@@ -210,7 +210,7 @@ const InformeTurnos = () => {
             </Form.Group>
           </Col>
 
-         
+
           <Col md={4}>
             <Form.Group>
               <Form.Label>Filtrar por Estado (Opcional)</Form.Label>
@@ -229,11 +229,32 @@ const InformeTurnos = () => {
           </Col>
         </Row>
 
-       
+
         <Row>
           <Col>
-            <Button onClick={generarInforme} variant="primary" className="w-100 mt-2">
-              Generar
+            <Button
+              onClick={generarInforme}
+              className="w-100 mt-2"
+              style={{
+                backgroundColor: "#6f42c1",
+                border: "none",
+                fontWeight: "bold",
+                color: "#fff",
+                boxShadow: "0 3px 0 #542c85",
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 5px 0 #542c85";
+                e.target.style.backgroundColor = "#5931a9";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 3px 0 #542c85";
+                e.target.style.backgroundColor = "#6f42c1";
+              }}
+            >
+              Generar Informe
             </Button>
           </Col>
         </Row>
@@ -265,7 +286,7 @@ const InformeTurnos = () => {
         </div>
       )}
 
-      
+
       {turnos.length > 0 && !loading && (
         <Table striped bordered hover ref={tableRef}>
           <thead>
@@ -279,48 +300,48 @@ const InformeTurnos = () => {
             </tr>
           </thead>
 
-            <tbody>
-              {turnos.map((t) => {
+          <tbody>
+            {turnos.map((t) => {
 
-                let displayFecha = 'N/A';
-                // Mantenemos la hora formateada a HH:MM
-                const displayHora = t.hora ? t.hora.slice(0, 5) : 'N/A';
+              let displayFecha = 'N/A';
+              // Mantenemos la hora formateada a HH:MM
+              const displayHora = t.hora ? t.hora.slice(0, 5) : 'N/A';
 
-                // 1. CONVERSIÓN SEGURA A STRING y LIMPIEZA
-                let fechaStringLimpia = 'FALLA';
+              // 1. CONVERSIÓN SEGURA A STRING y LIMPIEZA
+              let fechaStringLimpia = 'FALLA';
 
-                // Si es un objeto Date (como ocurría en tu caso), lo limpiamos a YYYY-MM-DD
-                if (t.fecha instanceof Date) {
-                  fechaStringLimpia = t.fecha.toISOString().slice(0, 10);
+              // Si es un objeto Date (como ocurría en tu caso), lo limpiamos a YYYY-MM-DD
+              if (t.fecha instanceof Date) {
+                fechaStringLimpia = t.fecha.toISOString().slice(0, 10);
+              }
+              // Si ya es una cadena (ej: "2025-11-29" o cadena ISO), tomamos el inicio
+              else if (typeof t.fecha === 'string') {
+                fechaStringLimpia = t.fecha.slice(0, 10);
+              }
+
+              // 2. FORMATEO (DD/MM/YYYY)
+              if (fechaStringLimpia !== 'FALLA') {
+                const partes = fechaStringLimpia.split('-'); // Espera ['YYYY', 'MM', 'DD']
+
+                if (partes.length === 3) {
+                  // Reordenamos: DD/MM/YYYY
+                  displayFecha = `${partes[2]}/${partes[1]}/${partes[0]}`;
                 }
-                // Si ya es una cadena (ej: "2025-11-29" o cadena ISO), tomamos el inicio
-                else if (typeof t.fecha === 'string') {
-                  fechaStringLimpia = t.fecha.slice(0, 10);
-                }
+              }
 
-                // 2. FORMATEO (DD/MM/YYYY)
-                if (fechaStringLimpia !== 'FALLA') {
-                  const partes = fechaStringLimpia.split('-'); // Espera ['YYYY', 'MM', 'DD']
-
-                  if (partes.length === 3) {
-                    // Reordenamos: DD/MM/YYYY
-                    displayFecha = `${partes[2]}/${partes[1]}/${partes[0]}`;
-                  }
-                }
-
-                return (
-                  <tr key={t.id_turno}>
-                    <td>{t.id_turno}</td>
-                    {/* Usamos las variables formateadas */}
-                    <td>{displayFecha} - {displayHora}</td>
-                    <td>{t.estado}</td>
-                    <td>{t.cliente}</td>
-                    <td>{t.mascota}</td>
-                    <td>{t.empleado}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
+              return (
+                <tr key={t.id_turno}>
+                  <td>{t.id_turno}</td>
+                  {/* Usamos las variables formateadas */}
+                  <td>{displayFecha} - {displayHora}</td>
+                  <td>{t.estado}</td>
+                  <td>{t.cliente}</td>
+                  <td>{t.mascota}</td>
+                  <td>{t.empleado}</td>
+                </tr>
+              );
+            })}
+          </tbody>
         </Table>
       )}
 
