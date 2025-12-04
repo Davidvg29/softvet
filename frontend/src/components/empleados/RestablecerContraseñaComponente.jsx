@@ -19,7 +19,6 @@ const RestablecerContraseñaComponente = () => {
   const [message, setMessage] = useState("");
   const [checked, setChecked] = useState(false);
 
-  // ✅ Manejo correcto del cambio en inputs
   const handleContraseña = (e) => {
     const { name, value } = e.target;
     setMessage("");
@@ -59,7 +58,7 @@ const RestablecerContraseñaComponente = () => {
       }, 3000);
     } catch (error) {
       console.log(error);
-      setMessage("Error al cambiar contraseña. Intente luego.");
+      setMessage(error.response.data);
     }
   };
 

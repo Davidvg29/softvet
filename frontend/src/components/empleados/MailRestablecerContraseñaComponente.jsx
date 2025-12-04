@@ -44,7 +44,7 @@ const MailRestablecerContraseñaComponente = () => {
       setMessage(data);
     } catch (error) {
       console.log(error);
-      setMessage("Error al enviar el correo. Intente luego.");
+      setMessage(error.response.data);
     }
   };
 

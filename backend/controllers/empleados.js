@@ -255,7 +255,7 @@ const mailRestablecerContraseña = async (req, res) => {
                 return res.status(500).json('Ocurrio un error al verificar correo de empleado para resetear contrasña.');
             }
             if(results.length === 0){
-                return res.status(404).json('No existe un empleado con ese correo electrónico.');
+                return res.status(500).json('No existe un empleado con ese correo electrónico.');
             }
         })
 
@@ -327,7 +327,7 @@ const restablecerContraseña = async (req, res) => {
     const { token, nuevaContraseña } = req.body;
 
     if (!token || !nuevaContraseña) {
-        return res.status(400).json({ error: 'Faltan datos obligatorios.' });
+        return res.status(200).json({ error: 'Faltan datos obligatorios.' });
     }
     try {
         const {email} = jwt.verify(token, process.env.JWT_SECRET)
@@ -342,12 +342,12 @@ const restablecerContraseña = async (req, res) => {
                 return res.status(500).json({ error: 'Error al actualizar la contraseña.' });
             }
             if (results.affectedRows === 0) {
-                return res.status(404).json('Empleado con el correo electronico asignado no existe.' );
+                return res.status(200).json('Empleado con el correo electronico asignado no existe.' );
             }
             return res.status(200).json('Contraseña restablecida correctamente.');
         })
     } catch (error) {
-        return res.status(400).json('Token inválido o expirado.');
+        return res.status(500).json('Token inválido o expirado.');
     }
 }
 
