@@ -11,7 +11,7 @@ const app = express()
 
 //habilito cors
 app.use(cors({
-  origin: 'https://softvet.onrender.com/',
+  origin: 'https://softvet.onrender.com',
   credentials: true // Puerto que utilizo en el frontend
 })); 
 
