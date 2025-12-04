@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
-import { Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog
+import { Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog,LineChart 
 } from "lucide-react";
 
 import { useEmpleadoStore } from "../../zustand/empleado";
@@ -284,6 +284,10 @@ const getHC = async () => {
 
             <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
               <DashboardCard to="/sucursales" label="Sucursales" Icon={Building2} index={14} />
+            </Col>
+
+            <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
+              <DashboardCard to="/informe" label="Informes" Icon={LineChart} index={16} />
             </Col>
 
           </Row>

@@ -1,6 +1,9 @@
+const e = require('express');
 const { connection } = require('../config/bd/dataBase');
 const { createToken } = require('../middlewares/jwt');
 const { encriptarContraseña, compararContraseña } = require('../service/bcrypt');
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
 
 const logout = (req, res)=>{
     res.clearCookie("TOKEN_AUTH_SOFTVET", {
@@ -242,6 +245,112 @@ const eliminarEmpleado = (req, res) => {
     });
 }
 
+const mailRestablecerContraseña = async (req, res) => {
+    const { email } = req.params;
+
+    try {
+
+        connection.query('SELECT * FROM empleados WHERE mail_empleado = ?', [email], async (error, results) => {
+            if(error){
+                return res.status(500).json('Ocurrio un error al verificar correo de empleado para resetear contrasña.');
+            }
+            if(results.length === 0){
+                return res.status(500).json('No existe un empleado con ese correo electrónico.');
+            }
+        })
+
+        const token = jwt.sign(
+             {email},
+             process.env.JWT_SECRET,
+             {expiresIn: "15m" }
+        )
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "soporte.softvet@gmail.com",
+                pass: "isqghcuqioxqmenm", 
+            },
+        });
+        // Supongamos que esta es la URL que generas con el token de seguridad
+        const resetUrl = `http://localhost:5173/empleados/password/restablecer/${token}`; 
+
+        const info = await transporter.sendMail({
+            from: '"Soporte Softvet" <soporte.softvet@gmail.com>',
+            to: email,
+            subject: "Restablece tu contraseña - Softvet",
+            text: `Hola,\n\nHemos recibido una solicitud para restablecer la contraseña de tu cuenta en Softvet.\n\nPor favor, visita el siguiente enlace para crear una nueva contraseña:\n\n${resetUrl}\n\nSi no solicitaste este cambio, puedes ignorar este correo.\n\nSaludos,\nEl equipo de Softvet.`, // Versión texto plano (importante para evitar spam)
+            html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                
+                <div style="background: linear-gradient(135deg, #6d3bd2 0%, #a56bf4 100%); padding: 20px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 24px;">SOFTVET</h1>
+                    <h4 style="color: #ffffff; margin: 0; ;">Sistema de gestión para veterinarias</h4>
+                </div>
+
+                <div style="padding: 30px;">
+                    <h2 style="color: #333; margin-top: 0;">Restablecimiento de Contraseña</h2>
+                    <p>Hola,</p>
+                    <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en el sistema de gestión <strong>Softvet</strong>.</p>
+                    <p>Haz clic en el botón de abajo para crear una nueva contraseña:</p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="${resetUrl}" style="background: linear-gradient(135deg, #6d3bd2 0%, #a56bf4 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">Restablecer mi contraseña</a>
+                    </div>
+
+                    <p style="font-size: 14px; color: #666;">RECORDAR: solo tienes 15 minutos para restablecer la contraseña.</p>
+
+
+                    <p style="font-size: 14px; color: #666;">Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:</p>
+                    <p style="font-size: 14px; color: #007BFF; word-break: break-all;">${resetUrl}</p>
+                    
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                    
+                    <p style="font-size: 12px; color: #999;">Si no solicitaste este cambio, por favor ignora este correo. Tu contraseña actual seguirá siendo segura.</p>
+                </div>
+                
+                <div style="background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #999;">
+                    <p>&copy; ${new Date().getFullYear()} Softvet. Todos los derechos reservados.</p>
+                </div>
+            </div>
+            `,
+        });
+
+        return res.status(200).json('Correo de recuperación enviado.');
+
+    } catch (error) {
+        return res.status(500).json('Ocurrio un error al enviar el correo de recuperación de contraseña.');
+    }
+}
+
+const restablecerContraseña = async (req, res) => {
+    const { token, nuevaContraseña } = req.body;
+
+    if (!token || !nuevaContraseña) {
+        return res.status(200).json({ error: 'Faltan datos obligatorios.' });
+    }
+    try {
+        const {email} = jwt.verify(token, process.env.JWT_SECRET)
+        // console.log(email);
+        
+        let contraseñaEncriptada = await encriptarContraseña(nuevaContraseña);
+
+        // console.log(contraseñaEncriptada);
+
+        connection.query('UPDATE empleados SET contrasena = ? WHERE mail_empleado = ?', [contraseñaEncriptada, email], (error, results) => {
+            if (error) {
+                return res.status(500).json({ error: 'Error al actualizar la contraseña.' });
+            }
+            if (results.affectedRows === 0) {
+                return res.status(200).json('Empleado con el correo electronico asignado no existe.' );
+            }
+            return res.status(200).json('Contraseña restablecida correctamente.');
+        })
+    } catch (error) {
+        return res.status(500).json('Token inválido o expirado.');
+    }
+}
+
 module.exports = {
     mostrarEmpleados,
     mostrarEmpleadoPorId,
@@ -250,5 +359,7 @@ module.exports = {
     eliminarEmpleado,
     autenticarEmpleado,
     obtenerInfoEmpleadoAutenticado,
-    logout
+    logout,
+    mailRestablecerContraseña,
+    restablecerContraseña
 };
