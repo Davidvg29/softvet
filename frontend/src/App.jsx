@@ -11,7 +11,7 @@ import Roles from './pages/Roles';
 import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS, TURNOS, STOCK, NOSOTROS } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS, TURNOS, STOCK, NOSOTROS, INFORME } from './routers/router';
 import Razas from './pages/Razas';
 import HistoriaClinica from './pages/HistoriaClinica.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
@@ -21,6 +21,7 @@ import Sucursales from './pages/Sucursales.jsx';
 import Categorias from './pages/Categorias.jsx';
 import Turnos from './pages/Turnos.jsx';
 import Stock from './pages/Stock.jsx';
+import Informe from './pages/Informe.jsx';
 import Nosotros from './pages/Nosotros.jsx';
 import MailRestablecerContraseña from './pages/MailRestablecerContraseña.jsx';
 import RestablecerContraseña from './pages/RestablecerContraseña.jsx';
@@ -51,6 +52,7 @@ function App() {
         <Route path={CATEGORIAS} element={<Categorias/>}/>
         <Route path={TURNOS} element={<Turnos/>}/>
         <Route path={STOCK} element={<Stock/>}/>
+        <Route path={INFORME} element={<Informe/>}/>
         <Route path={NOSOTROS} element={<Nosotros/>}/>
         
       </Route>
