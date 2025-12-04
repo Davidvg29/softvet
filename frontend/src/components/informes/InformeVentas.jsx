@@ -19,7 +19,7 @@ const InformeVentas = () => {
   const [listaClientes, setListaClientes] = useState([]);
   const [listaEmpleados, setListaEmpleados] = useState([]);
 
-  
+
   const [ventas, setVentas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,12 +42,12 @@ const InformeVentas = () => {
     }
   };
 
-  
+
   useEffect(() => {
     cargarFiltros();
   }, []);
 
-  
+
   const generarInforme = async () => {
     if (!fechaInicio || !fechaFin) {
       setError("Debes seleccionar ambas fechas.");
@@ -170,9 +170,9 @@ const InformeVentas = () => {
                 value={idCliente}
                 onChange={(e) => setIdCliente(e.target.value)}
               >
-                
+
                 <option value="">— Todos los Clientes —</option>
-                
+
                 {listaClientes.map(c => (
                   <option key={c.id_cliente} value={c.id_cliente}>
                     {c.nombre_cliente}
@@ -188,9 +188,9 @@ const InformeVentas = () => {
                 value={idEmpleado}
                 onChange={(e) => setIdEmpleado(e.target.value)}
               >
-                
+
                 <option value="">— Todos los Empleados —</option>
-                
+
                 {listaEmpleados.map(e => (
                   <option key={e.id_empleado} value={e.id_empleado}>
                     {e.nombre_empleado}
@@ -204,14 +204,35 @@ const InformeVentas = () => {
         {/* BOTÓN GENERAR */}
         <Row>
           <Col>
-            <Button onClick={generarInforme} variant="primary" className="w-100 mt-2">
-              Generar
+            <Button
+              onClick={generarInforme}
+              className="w-100 mt-2"
+              style={{
+                backgroundColor: "#6f42c1",
+                border: "none",
+                fontWeight: "bold",
+                color: "#fff",
+                boxShadow: "0 3px 0 #542c85",
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = "translateY(-2px)";
+                e.target.style.boxShadow = "0 5px 0 #542c85";
+                e.target.style.backgroundColor = "#5931a9";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 3px 0 #542c85";
+                e.target.style.backgroundColor = "#6f42c1";
+              }}
+            >
+              Generar Informe
             </Button>
           </Col>
         </Row>
       </Form>
 
-     
+
 
       {loading && (
         <div className="text-center">

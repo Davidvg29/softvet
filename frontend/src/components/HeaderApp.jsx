@@ -7,6 +7,8 @@ import { FaUser, FaHome, FaMapMarkerAlt, FaBox, FaUserShield, FaUsers, FaPaw } f
 import { MdPets } from "react-icons/md";
 import axios from 'axios';
 import { empleados } from '../endpoints/endpoints';
+
+
 const Header = () => {
     const empleado = useEmpleadoStore((state) => state.empleado);
     const [show, setShow] = useState(false);
@@ -98,7 +100,7 @@ const Header = () => {
                     <Nav className="flex-column">
                         <Nav.Link as={Link} to="/empleados"> <FaUsers className="me-2" /> Empleados</Nav.Link>
                         <Nav.Link as={Link} to="/clientes"> <FaUsers className="me-2" /> Clientes</Nav.Link>
-                        <Nav.Link as={Link} to="/mascotas"> <FaUsers className="me-2" /> Mascotas</Nav.Link>
+                        {/* <Nav.Link as={Link} to="/mascotas"> <FaUsers className="me-2" /> Mascotas</Nav.Link> */}
                         {/* <Nav.Link as={Link} to="/historiaClinica"> <FaUsers className="me-2" /> Historias Clinicas</Nav.Link> */}
                         <Nav.Link as={Link} to="/ventas"> <FaUsers className="me-2" />Ventas</Nav.Link>
                         <Nav.Link as={Link} to="/productos"> <FaUsers className="me-2" />Productos</Nav.Link>
@@ -108,6 +110,14 @@ const Header = () => {
                         <Nav.Link as={Link} to="/roles"> <FaUserShield className="me-2" /> Roles</Nav.Link>
                         <Nav.Link as={Link} to="/categorias"> <FaUserShield className="me-2" /> Categorias</Nav.Link>
                         <Nav.Link as={Link} to="/sucursales"> <FaUserShield className="me-2" /> Sucursales</Nav.Link>
+                        <div
+                            style={{
+                                width: "100%",
+                                height: "2px",
+                                background: "linear-gradient(135deg, #8f52ea 0%, #a56bf4 100%)",
+                                margin: "10px 0",
+                            }}
+                        ></div>
                         <NavDropdown
                             id="nav-acerca-dropdown"
                             title={
@@ -118,22 +128,22 @@ const Header = () => {
                             }
                             menuVariant="dark"
                         >
-                                <NavDropdown.Item
-                                    as="a"
-                                    href="https://drive.google.com/uc?export=download&id=1a63jlZZWQyNIJ9W3h0FZXBf_BSVu4-pn"
-                                    download
-                                >
-                                    Manual de Usuario
-                                </NavDropdown.Item>
-                                <NavDropdown.Divider />
-                                <NavDropdown.Item as={Link} to="/quienes-somos">
-                                    Quiénes somos
-                                </NavDropdown.Item>
+                            <NavDropdown.Item
+                                as="a"
+                                href="https://drive.google.com/uc?export=download&id=1a63jlZZWQyNIJ9W3h0FZXBf_BSVu4-pn"
+                                download
+                            >
+                                Manual de Usuario
+                            </NavDropdown.Item>
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item as={Link} to="/quienes-somos">
+                                Quiénes somos
+                            </NavDropdown.Item>
 
-                                <NavDropdown.Item as={Link} to="https://wa.me/5493812193799" target="_blank" rel="noopener noreferrer">
-                                    Soporte
-                                </NavDropdown.Item>
-                            
+                            <NavDropdown.Item as={Link} to="https://wa.me/5493812193799" target="_blank" rel="noopener noreferrer">
+                                Soporte
+                            </NavDropdown.Item>
+
                         </NavDropdown>
 
                     </Nav>
