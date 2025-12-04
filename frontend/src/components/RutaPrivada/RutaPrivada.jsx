@@ -15,9 +15,9 @@ const RutaPrivada = () => {
   const [rol, setRol] = useState("")
 
   const permisos = {
-    Administrador: ["/turnos", "/dashboard", "/ventas", "/empleados", "/productos", "/clientes", "/especies", "/roles", "/proveedores", "/sucursales", "/razas", "/historiaClinica", "/mascotas", "/categorias", "/stock","/informe"],
-    Veterinario: ["/turnos", "/dashboard", "/clientes", "/especies", "/razas", "/historiaClinica", "/detalleHistoriaClinica", "/mascotas"],
-    Recepcionista: ["/turnos", "/dashboard", "/ventas", "/sucursales", "/clientes", "/mascotas", "/productos", "/categorias"],
+    Administrador: ["/turnos", "/dashboard", "/ventas", "/empleados", "/productos", "/clientes", "/especies", "/roles", "/proveedores", "/sucursales", "/razas", "/historiaClinica", "/mascotas", "/categorias", "/stock", "/quienes-somos"],
+    Veterinario: ["/turnos", "/dashboard", "/clientes", "/especies", "/razas", "/historiaClinica", "/detalleHistoriaClinica", "/mascotas", "/quienes-somos"],
+    Recepcionista: ["/turnos", "/dashboard", "/ventas", "/sucursales", "/clientes", "/mascotas", "/productos", "/categorias", "/quienes-somos"],
   };
 
   const rutasPermitidas = permisos[rol] || [];

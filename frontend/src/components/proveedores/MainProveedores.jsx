@@ -90,6 +90,43 @@ const MainProveedores = () => {
 
     return (
         <>
+        <div className="text-center">
+        <h1
+          className="fw-bold animate-title p-2 mb-2 d-inline-block"
+          style={{
+            background: "linear-gradient(90deg, #6f42c1, #8f41aeff)",
+            fontSize: "2.5rem",
+            color: "#ffffffff",
+            marginTop: "10px",
+            letterSpacing: "2px",
+            textTransform: "uppercase",
+            borderRadius: "12px",
+          }}
+        ><i className="bi-truck" style={{marginRight: "8px"}}></i>
+          PROVEEDORES
+        </h1>
+      </div>
+
+      <style>
+        {`
+  .animate-title {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeSlide 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`}
+      </style>
             <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5" >
                 <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
                     <Form.Control

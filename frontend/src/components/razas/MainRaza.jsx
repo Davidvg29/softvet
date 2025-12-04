@@ -11,7 +11,7 @@ import CrearRaza from './CrearRaza';
 import EditarRaza from './EditarRaza';
 
 const MainRaza = () => {
-  
+
 
     //state de busqueda
     const [busqueda, setBusqueda] = useState("");
@@ -59,7 +59,7 @@ const MainRaza = () => {
     }, []);
 
     const razasFiltradas = raza.filter((raza) =>
-        raza.nombre_raza.toLowerCase().includes(busqueda.toLowerCase()) 
+        raza.nombre_raza.toLowerCase().includes(busqueda.toLowerCase())
 
     );
 
@@ -89,6 +89,52 @@ const MainRaza = () => {
 
     return (
         <>
+            <div className="text-center">
+                <h1
+                    className="fw-bold animate-title p-2 mb-2 d-inline-block"
+                    style={{
+                        background: "linear-gradient(90deg, #6f42c1, #8f41aeff)",
+                        fontSize: "2.5rem",
+                        color: "#ffffffff",
+                        marginTop: "10px",
+                        letterSpacing: "2px",
+                        textTransform: "uppercase",
+                        borderRadius: "12px",
+                    }}
+                >
+                    <img
+                        src="/src/assets/huellita.svg"
+                        alt="Huellita"
+                        style={{
+                            width: "40px", height: "40px", objectFit: "contain",
+                            marginRight: "5px",
+                            transform: "translateY(-6px)"
+                        }}
+                    />
+                    RAZAS
+                </h1>
+            </div>
+
+            <style>
+                {`
+  .animate-title {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeSlide 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`}
+            </style>
             <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5" >
                 <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
                     <Form.Control
@@ -201,7 +247,7 @@ const MainRaza = () => {
                                                 border: "none",
                                             }}
                                         >{raza.nombre_raza}</td>
-                                        
+
                                         <td
                                             style={{
                                                 display: "flex",
@@ -230,7 +276,7 @@ const MainRaza = () => {
                                                     e.target.style.boxShadow = "0 3px 0 #138a28";
                                                 }}
                                                 onClick={() => handleOpenModal("verRaza", raza.id_raza)}>Ver</Button>
-                                        
+
                                             <Button
                                                 style={{
                                                     backgroundColor: "#ffc107",
@@ -249,7 +295,7 @@ const MainRaza = () => {
                                                     e.target.style.boxShadow = "0 3px 0 #d39e00";
                                                 }}
                                                 onClick={() => handleOpenModal("editarRaza", raza.id_raza)} >Editar</Button>
-                                      
+
                                             <Button
                                                 style={{
                                                     backgroundColor: "#dc3545",
@@ -352,7 +398,7 @@ const MainRaza = () => {
                         </div>
                     </div>
                 </div>
-                
+
 
             </Modal>
         </>
