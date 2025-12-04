@@ -28,6 +28,7 @@ const CrearStock = ({ onClose, onUpdate }) => {
         const productosSinStock = data.filter(p =>
           p.cantidad === 0 || p.cantidad == null
         );
+
         setListaProductos(productosSinStock);
       } catch (error) {
         console.error("Error al cargar los productos:", error);
