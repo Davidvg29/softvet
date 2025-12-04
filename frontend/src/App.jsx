@@ -22,6 +22,8 @@ import Categorias from './pages/Categorias.jsx';
 import Turnos from './pages/Turnos.jsx';
 import Stock from './pages/Stock.jsx';
 import Nosotros from './pages/Nosotros.jsx';
+import MailRestablecerContraseña from './pages/MailRestablecerContraseña.jsx';
+import RestablecerContraseña from './pages/RestablecerContraseña.jsx';
 // import Compras from './pages/Compras.jsx';
 
 function App() {
@@ -50,8 +52,11 @@ function App() {
         <Route path={TURNOS} element={<Turnos/>}/>
         <Route path={STOCK} element={<Stock/>}/>
         <Route path={NOSOTROS} element={<Nosotros/>}/>
+        
       </Route>
       {/* fin grupo de rutas privadas */}
+      <Route path={`${EMPLEADOS}/password/restablecer`} element={<MailRestablecerContraseña/>}/>
+      <Route path={`${EMPLEADOS}/password/restablecer/:token`} element={<RestablecerContraseña/>}/>
     </Routes>
   );
 }

@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import axios from "axios";
 import { empleados } from '../../endpoints/endpoints';
 import { useEmpleadoStore } from '../../zustand/empleado';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const IniciarSesion = () => {
   const navigate = useNavigate();
@@ -86,7 +86,10 @@ const IniciarSesion = () => {
         </Form.Group>
 
         <Form.Group className="mb-3 text-start" controlId="formBasicPassword">
-          <Form.Label className="fw-semibold text-white">Contraseña:</Form.Label>
+          <div className="d-flex justify-content-between align-items-center">
+            <Form.Label className="fw-semibold text-white">Contraseña:</Form.Label>
+            <Link to="/empleados/password/restablecer" className="text-white" style={{ fontSize: "0.9rem" }}>¿Olvidaste tu contraseña?</Link>
+          </div>
           <Form.Control
             type="password"
             placeholder="******"

@@ -8,7 +8,9 @@ const {
     eliminarEmpleado,
     autenticarEmpleado,
     obtenerInfoEmpleadoAutenticado,
-    logout
+    logout,
+    mailRestablecerContraseña,
+    restablecerContraseña
 } = require('../controllers/empleados');
 const { verifyToken } = require('../middlewares/jwt');
 const { autenticarRoles } = require('../middlewares/autenticarRoles');
@@ -22,5 +24,7 @@ router.delete('/eliminar/:id',verifyToken, autenticarRoles(["Administrador"]), e
 router.post('/autenticar', autenticarEmpleado);
 router.post('/info', verifyToken, obtenerInfoEmpleadoAutenticado);
 router.get('/logout', logout)
+router.get('/password/restablecer/:email', mailRestablecerContraseña)
+router.post('/password/restablecer/', restablecerContraseña)
 
 module.exports = router;
