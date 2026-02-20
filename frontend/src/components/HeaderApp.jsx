@@ -3,7 +3,12 @@ import { Navbar, Container, Offcanvas, Nav, Row, Col, NavDropdown } from 'react-
 import { Link, useNavigate } from 'react-router-dom';
 import logovet from '../assets/logovet.svg';
 import { useEmpleadoStore } from '../zustand/empleado';
-import { FaUser, FaHome, FaMapMarkerAlt, FaBox, FaUserShield, FaUsers, FaPaw } from 'react-icons/fa';
+import { FaUserTie, 
+  FaUsers, 
+  FaDog, 
+  FaFileMedical, 
+  FaCashRegister, 
+  FaBoxOpen,FaUser,FaTags ,FaHome, FaMapMarkerAlt, FaCalendarAlt, FaUserShield, FaPaw,FaChartLine } from 'react-icons/fa';
 import { MdPets } from "react-icons/md";
 import axios from 'axios';
 import { empleados } from '../endpoints/endpoints';
@@ -11,6 +16,7 @@ import { empleados } from '../endpoints/endpoints';
 
 const Header = () => {
     const empleado = useEmpleadoStore((state) => state.empleado);
+    const rol = empleado?.nombre_rol;
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -98,18 +104,55 @@ const Header = () => {
                 </Offcanvas.Header>
                 <Offcanvas.Body>
                     <Nav className="flex-column">
-                        <Nav.Link as={Link} to="/empleados"> <FaUsers className="me-2" /> Empleados</Nav.Link>
+                        {(rol === "Administrador") && (
+                        <Nav.Link as={Link} to="/empleados">  <FaUserTie className="me-2" /> Empleados</Nav.Link>
+                        )}
+
+                        {(rol === "Administrador" || rol === "Recepcionista") && (
                         <Nav.Link as={Link} to="/clientes"> <FaUsers className="me-2" /> Clientes</Nav.Link>
-                        {/* <Nav.Link as={Link} to="/mascotas"> <FaUsers className="me-2" /> Mascotas</Nav.Link> */}
-                        {/* <Nav.Link as={Link} to="/historiaClinica"> <FaUsers className="me-2" /> Historias Clinicas</Nav.Link> */}
-                        <Nav.Link as={Link} to="/ventas"> <FaUsers className="me-2" />Ventas</Nav.Link>
-                        <Nav.Link as={Link} to="/productos"> <FaUsers className="me-2" />Productos</Nav.Link>
-                        <Nav.Link as={Link} to="/proveedores"> <FaBox className="me-2" /> Proveedores</Nav.Link>
-                        {/* <Nav.Link as={Link} to="/especies"> <FaPaw className="me-2" /> Especies</Nav.Link>
-                        <Nav.Link as={Link} to="/razas"> <MdPets className="me-2" /> Razas</Nav.Link> */}
-                        <Nav.Link as={Link} to="/roles"> <FaUserShield className="me-2" /> Roles</Nav.Link>
-                        <Nav.Link as={Link} to="/categorias"> <FaUserShield className="me-2" /> Categorias</Nav.Link>
-                        <Nav.Link as={Link} to="/sucursales"> <FaUserShield className="me-2" /> Sucursales</Nav.Link>
+                        )}
+
+                        {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
+                        <Nav.Link as={Link} to="/mascotas"> <FaDog className="me-2" /> Mascotas</Nav.Link>
+                        )}
+
+                        {(rol === "Administrador" || rol === "Veterinario") && (
+                        <Nav.Link as={Link} to="/historiaClinica"> <FaFileMedical className="me-2" /> Historias Clinicas</Nav.Link>
+                        )}
+
+                        {(rol === "Administrador" || rol === "Recepcionista") && (
+                        <Nav.Link as={Link} to="/ventas"> <FaCashRegister className="me-2" />Ventas</Nav.Link>
+                        )}
+
+                         {(rol === "Administrador") && (
+                        <Nav.Link as={Link} to="/productos"> <FaBoxOpen className="me-2" />Productos</Nav.Link>
+                        )}
+
+                        {/* <Nav.Link as={Link} to="/proveedores"> <FaBox className="me-2" /> Proveedores</Nav.Link> */}
+
+                        {(rol === "Administrador" || rol === "Veterinario") && (
+                        <Nav.Link as={Link} to="/especies"> <FaPaw className="me-2" /> Especies</Nav.Link>
+                        )}
+
+                        {(rol === "Administrador" || rol === "Veterinario") && (
+                        <Nav.Link as={Link} to="/razas">  <FaDog className="me-2" /> Razas</Nav.Link>
+                        )}
+                        
+                        {/* <Nav.Link as={Link} to="/roles"> <FaUserShield className="me-2" /> Roles</Nav.Link> */}
+
+                        {(rol === "Administrador") && (
+                        <Nav.Link as={Link} to="/categorias"> <FaTags className="me-2" /> Categorias</Nav.Link>
+                        )}
+
+                        {(rol === "Administrador") && (
+                        <Nav.Link as={Link} to="/informe"> <FaChartLine className="me-2" /> Informe</Nav.Link>
+                        )}
+
+                         {(rol === "Administrador" || rol === "Recepcionista") && (
+                        <Nav.Link as={Link} to="/turnos">  <FaCalendarAlt className="me-2" />Turnos</Nav.Link>
+                        )}
+
+                        {/* <Nav.Link as={Link} to="/sucursales"> <FaUserShield className="me-2" /> Sucursales</Nav.Link> */}
                         <div
                             style={{
                                 width: "100%",
