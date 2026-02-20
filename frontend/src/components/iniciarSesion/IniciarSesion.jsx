@@ -64,7 +64,7 @@ const IniciarSesion = () => {
         <h3 className="text-center mb-3 fw-bold text-white">
           Bienvenido a SoftVet
         </h3>
-        <p className="text-center text-white-50 mb-4">
+        <p className="text-center text-white mb-4">
           Inicie sesión para continuar
         </p>
 
