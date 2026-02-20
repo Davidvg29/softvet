@@ -15,37 +15,37 @@ const Gestion = () => {
           {
             id: 1,
             img : card1,
-            titulo: "Gestion de Clientes y Pacientes",
+            titulo: "Clientes y Pacientes",
             descripcion: "Toda la información necesaria al alcance de un click."
           },
           {
             id: 2,
             img : card2,
-            titulo: "Gestion de Historias Clínicas",
+            titulo: "Historias Clínicas",
             descripcion: "Accede y gestiona las historias clínicas de tus pacientes."
           },
           {
             id: 3,
             img : card3,
-            titulo: "Gestion de Agenda y Turnos",
+            titulo: "Agenda y Turnos",
             descripcion: "Gestiona los turnos de tu clínica fácilmente."
           },
           {
             id: 4,
             img : card4,
-            titulo: "Gestion de Productos y Stock",
+            titulo: "Productos y Stock",
             descripcion: "Controla el inventario y las ventas de tu clínica."
           },
           {
             id: 5,
             img : card5,
-            titulo: "Gestion de Compras y Proveedores",
-            descripcion: "Administra las compras y relaciones con proveedores."
+            titulo: "Compras",
+            descripcion: "Administra las compras de tu clínica."
           },
           {
             id: 6,
             img : card8,
-            titulo: "Gestion de Ventas",  
+            titulo: "Ventas",  
             descripcion: "Realiza y controla las ventas de manera eficiente."
           },
           {

@@ -72,9 +72,9 @@ const MailRestablecerContraseñaComponente = () => {
           }}
         >
           <h3 className="text-center mb-3 fw-bold text-white">
-            Restablecimiento de Contraseña
+            Restablecer Contraseña
           </h3>
-          <p className="text-center text-white-50 mb-4">
+          <p className="text-center text-white mb-4">
             Escriba su correo electrónico y se le enviará un enlace para restablecer su contraseña.
           </p>
 
@@ -118,6 +118,14 @@ const MailRestablecerContraseñaComponente = () => {
                 transition: "0.3s",
                 boxShadow: "0 5px 12px rgba(0,0,0,0.2)",
               }}
+              onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-3px)";
+              e.currentTarget.style.boxShadow = "0 10px 22px rgba(0,0,0,0.35)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 5px 12px rgba(0,0,0,0.2)";
+            }}
             >
               Enviar enlace
             </Button>

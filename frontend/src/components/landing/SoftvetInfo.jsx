@@ -55,7 +55,7 @@ const Info = () => {
                         <Card.Body>
                             <Card.Title>Sistema en la Nube</Card.Title>
                             <Card.Text className="text-muted">
-                                SoftVet permite gestionar tu clínica veterinaria 100% en línea desde cualquier dispositivo (Smartphones, Tablets, PCs), en cualquier momento y lugar, con acceso total a la información de la veterinaria.
+                                Gestioná tu veterinaria 100% online desde cualquier dispositivo(Smartphones, Tablets, PCs), en cualquier momento.
                             </Card.Text>
                          
                         </Card.Body>
@@ -83,7 +83,6 @@ const Info = () => {
                             <Card.Title>Simple y Tecnológica</Card.Title>
                             <Card.Text className="text-muted">
                                 SoftVet integra tecnología avanzada para tu clínica veterinaria.
-                                Gestiona turnos y recordatorios automáticos por email, SMS y WhatsApp.
                                 Mejora la comunicación y la experiencia de tus clientes.
                             </Card.Text>
                         </Card.Body>
@@ -114,7 +113,6 @@ const Info = () => {
       <Card.Text className="text-muted">
         Céntrese en sus pacientes mientras SoftVet protege su información.
         La infraestructura en la nube garantiza seguridad y disponibilidad.
-        Controle accesos y audite usuarios sin complicaciones.
       </Card.Text>
     </Card.Body>
   </Card>
@@ -143,7 +141,6 @@ const Info = () => {
                             <Card.Text className="text-muted">
                                 Tu abono mensual a SoftVet trae incluido nuestro soporte de calidad.
                                 Atendemos tus consultas de forma rápida y confiable.
-                                ¡Estamos contigo para que tu gestión sea más simple y segura!
                             </Card.Text>
                         </Card.Body>
                     </Card>
