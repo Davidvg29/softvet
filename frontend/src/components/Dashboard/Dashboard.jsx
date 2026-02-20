@@ -10,10 +10,11 @@ import { useProductosStore } from "../../zustand/productos";
 import { useMascotasStore } from "../../zustand/mascota";
 import { useEmpleadosStore } from "../../zustand/empleados";
 import { useHCStore } from "../../zustand/historiasClinicas";
+import { useTurnosStore } from "../../zustand/turnos";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { clientes as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL } from "../../endpoints/endpoints";
+import { clientes as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL, TURNOS } from "../../endpoints/endpoints";
 
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
@@ -23,6 +24,8 @@ const Dashboard = () => {
   const { productos, setProductos } = useProductosStore();
   const { mascotas, setMascotas } = useMascotasStore();
   const { hc: historiasClinicas, setHistoriasClinicas: setHistoriasClinicas } = useHCStore();
+  const { turnos, setTurnos } = useTurnosStore();
+  const [turnosPendientes, setTurnosPendientes] = useState([])
 
   useEffect(() => {
 
@@ -69,12 +72,23 @@ const Dashboard = () => {
         console.error("Error al obtener las Historias Clinicas:", error);
       }
     };
+    const getTurnos = async()=>{
+      try {
+        const { data } = await axios.get(`${TURNOS}/ver`, { withCredentials: true });
+        setTurnos(data)
+        const turnosFiltrados = data.filter((t) => t.estado === "Pendiente");
+        setTurnosPendientes(turnosFiltrados);
+      } catch (error) {
+        console.error("Error al obtener turnos:", error);
+      }
+    }
     getEmpleados();
     getClientes();
     getProductos();
     getMascotas();
     getHC();
-  }, [setEmpleados, setClientes, setProductos, setMascotas, setHistoriasClinicas]);
+    getTurnos()
+  }, [setEmpleados, setClientes, setProductos, setMascotas, setHistoriasClinicas, setTurnos]);
 
   // ESTILO BASE DE LAS CARDS
   const baseCardStyle = {
@@ -293,7 +307,7 @@ const Dashboard = () => {
             </Col> */}
             {(rol === "Administrador" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12} />
+                <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12}  count={turnosPendientes.length}/>
               </Col>
             )}
 
