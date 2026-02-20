@@ -2,12 +2,14 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import formImg from "../../assets/form.svg";
+import { clientes } from "../../endpoints/endpoints";
+import axios from "axios"
 
 function Formulario() {
+  const [message, setMessage] = useState("")
   const [formData, setFormData] = useState({
     email: "",
     nombre: "",
-    veterinaria: "",
     telefono: "",
     mensaje: "",
   });
@@ -21,34 +23,41 @@ function Formulario() {
   };
 
   // enviar formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
-    const { email, nombre, veterinaria, telefono, mensaje } = formData;
+    const { email, nombre, telefono, mensaje } = formData;
 
     // VALIDACIÓN simple
-    if (!email || !nombre || !veterinaria || !telefono) {
+    if (!email || !nombre || !telefono || !mensaje) {
       alert("Por favor completá todos los campos obligatorios.");
       return;
     }
-
-    // Armamos el texto del WhatsApp
-    const texto = `
-*Nuevo formulario enviado:*
-
-📧 *Email:* ${email}
-👤 *Nombre:* ${nombre}
-🏥 *Veterinaria:* ${veterinaria}
-📱 *Teléfono:* ${telefono}
-📝 *Mensaje:* ${mensaje || "(Sin mensaje)"} 
-    `;
-
-    const numero = "543813965671"; // 👈 CAMBIÁ ESTO POR TU NÚMERO
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
-
-    // Redirige a WhatsApp
-    window.location.href = url;
-  };
+    try {
+      const {data} = await axios.post(`${clientes}/contact`, formData)
+      setMessage(data)
+      setTimeout(()=>{
+        setFormData({
+          email: "",
+          nombre: "",
+          telefono: "",
+          mensaje: "",
+        })
+        setMessage("")
+      }, 5000)
+    } catch (error) {
+      setMessage(error?.response?.data)
+      setTimeout(()=>{
+        setFormData({
+          email: "",
+          nombre: "",
+          telefono: "",
+          mensaje: "",
+        })
+        setMessage("")
+      }, 5000)
+    }
+   };
 
   return (
     <div
@@ -107,7 +116,7 @@ function Formulario() {
             />
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          {/* <Form.Group className="mb-3">
             <Form.Control
               type="text"
               name="veterinaria"
@@ -116,7 +125,7 @@ function Formulario() {
               onChange={handleChange}
               required
             />
-          </Form.Group>
+          </Form.Group> */}
 
           <Form.Group className="mb-3">
             <Form.Control
@@ -137,6 +146,7 @@ function Formulario() {
               rows={4}
               value={formData.mensaje}
               onChange={handleChange}
+              required
             />
           </Form.Group>
 
@@ -158,8 +168,8 @@ function Formulario() {
             Enviar Formulario
           </Button>
         </Form>
+            <p>{message}</p>
       </div>
-
       {/* COLUMNA DERECHA */}
       <div
         style={{

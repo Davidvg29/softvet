@@ -1,4 +1,5 @@
 const { connection } = require('../config/bd/dataBase');
+const nodemailer = require("nodemailer");
 
 // Obtener todos los clientes
 const mostrarClientes = (req, res) => {
@@ -136,6 +137,51 @@ const buscarClientes = (req, res) => {
     });
 };
 
+const contactarFormLanding =async(req, res)=>{
+    const { email, nombre, telefono, mensaje } = req.body
+
+    if (!email || !nombre || !mensaje) {
+        return res.status(400).json('Faltan campos obligatorios.');
+    }
+
+    try {
+        
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: "soporte.softvet@gmail.com",
+                pass: "isqghcuqioxqmenm", 
+            },
+        });
+    
+        const info = await transporter.sendMail({
+            from: `"Landing Softvet" <soporte.softvet@gmail.com>`, // Quién lo envía (tu sistema)
+            to: "soporte.softvet@gmail.com", // A quién le llega (tú mismo)
+            replyTo: email, // A dónde se responde al darle "Responder" en Gmail
+            subject: `Nuevo contacto de: ${nombre}`,
+            text: `Hola Equipo Softvet,\n\nHas recibido un nuevo mensaje desde la landing page.\n\nDatos del contacto:\n- Nombre: ${nombre}\n- Correo: ${email}\n- Teléfono: ${telefono || 'No provisto'}\n\nMensaje:\n${mensaje}`,
+            html: `
+            <h2>Nuevo mensaje de contacto</h2>
+            <ul>
+                <li><strong>Nombre:</strong> ${nombre}</li>
+                <li><strong>Correo:</strong> ${email}</li>
+                <li><strong>Teléfono:</strong> ${telefono || 'No provisto'}</li>
+            </ul>
+            <p><strong>Mensaje del cliente:</strong></p>
+            <p>${mensaje}</p>
+            `,
+        });
+    
+    return res.status(200).json('Mensaje enviado con exito.');
+
+    } catch (error) {
+        console.log(error);
+        
+        return res.status(500).json('Ocurrio un error al enviar el mensaje.');
+    }
+    
+}
+
 
 module.exports = {
     mostrarClientes,
@@ -143,5 +189,6 @@ module.exports = {
     crearCliente,
     editarCliente,
     eliminarCliente,
-    buscarClientes
+    buscarClientes,
+    contactarFormLanding
 };
