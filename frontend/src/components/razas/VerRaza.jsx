@@ -34,7 +34,6 @@ const VerRaza = ({ id }) => {
                 }}
             >
                 <Card.Body>
-                    <Card.Title className="mb-3">{raza.nombre_raza}</Card.Title>
                     <Card.Text><strong>Nombre:</strong> {raza.nombre_raza}</Card.Text>
                     <Card.Text><strong>Especie:</strong> {raza.nombre_especie}</Card.Text>
                 </Card.Body>
