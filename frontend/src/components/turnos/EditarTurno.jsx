@@ -23,7 +23,8 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
         motivo_turno: "",
         id_cliente: "",
         id_mascota: "",
-        id_empleado: empleado?.id_empleado
+        id_empleado: empleado?.id_empleado,
+        estado: ""
     });
 
     // Validación de roles
@@ -51,7 +52,8 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                     motivo_turno: data.motivo_turno,
                     id_cliente: data.id_cliente,
                     id_mascota: data.id_mascota,
-                    id_empleado: empleado?.id_empleado
+                    id_empleado: empleado?.id_empleado,
+                    estado: data.estado
                 });
 
                 setFecha(data.fecha_hora.substring(0, 10)); // YYYY-MM-DD
@@ -248,6 +250,23 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                                     {m.nombre_mascota} {m.tieneHistoria ? "(ya tiene historia)" : ""}
                                 </option>
                             ))}
+                        </Form.Select>
+                    </Col>
+                </Form.Group>
+
+                {/* Estado del Turno */}
+                <Form.Group as={Row} className="mb-3 align-items-center">
+                    <Form.Label column sm="3" className="text-end fw-bold">Estado:</Form.Label>
+                    <Col sm="9">
+                        <Form.Select
+                            name="estado"
+                            value={turno.estado}
+                            onChange={handleChange}
+                        >
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Confirmado">Confirmado</option>
+                            <option value="Atendido">Atendido</option>
+                            <option value="Cancelado">Cancelado</option>
                         </Form.Select>
                     </Col>
                 </Form.Group>
