@@ -6,7 +6,8 @@ const {
     crearCliente,
     editarCliente,
     eliminarCliente,
-    buscarClientes
+    buscarClientes,
+    contactarFormLanding
 } = require('../controllers/clientes');
 const { verifyToken } = require('../middlewares/jwt');
 
@@ -17,5 +18,6 @@ router.get('/buscar', verifyToken, buscarClientes);
 router.post('/crear', verifyToken, crearCliente);
 router.put('/editar/:id', verifyToken, editarCliente);
 router.delete('/eliminar/:id', verifyToken, eliminarCliente);
+router.post('/contact', contactarFormLanding);
 
 module.exports = router;
