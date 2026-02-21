@@ -38,7 +38,7 @@ const MainCategorias = () => {
   const cargarCategorias = async () => {
     try {
       const response = await axios.get(`${categorias}/ver`, { withCredentials: true });
-      setCategoria(response.data);
+      setCategoria(response.data.reverse());
     } catch (error) {
       console.error('Error al cargar las Categorias:', error);
     }

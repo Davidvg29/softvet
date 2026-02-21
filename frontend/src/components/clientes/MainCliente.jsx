@@ -41,7 +41,7 @@ const MainCliente = () => {
     try {
       const response = await axios.get(`${clientes}/ver`, { withCredentials: true });
       console.log("Respuesta del backend:", response.data);
-      setCliente(response.data);
+      setCliente(response.data.reverse());
     } catch (error) {
       console.error('Error al cargar los CLientes:', error);
     }
