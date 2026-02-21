@@ -100,16 +100,16 @@ const InformeTurnos = () => {
   const margin = 20;
   let y = 20;
 
-  // 🟣 LOGO
+  // LOGO
   pdf.addImage(logovet, "PNG", margin, y, 40, 20);
 
-  // 🟣 TÍTULO
+  // TÍTULO
   pdf.setFontSize(18);
   pdf.text("Informe de Turnos", pageWidth / 2, y + 10, { align: "center" });
 
   y += 30;
 
-  // 🟣 FILTROS
+  // FILTROS
   const clienteFiltro =
     listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || "Todos";
 
@@ -129,7 +129,7 @@ const InformeTurnos = () => {
 
   y += 15;
 
-  // 🟣 ENCABEZADO TABLA
+  // ENCABEZADO TABLA
   pdf.setFillColor(111, 66, 193);
   pdf.setTextColor(255, 255, 255);
   pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
@@ -144,7 +144,7 @@ const InformeTurnos = () => {
   pdf.setTextColor(0, 0, 0);
   y += 10;
 
-  // 🟣 FILAS
+  // FILAS
   turnos.forEach((t) => {
 
     if (y > 270) {
@@ -191,7 +191,7 @@ const InformeTurnos = () => {
     { align: "right" }
   );
 
-  // 👇 Vista previa
+  // Vista previa
   const blob = pdf.output("bloburl");
   window.open(blob, "_blank");
 };

@@ -126,10 +126,10 @@ const InformeEmpleadoMasVentas = () => {
   const margin = 20;
   let y = 20;
 
-  // 🟣 LOGO
+  //  LOGO
   pdf.addImage(logovet, "PNG", margin, y, 40, 20);
 
-  // 🟣 TÍTULO
+  //  TÍTULO
   pdf.setFontSize(18);
   pdf.text(
     "Informe de Ventas por Empleado",
@@ -140,7 +140,7 @@ const InformeEmpleadoMasVentas = () => {
 
   y += 30;
 
-  // 🟣 FILTROS
+  // FILTROS
   const clienteFiltro =
     listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || "Todos";
 
@@ -156,7 +156,7 @@ const InformeEmpleadoMasVentas = () => {
 
   y += 15;
 
-  // 🟣 ENCABEZADO TABLA
+  // ENCABEZADO TABLA
   pdf.setFillColor(111, 66, 193);
   pdf.setTextColor(255, 255, 255);
   pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
@@ -170,7 +170,7 @@ const InformeEmpleadoMasVentas = () => {
   pdf.setTextColor(0, 0, 0);
   y += 10;
 
-  // 🟣 FILAS
+  // FILAS
   empleadosRankeados.forEach((e, index) => {
 
     if (y > 270) {
@@ -194,7 +194,7 @@ const InformeEmpleadoMasVentas = () => {
 
   y += 10;
 
-  // 🟣 TOTAL GENERAL
+  // TOTAL GENERAL
   pdf.setFontSize(14);
   pdf.text(
     `TOTAL GENERAL: ${formatCurrency(totalGeneral)}`,
@@ -203,7 +203,7 @@ const InformeEmpleadoMasVentas = () => {
     { align: "right" }
   );
 
-  // 👇 Vista previa antes de descargar
+  // Vista previa antes de descargar
   const blobUrl = pdf.output("bloburl");
   window.open(blobUrl, "_blank");
 };
