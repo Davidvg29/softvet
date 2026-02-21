@@ -90,16 +90,16 @@ const InformeVentas = () => {
   const margin = 20;
   let y = 20;
 
-  // 🟣 LOGO
+  // LOGO
   pdf.addImage(logovet, "PNG", margin, y, 40, 20);
 
-  // 🟣 TÍTULO
+  // tÍTULO
   pdf.setFontSize(18);
   pdf.text("Informe de Ventas", pageWidth / 2, y + 10, { align: "center" });
 
   y += 30;
 
-  // 🟣 DATOS FILTRO
+  // DATOS FILTRO
   const clienteFiltro =
     listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || "Todos";
 
@@ -115,7 +115,7 @@ const InformeVentas = () => {
 
   y += 15;
 
-  // 🟣 ENCABEZADO TABLA
+  // ENCABEZADO TABLA
   pdf.setFillColor(111, 66, 193);
   pdf.setTextColor(255, 255, 255);
   pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
@@ -129,7 +129,7 @@ const InformeVentas = () => {
   pdf.setTextColor(0, 0, 0);
   y += 10;
 
-  // 🟣 FILAS
+  // FILAS
   ventas.forEach((v) => {
     if (y > 270) {
       pdf.addPage();
@@ -153,7 +153,7 @@ const InformeVentas = () => {
 
   y += 10;
 
-  // 🟣 TOTAL GENERAL
+  // TOTAL GENERAL
   const totalGeneral = ventas.reduce(
     (acc, v) => acc + Number(v.total_venta),
     0
@@ -169,7 +169,7 @@ const InformeVentas = () => {
     { align: "right" }
   );
 
-  // 👇 Vista previa
+  // Vista previa
   const blob = pdf.output("bloburl");
   window.open(blob, "_blank");
 };
