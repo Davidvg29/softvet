@@ -15,6 +15,12 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
   const { productos } = useProductosStore();
   const { empleado } = useEmpleadoStore();
 
+  const [busquedaCliente, setBusquedaCliente] = useState("");
+  const [mostrarListaCliente, setMostrarListaCliente] = useState(false);
+
+  const [busquedaProducto, setBusquedaProducto] = useState("");
+  const [mostrarListaProducto, setMostrarListaProducto] = useState(false);
+
   const [venta, setVenta] = useState({
     total: 0,
     id_cliente: "",
@@ -55,6 +61,12 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
         id_cliente: String(v.id_cliente),
         id_empleado: String(v.id_empleado)
       });
+
+      const clienteActual = clientes.find(c => c.id_cliente === v.id_cliente);
+
+if (clienteActual) {
+  setBusquedaCliente(`${clienteActual.nombre_cliente} - DNI: ${clienteActual.dni_cliente}`);
+}
 
       const { data: detallesAll } = await axios.get(`${detallesVentas}/ver`, { withCredentials: true });
 
@@ -256,43 +268,134 @@ const EditVenta = ({ id_venta, onClose, onUpdate }) => {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px 20px", textAlign: "left" }}>
 
           {/* CLIENTE */}
-          <Form.Group>
+          <Form.Group style={{ position: "relative" }}>
             <Form.Label><strong>Cliente:</strong></Form.Label>
-            <Form.Select
-              name="id_cliente"
-              value={venta.id_cliente}
-              onChange={handleVenta}
-              style={{ borderRadius: "8px" }}
-            >
-              <option value="">Selecciona un cliente</option>
-              {clientes.map((c, index) => (
-                <option key={index} value={c.id_cliente}>
-                  {c.nombre_cliente}
-                </option>
-              ))}
-            </Form.Select>
+
+            <Form.Control
+              type="text"
+              placeholder="Buscar cliente por nombre o DNI..."
+              value={busquedaCliente}
+              onChange={(e) => {
+                setBusquedaCliente(e.target.value);
+                setMostrarListaCliente(true);
+              }}
+              onFocus={() => setMostrarListaCliente(true)}
+              autoComplete="off"
+            />
+
+            {mostrarListaCliente && busquedaCliente && (
+              <div
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  zIndex: 1000,
+                  marginTop: "4px"
+                }}
+              >
+                {clientes
+                  .filter(cliente =>
+                    cliente.nombre_cliente.toLowerCase().includes(busquedaCliente.toLowerCase()) ||
+                    cliente.dni_cliente?.toString().includes(busquedaCliente)
+                  )
+                  .map(cliente => (
+                    <div
+                      key={cliente.id_cliente}
+                      style={{
+                        padding: "10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #f1f1f1"
+                      }}
+                      onClick={() => {
+                        setBusquedaCliente(
+                          `${cliente.nombre_cliente} - DNI: ${cliente.dni_cliente}`
+                        );
+
+                        setVenta(prev => ({
+                          ...prev,
+                          id_cliente: cliente.id_cliente
+                        }));
+
+                        setMostrarListaCliente(false);
+                      }}
+                    >
+                      {cliente.nombre_cliente} - DNI: {cliente.dni_cliente}
+                    </div>
+                  ))}
+              </div>
+            )}
           </Form.Group>
 
           {/* PRODUCTO */}
-          <Form.Group>
+          <Form.Group style={{ position: "relative" }}>
             <Form.Label><strong>Producto:</strong></Form.Label>
-            <Form.Select
-              name="id_producto"
-              value={detalleVenta.id_producto}
+
+            <Form.Control
+              type="text"
+              placeholder="Buscar producto por nombre o código..."
+              value={busquedaProducto}
               onChange={(e) => {
-                handleDetalleVenta(e);
-                const producto = productos.find(p => p.id_producto === Number(e.target.value));
-                handleProductoSeleccionado(producto);
+                setBusquedaProducto(e.target.value);
+                setMostrarListaProducto(true);
               }}
-              style={{ borderRadius: "8px" }}
-            >
-              <option value="">Selecciona un producto</option>
-              {productos.map((p, index) => (
-                <option key={index} value={p.id_producto}>
-                  {p.nombre_producto}
-                </option>
-              ))}
-            </Form.Select>
+              onFocus={() => setMostrarListaProducto(true)}
+              autoComplete="off"
+            />
+
+            {mostrarListaProducto && busquedaProducto && (
+              <div
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  zIndex: 1000,
+                  marginTop: "4px"
+                }}
+              >
+                {productos
+                  .filter(producto =>
+                    producto.nombre_producto.toLowerCase().includes(busquedaProducto.toLowerCase()) ||
+                    producto.codigo_producto.toLowerCase().includes(busquedaProducto.toLowerCase())
+                  )
+                  .map(producto => (
+                    <div
+                      key={producto.id_producto}
+                      style={{
+                        padding: "10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #f1f1f1"
+                      }}
+                      onClick={() => {
+
+                        setBusquedaProducto(
+                          `${producto.nombre_producto} - Cod: ${producto.codigo_producto}`
+                        );
+
+                        setDetalleVenta(prev => ({
+                          ...prev,
+                          id_producto: producto.id_producto,
+                          precio_unitario: producto.precio_producto,
+                          sub_total: prev.cantidad
+                            ? prev.cantidad * producto.precio_producto
+                            : ""
+                        }));
+
+                        setMostrarListaProducto(false);
+                      }}
+                    >
+                      {producto.nombre_producto} - Cod: {producto.codigo_producto}
+                    </div>
+                  ))}
+              </div>
+            )}
           </Form.Group>
 
           {/* CANTIDAD */}

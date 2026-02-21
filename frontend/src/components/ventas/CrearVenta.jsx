@@ -9,12 +9,16 @@ import { detallesVentas, VENTAS } from '../../endpoints/endpoints';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const CrearVenta = ({ onClose, onUpdate, cargarVentas}) => {
+const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
   const { clientes } = useClientesStore();
   const { productos } = useProductosStore();
   const { empleado } = useEmpleadoStore();
   const [productoSeleccionado, setProductoSeleccionado] = useState({})
   const [idVentaRecienCreada, setIdVentaRecienCreada] = useState(null)
+  const [busquedaCliente, setBusquedaCliente] = useState("");
+  const [busquedaProducto, setBusquedaProducto] = useState("");
+  const [mostrarListaProducto, setMostrarListaProducto] = useState(false);
+  const [mostrarListaCliente, setMostrarListaCliente] = useState(false);
 
   const [detalleVenta, setDetalleVenta] = useState({
     cantidad: "",
@@ -37,98 +41,108 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas}) => {
   };
 
   const handleDetalleVenta = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  const cantidad = name === "cantidad" ? value : detalleVenta.cantidad;
-  const precio = name === "precio_unitario" ? value : detalleVenta.precio_unitario;
+    const cantidad = name === "cantidad" ? value : detalleVenta.cantidad;
+    const precio = name === "precio_unitario" ? value : detalleVenta.precio_unitario;
 
-  setDetalleVenta({
-    ...detalleVenta,
-    [name]: value,
-    sub_total: (cantidad && precio) ? cantidad * precio : ""
-  });
-};
+    setDetalleVenta({
+      ...detalleVenta,
+      [name]: value,
+      sub_total: (cantidad && precio) ? cantidad * precio : ""
+    });
+  };
 
 
   const handleProductoSeleccionado = (producto) => {
-  setProductoSeleccionado(producto);
+    setProductoSeleccionado(producto);
 
-  setDetalleVenta(prev => {
-    const precio = producto?.precio_producto || 0;
-    const cantidad = prev.cantidad;
-    return {
-      ...prev,
-      precio_unitario: precio,
-      sub_total: cantidad ? cantidad * precio : "",
-    };
-  });
-};
+    setDetalleVenta(prev => {
+      const precio = producto?.precio_producto || 0;
+      const cantidad = prev.cantidad;
+      return {
+        ...prev,
+        precio_unitario: precio,
+        sub_total: cantidad ? cantidad * precio : "",
+      };
+    });
+  };
 
   const agregarItem = () => {
-  if (!detalleVenta.id_producto || !detalleVenta.cantidad) return;
+    if (!detalleVenta.id_producto || !detalleVenta.cantidad) return;
 
-  const producto = productos.find(
-    (p) => p.id_producto === Number(detalleVenta.id_producto)
-  );
+    const producto = productos.find(
+      (p) => p.id_producto === Number(detalleVenta.id_producto)
+    );
 
-  const precio = producto?.precio_producto || 0;
-  const subTotal = precio * detalleVenta.cantidad;
+    const precio = producto?.precio_producto || 0;
+    const subTotal = precio * detalleVenta.cantidad;
 
-  const nuevoItem = {
-  ...detalleVenta,
-  nombre_producto: producto.nombre_producto,
-  codigo_producto: producto.codigo_producto,
-  precio_unitario: precio,
-  sub_total: subTotal
-};
+    const nuevoItem = {
+      ...detalleVenta,
+      nombre_producto: producto.nombre_producto,
+      codigo_producto: producto.codigo_producto,
+      precio_unitario: precio,
+      sub_total: subTotal
+    };
 
 
-  setItems([...items, nuevoItem]);
+    setItems([...items, nuevoItem]);
 
-  setVenta(prev => ({
-    ...prev,
-    total: Number(prev.total || 0) + subTotal
-  }));
+    setVenta(prev => ({
+      ...prev,
+      total: Number(prev.total || 0) + subTotal
+    }));
 
-  // limpiar
-  setDetalleVenta({
-    cantidad: "",
-    precio_unitario: "",
-    sub_total: "",
-    id_producto: ""
-  });
-};
+    // limpiar
+    setDetalleVenta({
+      cantidad: "",
+      precio_unitario: "",
+      sub_total: "",
+      id_producto: ""
+    });
+  };
 
-const sendData = async(e)=>{
-  e.preventDefault()
-  try {
-    const {data} = await axios.post(`${VENTAS}/crear`, venta, { withCredentials: true })
-    // console.log("venta creada: ", data);
-    
-    const itemsConVenta = items.map(item => ({...item, id_venta: data.id_venta}));
+  const sendData = async (e) => {
+    e.preventDefault()
+    try {
+      const { data } = await axios.post(`${VENTAS}/crear`, venta, { withCredentials: true })
+      // console.log("venta creada: ", data);
 
-    for (let item of itemsConVenta) {
-      await axios.post(`${detallesVentas}/crear`, item, {withCredentials: true});
-    }
-    
-    onClose()
-    await Swal.fire({
-              icon: 'success',
-              title: 'Venta creada con éxito!',
-              confirmButtonText: 'Aceptar',
-              confirmButtonColor: '#6f42c1',
-            });
-    cargarVentas()
-  } catch (error) {
-    Swal.fire({
+      const itemsConVenta = items.map(item => ({ ...item, id_venta: data.id_venta }));
+
+      for (let item of itemsConVenta) {
+        await axios.post(`${detallesVentas}/crear`, item, { withCredentials: true });
+      }
+
+      onClose()
+      await Swal.fire({
+        icon: 'success',
+        title: 'Venta creada con éxito!',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+      cargarVentas()
+    } catch (error) {
+      Swal.fire({
         icon: "error",
         title: "Error",
         text: "Ocurrio un error al crear Venta.",
         confirmButtonText: "Aceptar",
       });
-    
+
+    }
   }
-}
+
+  const clientesFiltrados = clientes.filter(cliente =>
+    cliente.nombre_cliente.toLowerCase().includes(busquedaCliente.toLowerCase()) ||
+    cliente.dni_cliente?.toString().includes(busquedaCliente)
+  );
+
+  const productosFiltrados = productos.filter(producto =>
+    producto.nombre_producto.toLowerCase().includes(busquedaProducto.toLowerCase()) ||
+    producto.codigo_producto?.toLowerCase().includes(busquedaProducto.toLowerCase())
+  );
 
   return (
     <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
@@ -136,43 +150,133 @@ const sendData = async(e)=>{
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px 20px", textAlign: "left" }}>
 
           {/* CLIENTE */}
-          <Form.Group>
+          <Form.Group style={{ position: "relative" }}>
             <Form.Label><strong>Cliente:</strong></Form.Label>
-            <Form.Select
-              name="id_cliente"
-              value={venta.id_cliente}
-              onChange={handleVenta}
-              style={{ borderRadius: "8px" }}
-            >
-              <option value="">Selecciona un cliente</option>
-              {clientes.map((cliente, index) => (
-                <option key={index} value={cliente.id_cliente}>
-                  {cliente.nombre_cliente}
-                </option>
-              ))}
-            </Form.Select>
+
+            <Form.Control
+              type="text"
+              placeholder="Buscar Cliente por nombre o DNI..."
+              value={busquedaCliente}
+              onChange={(e) => {
+                setBusquedaCliente(e.target.value);
+                setMostrarListaCliente(true);
+              }}
+              onFocus={() => setMostrarListaC(true)}
+              autoComplete="off"
+            />
+
+            {mostrarListaCliente && busquedaCliente && (
+              <div
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  zIndex: 1000,
+                  marginTop: "4px"
+                }}
+              >
+                {clientes
+                  .filter(cliente =>
+                    cliente.nombre_cliente.toLowerCase().includes(busquedaCliente.toLowerCase()) ||
+                    cliente.dni_cliente?.toString().includes(busquedaCliente)
+                  )
+                  .map(cliente => (
+                    <div
+                      key={cliente.id_cliente}
+                      style={{
+                        padding: "10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #f1f1f1"
+                      }}
+                      onClick={() => {
+                        setBusquedaCliente(
+                          `${cliente.nombre_cliente} - DNI: ${cliente.dni_cliente}`
+                        );
+
+                        setVenta(prev => ({
+                          ...prev,
+                          id_cliente: cliente.id_cliente
+                        }));
+
+                        setMostrarListaCliente(false);
+                      }}
+                    >
+                      {cliente.nombre_cliente} - DNI: {cliente.dni_cliente}
+                    </div>
+                  ))}
+              </div>
+            )}
           </Form.Group>
 
           {/* PRODUCTO */}
-          <Form.Group>
+          <Form.Group style={{ position: "relative" }}>
             <Form.Label><strong>Producto:</strong></Form.Label>
-            <Form.Select
-              name="id_producto"
-              value={detalleVenta.id_producto}
+
+            <Form.Control
+              type="text"
+              placeholder="Buscar producto por nombre o código..."
+              value={busquedaProducto}
               onChange={(e) => {
-                handleDetalleVenta(e);
-                const producto = productos.find(p => p.id_producto === Number(e.target.value));
-                handleProductoSeleccionado(producto);
+                setBusquedaProducto(e.target.value);
+                setMostrarListaProducto(true);
               }}
-              style={{ borderRadius: "8px" }}
-            >
-              <option value="">Selecciona un producto</option>
-              {productos.map((producto, index) => (
-                <option key={index} value={producto.id_producto}>
-                  {producto.nombre_producto}
-                </option>
-              ))}
-            </Form.Select>
+              onFocus={() => setMostrarListaProducto(true)}
+              autoComplete="off"
+            />
+
+            {mostrarListaProducto && busquedaProducto && (
+              <div
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  maxHeight: "200px",
+                  overflowY: "auto",
+                  zIndex: 1000,
+                  marginTop: "4px"
+                }}
+              >
+                {productos
+                  .filter(producto =>
+                    producto.nombre_producto.toLowerCase().includes(busquedaProducto.toLowerCase()) ||
+                    producto.codigo_producto.toLowerCase().includes(busquedaProducto.toLowerCase())
+                  )
+                  .map(producto => (
+                    <div
+                      key={producto.id_producto}
+                      style={{
+                        padding: "10px",
+                        cursor: "pointer",
+                        borderBottom: "1px solid #f1f1f1"
+                      }}
+                      onClick={() => {
+                        setBusquedaProducto(
+                          `${producto.nombre_producto} - Cod: ${producto.codigo_producto}`
+                        );
+
+                        setDetalleVenta(prev => ({
+                          ...prev,
+                          id_producto: producto.id_producto,
+                          precio_unitario: producto.precio_producto,
+                          sub_total: prev.cantidad
+                            ? prev.cantidad * producto.precio_producto
+                            : ""
+                        }));
+
+                        setMostrarListaProducto(false);
+                      }}
+                    >
+                      {producto.nombre_producto} - Cod: {producto.codigo_producto}
+                    </div>
+                  ))}
+              </div>
+            )}
           </Form.Group>
 
           {/* CANTIDAD */}
@@ -188,7 +292,7 @@ const sendData = async(e)=>{
             />
           </Form.Group>
 
-          
+
 
           {/* BOTÓN AÑADIR */}
           <Button
@@ -215,7 +319,7 @@ const sendData = async(e)=>{
 
         {/* TABLA DE ITEMS */}
         <div className='mt-3'>
-            <Table
+          <Table
             hover
             responsive
             style={{
@@ -271,18 +375,18 @@ const sendData = async(e)=>{
                       {item.nombre_producto}
                     </td>
                     <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
-                        {item.cantidad}
+                      {item.cantidad}
                     </td>
                     {/* <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
                         {"Asd"}
                     </td> */}
                     <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
-                        $ {item.precio_unitario}
+                      $ {item.precio_unitario}
                     </td>
                     <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
-                        $ {item.sub_total}
+                      $ {item.sub_total}
                     </td>
-                    
+
                   </tr>
                 ))
               ) : (
@@ -297,8 +401,8 @@ const sendData = async(e)=>{
 
           </Table>
         </div>
-            <div><p>Total: ${venta.total || 0}</p></div>
-            
+        <div><p>Total: ${venta.total || 0}</p></div>
+
 
         {/* BOTONES */}
         <div style={{ textAlign: "center", marginTop: "25px" }}>
