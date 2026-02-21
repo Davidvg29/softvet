@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Form, Button, Table, Spinner, Alert, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import logovet from "../../assets/logovet.png";
 
 import { informes, empleados, clientes } from "../../endpoints/endpoints";
 
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 
 const InformeVentas = () => {
@@ -78,58 +78,101 @@ const InformeVentas = () => {
     }
   };
 
-  const descargarPDF = async () => {
-    if (ventas.length === 0 || !tableRef.current) {
-      setError("No hay datos cargados para generar el PDF.");
-      return;
+  const descargarPDF = () => {
+  if (ventas.length === 0) {
+    setError("No hay datos para generar el PDF.");
+    return;
+  }
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const margin = 20;
+  let y = 20;
+
+  // 🟣 LOGO
+  pdf.addImage(logovet, "PNG", margin, y, 40, 20);
+
+  // 🟣 TÍTULO
+  pdf.setFontSize(18);
+  pdf.text("Informe de Ventas", pageWidth / 2, y + 10, { align: "center" });
+
+  y += 30;
+
+  // 🟣 DATOS FILTRO
+  const clienteFiltro =
+    listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || "Todos";
+
+  const empleadoFiltro =
+    listaEmpleados.find(e => String(e.id_empleado) === idEmpleado)?.nombre_empleado || "Todos";
+
+  pdf.setFontSize(12);
+  pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, margin, y);
+  y += 7;
+  pdf.text(`Cliente: ${clienteFiltro}`, margin, y);
+  y += 7;
+  pdf.text(`Empleado: ${empleadoFiltro}`, margin, y);
+
+  y += 15;
+
+  // 🟣 ENCABEZADO TABLA
+  pdf.setFillColor(111, 66, 193);
+  pdf.setTextColor(255, 255, 255);
+  pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
+
+  pdf.text("ID", margin + 2, y);
+  pdf.text("Cliente", margin + 20, y);
+  pdf.text("Empleado", margin + 75, y);
+  pdf.text("Total", margin + 120, y);
+  pdf.text("Fecha", margin + 150, y);
+
+  pdf.setTextColor(0, 0, 0);
+  y += 10;
+
+  // 🟣 FILAS
+  ventas.forEach((v) => {
+    if (y > 270) {
+      pdf.addPage();
+      y = 20;
     }
 
-    setPdfLoading(true);
+    pdf.text(String(v.id_venta), margin + 2, y);
+    pdf.text(v.cliente || "", margin + 20, y);
+    pdf.text(v.empleado || "", margin + 75, y);
+    pdf.text(
+      `$ ${Number(v.total_venta).toLocaleString("es-AR", {
+        minimumFractionDigits: 2,
+      })}`,
+      margin + 120,
+      y
+    );
+    pdf.text(v.fecha_hora || "", margin + 150, y);
 
-    try {
-      const input = tableRef.current;
-      const canvas = await html2canvas(input, { scale: 2 });
-      const imgData = canvas.toDataURL('image/png');
+    y += 8;
+  });
 
-      const pdf = new jsPDF('p', 'mm', 'a4');
+  y += 10;
 
-      const imgWidth = 200;
-      const pageHeight = 290;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 5;
+  // 🟣 TOTAL GENERAL
+  const totalGeneral = ventas.reduce(
+    (acc, v) => acc + Number(v.total_venta),
+    0
+  );
 
-      // Obtener nombres para el PDF usando los IDs seleccionados
-      const clienteFiltro = listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || 'Todos';
-      const empleadoFiltro = listaEmpleados.find(e => String(e.id_empleado) === idEmpleado)?.nombre_empleado || 'Todos';
+  pdf.setFontSize(14);
+  pdf.text(
+    `TOTAL GENERAL: $ ${totalGeneral.toLocaleString("es-AR", {
+      minimumFractionDigits: 2,
+    })}`,
+    pageWidth - margin,
+    y,
+    { align: "right" }
+  );
 
-      pdf.setFontSize(14);
-      pdf.text("Informe de Ventas por Fecha", 10, 15);
-      pdf.setFontSize(10);
-      pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, 10, 22);
-      pdf.text(`Cliente: ${clienteFiltro} | Empleado: ${empleadoFiltro}`, 10, 29);
-
-      position = 35;
-
-      pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      pdf.save(`Informe_Ventas_${fechaInicio}_a_${fechaFin}.pdf`);
-
-    } catch (err) {
-      console.error("Error al generar el PDF:", err);
-      setError("Ocurrió un error al generar el archivo PDF.");
-    } finally {
-      setPdfLoading(false);
-    }
-  };
+  // 👇 Vista previa
+  const blob = pdf.output("bloburl");
+  window.open(blob, "_blank");
+};
 
 
   return (
