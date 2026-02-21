@@ -24,35 +24,45 @@ const verDetallesVentas = (req, res) => {
 }
 
 const crearDetalleVenta = (req, res) => {
-    const {cantidad, precio_unitario, sub_total, id_venta, id_producto} = req.body;
+    const { cantidad, precio_unitario, sub_total, id_venta, id_producto } = req.body;
+    
     const validation = validationsCrearDetallesVentas(req.body);
-    if(validation !== null){
-        return res.status(400).json({error: validation});
+    if (validation !== null) {
+        return res.status(400).json({ error: validation });
     }
 
-    const queryCrearDetalleVenta = `insert into detalles_ventas (cantidad, precio_unitario, sub_total, id_venta, id_producto) values (?,?,?,?,?);`
-    connection.query(queryCrearDetalleVenta, [cantidad, precio_unitario, sub_total, id_venta, id_producto], (error, results) => {
-        if (error) {
-            return res.status(500).json({ error: 'Error al crear detalle de venta, verifique que exista venta y que exista el producto seleccionado.' });
-        }else{
-            const stockProducto = `select * from stock where id_producto = ?;`
-            connection.query(stockProducto, [id_producto], (errorStock, resultsStock) => {
-                if (errorStock) {
-                    return res.status(500).json({ error: 'Error al actualizar el stock del producto.' });
-                }else{
-                    const nuevaCantidad = resultsStock[0].cantidad - cantidad;
-                    const actualizarStock = `update stock set cantidad = ? where id_producto = ?;`
-                    connection.query(actualizarStock, [nuevaCantidad, id_producto], (errorActualizarStock, resultsActualizarStock) => {
-                        if (errorActualizarStock) {
-                            return res.status(500).json({ error: 'Error al actualizar el stock del producto.' });
-                        }
-                    })
-                }
-            })
-            return res.status(201).json('Detalle de venta creado correctamente.');
+    const queryStock = `SELECT cantidad FROM stock WHERE id_producto = ?`;
+    
+    connection.query(queryStock, [id_producto], (errorStock, resultsStock) => {
+        if (errorStock || resultsStock.length === 0) {
+            return res.status(500).json({ error: 'Producto no encontrado en stock o error de servidor.' });
         }
-    })
-}
+
+        const stockActual = resultsStock[0].cantidad;
+
+        if (stockActual < cantidad) {
+            return res.status(400).json({ error: `Stock insuficiente. Disponible: ${stockActual}, Solicitado: ${cantidad}` });
+        }
+
+        const queryInsert = `INSERT INTO detalles_ventas (cantidad, precio_unitario, sub_total, id_venta, id_producto) VALUES (?,?,?,?,?)`;
+        
+        connection.query(queryInsert, [cantidad, precio_unitario, sub_total, id_venta, id_producto], (errorInsert) => {
+            if (errorInsert) {
+                return res.status(500).json({ error: 'Error al crear el detalle de venta.' });
+            }
+
+            const nuevaCantidad = stockActual - cantidad;
+            const queryUpdateStock = `UPDATE stock SET cantidad = ? WHERE id_producto = ?`;
+
+            connection.query(queryUpdateStock, [nuevaCantidad, id_producto], (errorUpdate) => {
+                if (errorUpdate) {
+                    return res.status(500).json({ error: 'Error crítico al actualizar el stock.' });
+                }
+                return res.status(201).json({ message: 'Detalle de venta creado y stock actualizado correctamente.' });
+            });
+        });
+    });
+};
 
 const editarDetalleVenta = (req, res) => {
     const id_detalle_venta = req.params.id;

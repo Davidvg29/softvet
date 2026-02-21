@@ -42,7 +42,7 @@ const MainVentas = () => {
   const cargarVentas = async () => {
     try {
       const {data} = await axios.get(`${VENTAS}/ver`, { withCredentials: true });
-      const ventasFilter = data.filter((v)=>(v.is_active == 1))
+      const ventasFilter = data.reverse().filter((v)=>(v.is_active == 1))
       setVentas(ventasFilter || []);
     } catch (error) {
       console.error('Error al cargar las ventas:', error);
