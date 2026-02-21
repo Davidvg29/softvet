@@ -124,10 +124,11 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
       });
       cargarVentas()
     } catch (error) {
+      
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Ocurrio un error al crear Venta.",
+        text: error?.response?.data?.error,
         confirmButtonText: "Aceptar",
       });
 
