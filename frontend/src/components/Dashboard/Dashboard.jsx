@@ -292,7 +292,7 @@ const Dashboard = () => {
             </Col> */}
 
             {(rol === "Administrador" || rol === "Veterinario") && (
-              <Col xs="auto" className="mb-3" style={{ width: "180px", height: "160px" }}>
+              <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
                 <DashboardCard to="/especies" label="Especies" Icon={Dna} index={3} />
               </Col>
             )}
