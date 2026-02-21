@@ -65,7 +65,7 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
   // CONTROLAR PERMISOS
  
   useEffect(() => {
-    if ((rolUsuario !== "Veterinario" && rolUsuario !== "Administrador" ) && rolUsuario !== "") {
+    if (rolUsuario !== "Veterinario" && rolUsuario !== "") {
       Swal.fire({
         icon: "error",
         title: "Acceso Denegado",

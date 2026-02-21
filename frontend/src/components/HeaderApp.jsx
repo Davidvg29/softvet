@@ -116,7 +116,7 @@ const Header = () => {
                         <Nav.Link as={Link} to="/mascotas"> <FaDog className="me-2" /> Mascotas</Nav.Link>
                         )}
 
-                        {(rol === "Administrador" || rol === "Veterinario") && (
+                        {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
                         <Nav.Link as={Link} to="/historiaClinica"> <FaFileMedical className="me-2" /> Historias Clinicas</Nav.Link>
                         )}
 
