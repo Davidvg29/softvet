@@ -4,7 +4,7 @@ import axios from "axios";
 import { informes, empleados, clientes } from "../../endpoints/endpoints";
 
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import logovet from "../../assets/logovet.png";
 
 
 // Función de utilidad para formatear moneda ARS
@@ -113,54 +113,105 @@ const InformeEmpleadoMasVentas = () => {
 
   // Descarga de PDF
 
-  const descargarPDF = async () => {
-    if (empleadosRankeados.length === 0 || !tableRef.current) {
-      setError("No hay datos cargados para generar el PDF.");
-      return;
+  const descargarPDF = () => {
+  if (empleadosRankeados.length === 0) {
+    setError("No hay datos cargados para generar el PDF.");
+    return;
+  }
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  let y = 20;
+
+  // 🟣 LOGO
+  pdf.addImage(logovet, "PNG", margin, y, 40, 20);
+
+  // 🟣 TÍTULO
+  pdf.setFontSize(18);
+  pdf.text(
+    "Informe de Ventas por Empleado",
+    pageWidth / 2,
+    y + 10,
+    { align: "center" }
+  );
+
+  y += 30;
+
+  // 🟣 FILTROS
+  const clienteFiltro =
+    listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || "Todos";
+
+  const empleadoFiltro =
+    listaEmpleados.find(e => String(e.id_empleado) === idEmpleado)?.nombre_empleado || "Todos";
+
+  pdf.setFontSize(12);
+  pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, margin, y);
+  y += 7;
+  pdf.text(`Cliente: ${clienteFiltro}`, margin, y);
+  y += 7;
+  pdf.text(`Empleado: ${empleadoFiltro}`, margin, y);
+
+  y += 15;
+
+  // 🟣 ENCABEZADO TABLA
+  pdf.setFillColor(111, 66, 193);
+  pdf.setTextColor(255, 255, 255);
+  pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
+
+  pdf.text("Pos", margin + 2, y);
+  pdf.text("Empleado", margin + 15, y);
+  pdf.text("DNI", margin + 70, y);
+  pdf.text("Cant.", margin + 100, y);
+  pdf.text("Total Vendido", margin + 120, y);
+
+  pdf.setTextColor(0, 0, 0);
+  y += 10;
+
+  // 🟣 FILAS
+  empleadosRankeados.forEach((e, index) => {
+
+    if (y > 270) {
+      pdf.addPage();
+      y = 20;
     }
 
-    setPdfLoading(true);
-    setError("");
+    pdf.text(String(index + 1), margin + 2, y);
+    pdf.text(e.nombre_empleado || "", margin + 15, y);
+    pdf.text(e.dni_empleado || "", margin + 70, y);
+    pdf.text(String(e.cantidad_ventas || 0), margin + 100, y);
 
-    try {
-      const canvas = await html2canvas(tableRef.current);
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
+    pdf.text(
+      formatCurrency(e.total_vendido),
+      margin + 120,
+      y
+    );
 
-      // Calcular escala para ajustar la imagen al PDF
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const finalWidth = imgWidth * ratio - 20; // 10mm de margen a cada lado
-      const finalHeight = imgHeight * ratio - 20;
-      const x = (pdfWidth - finalWidth) / 2;
-      const y = 10; // Margen superior
+    y += 8;
+  });
 
-      // Agregar título al PDF
-      pdf.setFontSize(16);
-      pdf.text("Informe de Ventas por Empleado", 10, 10);
-      pdf.setFontSize(10);
-      pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, 10, 18);
-      pdf.text(`Total General: ${formatCurrency(totalGeneral)}`, 10, 26);
+  y += 10;
 
-      // Agregar tabla (ajustada para que quepa en la página después del encabezado)
-      pdf.addImage(imgData, 'PNG', x, y + 25, finalWidth, finalHeight);
-      pdf.save('Informe_Ventas_Empleado.pdf');
+  // 🟣 TOTAL GENERAL
+  pdf.setFontSize(14);
+  pdf.text(
+    `TOTAL GENERAL: ${formatCurrency(totalGeneral)}`,
+    pageWidth - margin,
+    y,
+    { align: "right" }
+  );
 
-    } catch (err) {
-      console.error("Error al generar PDF:", err);
-      setError("Error al generar el PDF. Intente de nuevo.");
-    } finally {
-      setPdfLoading(false);
-    }
-  };
+  // 👇 Vista previa antes de descargar
+  const blobUrl = pdf.output("bloburl");
+  window.open(blobUrl, "_blank");
+};
 
 
   return (
     <div>
-      <h5 className="mb-3">Informe de Ventas Agrupadas por Empleado</h5>
+      <h5 className="mb-3">Informe de Ventas por Empleado</h5>
 
       {filtroError && <Alert variant="warning">{filtroError}</Alert>}
 
