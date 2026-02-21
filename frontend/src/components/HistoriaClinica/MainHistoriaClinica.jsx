@@ -278,7 +278,8 @@ const MainHistoriaClinica = () => {
             <tbody className=''>
               {historiaClinicaFiltrados.length > 0 ? (
                 [...historiaClinicaFiltrados]
-                  .sort((a, b) => b.id_historia_clinica - a.id_historia_clinica)
+                .sort((a, b) => b.id_historia_clinica - a.id_historia_clinica)
+                .reverse()
                   .map((historiaClinica, index) => (
                     <tr key={index}
                       style={{

@@ -34,7 +34,7 @@ const MainMascota = () => {
       const { data } = await axios.get(`${mascotas}/ver`, {
         withCredentials: true,
       });
-      setListaMascotas(data);
+      setListaMascotas(data.reverse());
     } catch (error) {
       console.error("Error al cargar mascotas:", error);
     }

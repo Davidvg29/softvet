@@ -48,7 +48,7 @@ const MainRaza = () => {
 
             const { data } = await axios.get(`${razas}/ver`, { withCredentials: true });
             console.log(data);
-            setRaza(data);
+            setRaza(data.reverse());
         } catch (error) {
             console.error("Error al cargar las razas:", error);
         }

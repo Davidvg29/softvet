@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Form, Button, Table, Spinner, Alert, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { informes, empleados, clientes } from "../../endpoints/endpoints";
-
+import logovet from "../../assets/logovet.png";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 
 const InformeTurnos = () => {
@@ -89,61 +88,113 @@ const InformeTurnos = () => {
   };
 
 
-  const descargarPDF = async () => {
-    if (turnos.length === 0 || !tableRef.current) {
-      setError("No hay datos cargados para generar el PDF.");
-      return;
+  const descargarPDF = () => {
+  if (turnos.length === 0) {
+    setError("No hay datos para generar el PDF.");
+    return;
+  }
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const margin = 20;
+  let y = 20;
+
+  // LOGO
+  pdf.addImage(logovet, "PNG", margin, y, 40, 20);
+
+  // TÍTULO
+  pdf.setFontSize(18);
+  pdf.text("Informe de Turnos", pageWidth / 2, y + 10, { align: "center" });
+
+  y += 30;
+
+  // FILTROS
+  const clienteFiltro =
+    listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || "Todos";
+
+  const empleadoFiltro =
+    listaEmpleados.find(e => String(e.id_empleado) === idEmpleado)?.nombre_empleado || "Todos";
+
+  const estadoFiltro = estadoTurno || "Todos";
+
+  pdf.setFontSize(12);
+  pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, margin, y);
+  y += 7;
+  pdf.text(`Cliente: ${clienteFiltro}`, margin, y);
+  y += 7;
+  pdf.text(`Empleado: ${empleadoFiltro}`, margin, y);
+  y += 7;
+  pdf.text(`Estado: ${estadoFiltro}`, margin, y);
+
+  y += 15;
+
+  // ENCABEZADO TABLA
+  pdf.setFillColor(111, 66, 193);
+  pdf.setTextColor(255, 255, 255);
+  pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
+
+  pdf.text("ID", margin + 2, y);
+  pdf.text("Fecha/Hora", margin + 20, y);
+  pdf.text("Estado", margin + 65, y);
+  pdf.text("Cliente", margin + 95, y);
+  pdf.text("Mascota", margin + 130, y);
+  pdf.text("Empleado", margin + 160, y);
+
+  pdf.setTextColor(0, 0, 0);
+  y += 10;
+
+  // FILAS
+  turnos.forEach((t) => {
+
+    if (y > 270) {
+      pdf.addPage();
+      y = 20;
     }
 
-    setPdfLoading(true);
+    // Formateo fecha igual que en tabla
+    let displayFecha = "N/A";
+    let fechaStringLimpia = "";
 
-    try {
-      const input = tableRef.current;
-      const canvas = await html2canvas(input, { scale: 2 });
-      const imgData = canvas.toDataURL('image/png');
+    if (t.fecha instanceof Date) {
+      fechaStringLimpia = t.fecha.toISOString().slice(0, 10);
+    } else if (typeof t.fecha === "string") {
+      fechaStringLimpia = t.fecha.slice(0, 10);
+    }
 
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 200;
-      const pageHeight = 290;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 5;
-
-      // Obtener nombres para el PDF usando los IDs seleccionados
-      const clienteFiltro = listaClientes.find(c => String(c.id_cliente) === idCliente)?.nombre_cliente || 'Todos';
-      const empleadoFiltro = listaEmpleados.find(e => String(e.id_empleado) === idEmpleado)?.nombre_empleado || 'Todos';
-      const estadoFiltro = estadoTurno || 'Todos';
-
-      pdf.setFontSize(14);
-
-      pdf.text("Informe de Turnos por Fecha", 10, 15);
-      pdf.setFontSize(10);
-      pdf.text(`Período: ${fechaInicio} al ${fechaFin}`, 10, 22);
-
-      pdf.text(`Cliente: ${clienteFiltro} | Empleado: ${empleadoFiltro} | Estado: ${estadoFiltro}`, 10, 29);
-
-      position = 35;
-
-      pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+    if (fechaStringLimpia) {
+      const partes = fechaStringLimpia.split("-");
+      if (partes.length === 3) {
+        displayFecha = `${partes[2]}/${partes[1]}/${partes[0]}`;
       }
-
-
-      pdf.save(`Informe_Turnos_${fechaInicio}_a_${fechaFin}.pdf`);
-
-    } catch (err) {
-      console.error("Error al generar el PDF de turnos:", err);
-      setError("Ocurrió un error al generar el archivo PDF.");
-    } finally {
-      setPdfLoading(false);
     }
-  };
+
+    const displayHora = t.hora ? t.hora.slice(0, 5) : "N/A";
+
+    pdf.text(String(t.id_turno), margin + 2, y);
+    pdf.text(`${displayFecha} ${displayHora}`, margin + 20, y);
+    pdf.text(t.estado || "", margin + 65, y);
+    pdf.text(t.cliente || "", margin + 95, y);
+    pdf.text(t.mascota || "", margin + 130, y);
+    pdf.text(t.empleado || "", margin + 160, y);
+
+    y += 8;
+  });
+
+  y += 10;
+
+  pdf.setFontSize(14);
+  pdf.text(
+    `TOTAL TURNOS: ${turnos.length}`,
+    pageWidth - margin,
+    y,
+    { align: "right" }
+  );
+
+  // Vista previa
+  const blob = pdf.output("bloburl");
+  window.open(blob, "_blank");
+};
 
 
   return (

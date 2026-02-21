@@ -39,7 +39,7 @@ const MainProducto = () => {
     try {
       const response = await axios.get(`${productos}/ver`, { withCredentials: true });
       console.log("Respuesta del backend:", response.data);
-      setProducto(response.data);
+      setProducto(response.data.reverse());
     } catch (error) {
       console.error('Error al cargar los Productos:', error);
     }

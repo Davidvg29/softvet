@@ -101,6 +101,7 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
       sub_total: "",
       id_producto: ""
     });
+    setBusquedaProducto("")
   };
 
   const sendData = async (e) => {
@@ -124,10 +125,11 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
       });
       cargarVentas()
     } catch (error) {
+      
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Ocurrio un error al crear Venta.",
+        text: error?.response?.data?.error,
         confirmButtonText: "Aceptar",
       });
 
@@ -143,6 +145,21 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
     producto.nombre_producto.toLowerCase().includes(busquedaProducto.toLowerCase()) ||
     producto.codigo_producto?.toLowerCase().includes(busquedaProducto.toLowerCase())
   );
+
+  const eliminarItem = (indexEliminar) => {
+    // 1. Buscamos el item que vamos a eliminar para saber cuánto restar al total
+    const itemAEliminar = items[indexEliminar];
+
+    // 2. Filtramos la lista para quitar el item por su índice
+    const nuevosItems = items.filter((_, index) => index !== indexEliminar);
+    setItems(nuevosItems);
+
+    // 3. Actualizamos el total de la venta restando el sub_total del producto eliminado
+    setVenta(prev => ({
+      ...prev,
+      total: Number(prev.total) - Number(itemAEliminar.sub_total)
+    }));
+  };
 
   return (
     <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
@@ -344,6 +361,7 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
                 <th style={{ padding: "14px" }}>Cant.</th>
                 <th style={{ padding: "14px" }}>Prec. u.</th>
                 <th style={{ padding: "14px" }}>Sub total</th>
+                <th style={{ padding: "14px" }}></th>
               </tr>
             </thead>
             <tbody >
@@ -386,7 +404,15 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
                     <td style={{ padding: "3px", fontWeight: "400", textAlign: "center", color: "#333", border: "none" }}>
                       $ {item.sub_total}
                     </td>
-
+                      <td>
+                        <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => eliminarItem(index)}
+                      >
+                        X
+                      </Button>
+                      </td>
                   </tr>
                 ))
               ) : (

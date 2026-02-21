@@ -38,7 +38,7 @@ const MainEspecies = () => {
   const cargarEspecies = async () => {
     try {
       const response = await axios.get(`${ESPECIES}/ver`, { withCredentials: true });
-      setEspecies(response.data);
+      setEspecies(response.data.reverse());
     } catch (error) {
       console.error('Error al cargar los especies:', error);
     }

@@ -38,7 +38,7 @@ const MainTurnos = () => {
   const cargarTurnos = async () => {
     try {
       const response = await axios.get(`${TURNOS}/ver`, { withCredentials: true });
-      setTurnos(response.data);
+      setTurnos(response.data.reverse());
     } catch (error) {
       console.error('Error al cargar los Turnos:', error);
     }

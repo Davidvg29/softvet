@@ -38,7 +38,7 @@ const MainStock = () => {
   const cargarStock = async () => {
     try {
       const response = await axios.get(`${STOCK}/ver`, { withCredentials: true });
-      setStock(response.data);
+      setStock(response.data.reverse());
     } catch (error) {
       console.error('Error al cargar Stock:', error);
     }
