@@ -259,7 +259,7 @@ const Dashboard = () => {
               </Col>
             )}
 
-            {(rol === "Administrador" || rol === "Veterinario") && (
+            {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
                 <DashboardCard to="/historiaClinica" label="Historia Clínica" Icon={FileText} index={8} count={historiasClinicas?.length} />
               </Col>
