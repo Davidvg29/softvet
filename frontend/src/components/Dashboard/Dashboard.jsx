@@ -291,13 +291,13 @@ const Dashboard = () => {
               <DashboardCard to="/proveedores" label="Proveedores" Icon={Truck} index={2} />
             </Col> */}
 
-            {(rol === "Administrador" || rol === "Veterinario") && (
+            {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
                 <DashboardCard to="/especies" label="Especies" Icon={Dna} index={3} />
               </Col>
             )}
 
-            {(rol === "Administrador" || rol === "Veterinario") && (
+            {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
                 <DashboardCard to="/razas" label="Razas" Icon={PawPrint} index={9} />
               </Col>
