@@ -183,15 +183,24 @@ const activarMascota = (req, res) => {
 const mostrarMascotasPorCliente = (req, res) => {
     const { id_cliente } = req.params;
 
-    const query = "SELECT * FROM mascotas WHERE id_cliente = ? AND is_active = 1";
+    // Esta es la consulta clave: une las tablas para traer los nombres
+    const query = `
+        SELECT 
+            m.*, 
+            r.nombre_raza, 
+            e.nombre_especie 
+        FROM mascotas m
+        LEFT JOIN razas r ON m.id_raza = r.id_raza
+        LEFT JOIN especies e ON r.id_especie = e.id_especie
+        WHERE m.id_cliente = ? AND m.is_active = 1
+    `;
 
     connection.query(query, [id_cliente], (error, results) => {
         if (error) {
             console.log("ERROR SQL en mostrarMascotasPorCliente:", error);
             return res.status(500).json({ error: "Error al obtener las mascotas del cliente." });
         }
-
-        res.json(results);
+        res.json(results); // Ahora los objetos tendrán 'nombre_raza' y 'nombre_especie'
     });
 };
 
