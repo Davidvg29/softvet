@@ -105,36 +105,39 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
   };
 
   const sendData = async (e) => {
-    e.preventDefault()
-    try {
-      const { data } = await axios.post(`${VENTAS}/crear`, venta, { withCredentials: true })
-      // console.log("venta creada: ", data);
+  e.preventDefault();
+  try {
+    const { data } = await axios.post(`${VENTAS}/crear`, venta, { withCredentials: true });
 
-      const itemsConVenta = items.map(item => ({ ...item, id_venta: data.id_venta }));
+    const itemsConVenta = items.map(item => ({
+      ...item,
+      id_venta: data.id_venta
+    }));
 
-      for (let item of itemsConVenta) {
-        await axios.post(`${detallesVentas}/crear`, item, { withCredentials: true });
-      }
-
-      onClose()
-      await Swal.fire({
-        icon: 'success',
-        title: 'Venta creada con éxito!',
-        confirmButtonText: 'Aceptar',
-        confirmButtonColor: '#6f42c1',
-      });
-      cargarVentas()
-    } catch (error) {
-      
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error?.response?.data?.error,
-        confirmButtonText: "Aceptar",
-      });
-
+    for (let item of itemsConVenta) {
+      await axios.post(`${detallesVentas}/crear`, item, { withCredentials: true });
     }
+
+    if (onUpdate) {
+      onUpdate(data.id_venta);   
+    }
+
+    onClose();
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Venta creada con éxito!',
+      confirmButtonColor: '#6f42c1',
+    });
+
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error?.response?.data?.error,
+    });
   }
+};
 
   const clientesFiltrados = clientes.filter(cliente =>
     cliente.nombre_cliente.toLowerCase().includes(busquedaCliente.toLowerCase()) ||

@@ -21,17 +21,28 @@ const mostrardetalleHistoriaClinicaPorId = (req, res) => {
     
     const query = `
         SELECT 
-            d.id_detalle_historia_clinica,
-            d.fecha_hora AS fecha_atencion,
-            d.observaciones AS diagnostico_detalle,
-            e.nombre_empleado AS veterinario_atencion,
-            d.id_sucursal,
-            d.id_venta
-        FROM detalle_historia_clinica AS d
-        LEFT JOIN empleados AS e 
-            ON d.id_empleado = e.id_empleado
-        WHERE d.id_historia_clinica = ?
-        ORDER BY d.fecha_hora DESC;
+    d.id_detalle_historia_clinica,
+    d.fecha_hora AS fecha_atencion,
+    d.observaciones AS diagnostico_detalle,
+    e.nombre_empleado AS veterinario_atencion,
+    d.id_sucursal,
+    d.id_venta,
+    -- Aquí generamos el JSON de los productos
+    (SELECT JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'producto', p.nombre_producto,
+                    'cantidad', dv.cantidad,
+                    'precio_unitario', dv.precio_unitario
+                )
+            )
+     FROM detalles_ventas dv
+     JOIN productos p ON dv.id_producto = p.id_producto
+     WHERE dv.id_venta = d.id_venta
+    ) AS productos_vendidos
+FROM detalle_historia_clinica AS d
+LEFT JOIN empleados AS e ON d.id_empleado = e.id_empleado
+WHERE d.id_historia_clinica = ?
+ORDER BY d.fecha_hora DESC;
     `;
 
     connection.query(query, [id], (error, results) => {
