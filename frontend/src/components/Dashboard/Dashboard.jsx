@@ -275,7 +275,7 @@ const Dashboard = () => {
               <DashboardCard to="/compras" label="Compras" Icon={ShoppingCart} index={5} />
             </Col> */}
 
-            {(rol === "Administrador") && (
+            {(rol === "Administrador" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
                 <DashboardCard to="/productos" label="Productos" Icon={Package} index={7} count={productos?.length} />
               </Col>
