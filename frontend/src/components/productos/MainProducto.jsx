@@ -9,8 +9,11 @@ import { productos } from '../../endpoints/endpoints';
 import CrearProducto from './CrearProducto';
 import VerProducto from './VerProducto';
 import EditProducto from './EditProducto';
+import { useEmpleadoStore } from '../../zustand/empleado'; // Asegúrate de que la ruta sea correcta
 
 const MainProducto = () => {
+  const empleado = useEmpleadoStore((state) => state.empleado);
+  const rolUsuario = empleado?.nombre_rol || "";
   const [producto, setProducto] = useState([]);
   const [productoId, setProductoId] = useState(null);
   const [busqueda, setBusqueda] = useState('');
@@ -101,6 +104,41 @@ const MainProducto = () => {
     }
   };
 
+  // Validación para Crear y Editar
+  const handleAccionProducto = (type, id = null) => {
+    if (type === 'ver') {
+      handleOpenModal('ver', id); // El Recepcionista SI puede ver
+      return;
+    }
+
+    // Si intenta crear o editar y no es Admin, lanzamos el error
+    if (rolUsuario !== "Administrador") {
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: "No tienes permisos para realizar esta acción. Solo el Administrador puede gestionar productos.",
+        confirmButtonColor: "#6f42c1",
+      });
+      return;
+    }
+
+    handleOpenModal(type, id);
+  };
+
+  // Validación para Dar de Baja
+  const handleBorrarConPermiso = (id) => {
+    if (rolUsuario !== "Administrador") {
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: "Solo el Administrador puede dar de baja productos.",
+        confirmButtonColor: "#6f42c1",
+      });
+      return;
+    }
+    borrarProductos(id);
+  };
+
   return (
     <>
     <div className="text-center">
@@ -151,7 +189,7 @@ const MainProducto = () => {
             onChange={(e) => setBusqueda(e.target.value)}
           />
           <Button
-            onClick={() => handleOpenModal('crear')}
+            onClick={() => handleAccionProducto('crear')}
             style={{
               backgroundColor: "#6f42c1",
               border: "none",
@@ -313,7 +351,7 @@ const MainProducto = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #138a28";
                 }}
-                onClick={() => handleOpenModal("ver", producto.id_producto)}
+                onClick={() => handleAccionProducto("ver", producto.id_producto)}
               >
                 Ver
               </Button>
@@ -336,7 +374,7 @@ const MainProducto = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #d39e00";
                 }}
-                onClick={() => handleOpenModal("editar", producto.id_producto)}
+                onClick={() => handleAccionProducto("editar", producto.id_producto)}
               >
                 Editar
               </Button>
@@ -360,7 +398,7 @@ const MainProducto = () => {
                   e.target.style.transform = "translateY(0)";
                   e.target.style.boxShadow = "0 3px 0 #a71d2a";
                 }}
-                onClick={() => borrarProductos(producto.id_producto)}
+                onClick={() => handleBorrarConPermiso(producto.id_producto)}
               >
                 Dar Baja
               </Button>

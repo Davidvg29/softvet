@@ -112,16 +112,44 @@ const VerCliente = ({ id_cliente }) => {
 
           <hr />
 
-          <h5 style={{ marginTop: "1rem", fontWeight: "bold" }}>Mascotas:</h5>
+          <h5 style={{ marginTop: "1rem", fontWeight: "bold", textAlign: "center" }}>
+            Mascotas:
+          </h5>
 
           {loadingMascotas ? (
-            <p>Cargando mascotas...</p>
+            <p style={{ textAlign: "center" }}>Cargando mascotas...</p>
           ) : listaMascotas.length === 0 ? (
-            <p>No tiene</p>
+            <p style={{ textAlign: "center" }}>No tiene</p>
           ) : (
-            <p>
-              {listaMascotas.map((m) => m.nombre_mascota).join(", ")}
-            </p>
+            <div style={{ marginTop: "10px" }}>
+              {listaMascotas.map((m, index) => (
+                <div
+                  key={m.id_mascota || index}
+                  style={{
+                    textAlign: "center",
+                    padding: "15px 0", // Más espacio arriba y abajo
+                    borderBottom: index !== listaMascotas.length - 1 ? "1px solid #e9ecef" : "none", // Línea divisora sutil
+                    width: "100%"
+                  }}
+                >
+                  <div style={{
+                    fontWeight: "bold",
+                    color: "#2c3e50",
+                    fontSize: "1.1rem",
+                    marginBottom: "2px"
+                  }}>
+                    {m.nombre_mascota}
+                  </div>
+                  <div style={{
+                    fontSize: "0.95rem",
+                    color: "#3f3f3f",
+                    fontStyle: "italic" // Un toque elegante para diferenciarlo del nombre
+                  }}>
+                    {m.nombre_especie} — {m.nombre_raza}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
 
         </div>
