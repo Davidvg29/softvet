@@ -181,7 +181,7 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
                 setBusquedaCliente(e.target.value);
                 setMostrarListaCliente(true);
               }}
-              onFocus={() => setMostrarListaC(true)}
+              // onFocus={() => setMostrarListaC(true)}
               autoComplete="off"
             />
 

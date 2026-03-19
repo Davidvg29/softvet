@@ -28,13 +28,24 @@ const crearVenta = (req, res) => {
 
     const queryCreateVenta = `insert into ventas (fecha_hora, total, id_cliente, id_empleado) values (now(), ?, ?, ?);`
     connection.query(queryCreateVenta, [total, id_cliente, id_empleado], (error, results) => {
+        console.log(results.insertId);
+        
         if (error) {
             return res.status(500).json({ error: 'Error al crear la venta' });
         }else {
-            return res.status(201).json({
+            res.status(201).json({
                 message: 'Venta creada exitosamente',
                 id_venta: results.insertId
             });
+            connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Ventas', 'CREAR', ?);`, 
+                [id_empleado, `Se creó la venta Nº ${results.insertId}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
         }
     })  
 }
@@ -56,7 +67,16 @@ const queryEditarVenta = `update ventas set total = ?, id_cliente = ?, id_emplea
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Venta no encontrada." });
         }
-            return res.status(200).json('Venta editada exitosamente');
+            res.status(200).json('Venta editada exitosamente');
+            connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Ventas', 'ACTUALIZAR', ?);`, 
+                [id_empleado, `Se actualizó la venta Nº ${id_venta}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     })
 }
 

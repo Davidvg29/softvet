@@ -5,6 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { clientes } from "../../endpoints/endpoints";
 import validationCrearClientes from "../../validations/validationCrearClientes";
+import { useEmpleadoStore } from "../../zustand/empleado";
 
 const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({ 
@@ -15,6 +16,7 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
     mail_cliente: ""
   });
 
+  const empleadoStore = useEmpleadoStore((state) => state.empleado);
   
   useEffect(() => {
     const fetchCliente = async () => {
@@ -68,10 +70,14 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
       });
     }
 
+    const datosFinales = {
+      ...formData,
+      id_empleado: empleadoStore?.id_empleado 
+    };
     try {
       const response = await axios.put(
         `${clientes}/editar/${id_cliente}`,
-        formData,
+        datosFinales,
         { withCredentials: true }
       );
 
@@ -88,6 +94,7 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
         onClose();
       }
     } catch (error) {
+      
       console.error("Error al editar el cliente:", error);
       Swal.fire({
         icon: "error",
