@@ -138,7 +138,7 @@ const MainHistoriaClinica = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`${historiasClinicas}/eliminar/${id_historia_clinica}`, { withCredentials: true });
+      await axios.delete(`${historiasClinicas}/eliminar/${id_historia_clinica}`,{data:{id_empleado: empleado.id_empleado}, withCredentials: true});
       Swal.fire("Eliminado", "La historia clínica fue eliminada correctamente.", "success");
       cargarHistoriaClinica();
     } catch (error) {

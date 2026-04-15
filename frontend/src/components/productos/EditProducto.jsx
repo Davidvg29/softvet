@@ -5,13 +5,16 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { productos, categorias } from "../../endpoints/endpoints";
 import validationCrearProductos from "../../validations/validationCrearProductos";
+import { useEmpleadoStore } from "../../zustand/empleado";
 
 const EditProducto = ({ id_producto, onClose, onUpdate }) => {
+  const {empleado} = useEmpleadoStore()
   const [formData, setFormData] = useState({ 
     nombre_producto: "",
     codigo_producto: "",
     precio_producto: "",
-    id_categoria: ""
+    id_categoria: "",
+    id_empleado: empleado ? empleado.id_empleado : null
 });
 
   
@@ -21,7 +24,10 @@ const EditProducto = ({ id_producto, onClose, onUpdate }) => {
         const response = await axios.get(`${productos}/ver/${id_producto}`, {
           withCredentials: true,
         });
-        setFormData(response.data);
+        setFormData({
+          ...response.data,
+          id_empleado: empleado ? empleado.id_empleado : null
+        });
       } catch (error) {
         console.error("Error al obtener el Producto:", error);
         Swal.fire({

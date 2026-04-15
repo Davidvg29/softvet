@@ -9,6 +9,7 @@ import { VENTAS } from '../../endpoints/endpoints';
 import VerVenta from './VerVenta';
 import CrearVenta from './CrearVenta';
 import EditVenta from './EditVenta';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 const MainVentas = () => {
   const [ventas, setVentas] = useState([]);
@@ -17,6 +18,7 @@ const MainVentas = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
+  const {empleado} = useEmpleadoStore()
 
   const TITULOS = {
     crear: 'Nueva Venta',
@@ -75,7 +77,7 @@ const MainVentas = () => {
 
     try {
       // Usar la constante VENTAS (antes había `${ventas}` que es incorrecto)
-      const response = await axios.put(`${VENTAS}/borrar/${id_venta}`, {},{ withCredentials: true });
+      const response = await axios.put(`${VENTAS}/borrar/${id_venta}`, {id_empleado: empleado.id_empleado},{ withCredentials: true });
 
       if (response.status === 200) {
         await Swal.fire({

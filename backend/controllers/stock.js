@@ -41,17 +41,16 @@ const verStock = (req, res) => {
     });
 };
 
-
-
 const crearStock = (req, res) => {
-  const { cantidad, fecha_ingreso, observaciones_stock, id_producto, id_sucursal } = req.body;
+  const { cantidad, fecha_ingreso, observaciones_stock, id_producto, id_sucursal, id_empleado } = req.body;
+  console.log(req.body);
+  
 
   const validation = validationsCrearStock(req.body);
   if (validation !== null) {
     return res.status(400).json({ error: validation });
   }
 
-  
   const querySelect = `
     SELECT id_stock, cantidad 
     FROM stock 
@@ -110,12 +109,21 @@ const crearStock = (req, res) => {
         }
       );
     }
+    connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Stock', 'CREAR', ?);`, 
+                [id_empleado, `Se creo el stock para el producto N° ${id_producto} con una cantidad de ${cantidad}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
   });
 };
 
 const editarStock = (req, res) => {
     const id_stock = req.params.id_stock;
-    const { cantidad, fecha_ingreso, observaciones_stock,  id_producto, id_sucursal} = req.body;
+    const { cantidad, fecha_ingreso, observaciones_stock,  id_producto, id_sucursal, id_empleado} = req.body;
 
     const validation = validationsCrearStock(req.body);
     if(validation !== null){
@@ -126,23 +134,42 @@ const editarStock = (req, res) => {
     connection.query(queryUpdateStock, [cantidad, observaciones_stock, id_producto, id_sucursal, id_stock], (error, results) => {
         if (error) {
             console.log(error);
-            return res.status(500).json({ error: 'Error al editar el stock' });
+            res.status(500).json({ error: 'Error al editar el stock' });
         }else {
-            return  res.status(200).json('Stock editado correctamente');
+            res.status(200).json('Stock editado correctamente');
         }
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Stock', 'ACTUALIZAR', ?);`, 
+                [id_empleado, `Se actualizo el stock Nº ${id_stock} del producto N° ${id_producto} a una cantidad de ${cantidad}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     })
 }
 
 const eliminarStock = (req, res) => {
     const id_stock = req.params.id_stock;
+    const { id_empleado } = req.body;
     const queryDeleteStock = `delete from stock where id_stock = ?;`
     connection.query(queryDeleteStock, [id_stock], (error, results) => {
         if (error) {
             console.log(error);
             return res.status(500).json({ error: 'Error al eliminar el stock' });
         }else {
-            return  res.status(200).json('Stock eliminado correctamente');
+            res.status(200).json('Stock eliminado correctamente');
         }
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Stock', 'Eliminar', ?);`, 
+                [id_empleado, `Se elimino el stock N° ${id_stock}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     })
 }
 

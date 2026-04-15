@@ -5,8 +5,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { mascotas, ESPECIES, razas } from "../../endpoints/endpoints";
 import validationCrearMascotas from "../../validations/validationCrearMascotas";
+import { useEmpleadoStore } from "../../zustand/empleado";
 
 const CrearMascota = ({ id_cliente, onClose, onUpdate }) => {
+  const {empleado} = useEmpleadoStore()
   const initialState = {
     nombre_mascota: "",
     edad_mascota: "",
@@ -86,7 +88,7 @@ const CrearMascota = ({ id_cliente, onClose, onUpdate }) => {
     try {
       const response = await axios.post(
         `${mascotas}/crear`,
-        { ...formData, id_cliente },
+        { ...formData, id_cliente, id_empleado: empleado?.id_empleado },
         { withCredentials: true }
       );
 

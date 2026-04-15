@@ -74,7 +74,7 @@ const MainProducto = () => {
 
     try {
 
-      const response = await axios.delete(`${productos}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${productos}/eliminar/${id}`, {data:{id_empleado: empleado.id_empleado}, withCredentials: true });
 
       if (response.status === 200) {
 

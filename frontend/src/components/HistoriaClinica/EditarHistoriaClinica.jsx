@@ -89,7 +89,7 @@ const EditarHistoriaClinica = ({ id, onClose, onUpdated }) => {
     try {
       const response = await axios.put(
         `${historiasClinicas}/editar/${id}`,
-        historiaClinica,
+        {historiaClinica, id_empleado: empleado.id_empleado},
         { withCredentials: true }
       );
 

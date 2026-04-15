@@ -9,6 +9,7 @@ import { STOCK } from '../../endpoints/endpoints';
 import CrearStock from './CrearStock';
 import VerStock from './VerStock';
 import EditStock from './EditStock';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 const MainStock = () => {
   const [stock, setStock] = useState([]);
@@ -16,6 +17,7 @@ const MainStock = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
+  const {empleado} = useEmpleadoStore()
 
   const TITULOS = {
     crear: 'Nuevo Stock',
@@ -69,7 +71,7 @@ const MainStock = () => {
 
     try {
 
-      const response = await axios.delete(`${STOCK}/borrar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${STOCK}/borrar/${id}`, { data:{id_empleado: empleado.id_empleado}, withCredentials: true });
 
       if (response.status === 200) {
 

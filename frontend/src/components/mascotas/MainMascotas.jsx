@@ -78,7 +78,7 @@ const MainMascota = () => {
 
     try {
 
-      const response = await axios.delete(`${mascotas}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${mascotas}/eliminar/${id}`, { data: {id_empleado: empleado.id_empleado}, withCredentials: true});
 
       if (response.status === 200) {
 

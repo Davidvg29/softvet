@@ -10,6 +10,7 @@ import CrearCliente from './CrearCliente';
 import VerCliente from './VerCliente';
 import EditCliente from './EditCliente';
 import CrearMascota from '../mascotas/CrearMascota'
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 const MainCliente = () => {
   const [cliente, setCliente] = useState([]);
@@ -17,6 +18,8 @@ const MainCliente = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
+
+  const empleadoStore = useEmpleadoStore((state) => state.empleado);
 
   const TITULOS = {
     crear: 'Nuevo Cliente',
@@ -73,7 +76,7 @@ const MainCliente = () => {
 
     try {
 
-      const response = await axios.delete(`${clientes}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${clientes}/eliminar/${id}/${empleadoStore.id_empleado}`, { withCredentials: true });
 
       if (response.status === 200) {
 

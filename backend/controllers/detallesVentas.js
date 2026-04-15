@@ -58,7 +58,7 @@ const crearDetalleVenta = (req, res) => {
                 if (errorUpdate) {
                     return res.status(500).json({ error: 'Error crítico al actualizar el stock.' });
                 }
-                return res.status(201).json({ message: 'Detalle de venta creado y stock actualizado correctamente.' });
+                res.status(201).json({ message: 'Detalle de venta creado y stock actualizado correctamente.' });
             });
         });
     });

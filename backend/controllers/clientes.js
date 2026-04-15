@@ -29,7 +29,8 @@ const mostrarClientePorId = (req, res) => {
 
 // Agregar un nuevo cliente
 const crearCliente = (req, res) => {
-    const { nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente } = req.body;
+    const { id_empleado, nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente } = req.body;
+    
     if (!nombre_cliente || !dni_cliente || !direccion_cliente || !celular_cliente || !mail_cliente) {
         return res.status(400).json({ error: 'Faltan datos obligatorios.' });
     }
@@ -56,6 +57,15 @@ const crearCliente = (req, res) => {
                 return res.status(500).json({ error: 'Error al crear el Cliente', detalle: error.message });
             }
             res.status(201).json({ message: 'Cliente creado exitosamente.', id_cliente: results.insertId });
+            connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Clientes', 'CREAR', ?);`, 
+                [id_empleado, `Se creó el cliente ${nombre_cliente} (DNI: ${dni_cliente})`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
         });
     });
 }
@@ -63,7 +73,7 @@ const crearCliente = (req, res) => {
 // Editar un cliente
 const editarCliente = (req, res) => {
     const { id } = req.params;
-    const { nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente } = req.body;
+    const { id_empleado, nombre_cliente, dni_cliente, direccion_cliente, celular_cliente, mail_cliente } = req.body;
 
     const validacion = 'SELECT * FROM clientes WHERE dni_cliente = ? AND id_cliente != ?';
     connection.query(validacion, [dni_cliente, id], (error, results) => {
@@ -90,13 +100,22 @@ const editarCliente = (req, res) => {
                 return res.status(404).json({ error: 'Cliente no encontrado.' });
             }
             res.json({ message: 'Cliente actualizado correctamente.' });
+            connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Clientes', 'ACTUALIZAR', ?);`, 
+                [id_empleado, `Se actualizo el cliente Nº ${id} (DNI: ${dni_cliente})`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
         });
     });
 }
 
 // Eliminar un cliente
 const eliminarCliente = (req, res) => {
-    const { id } = req.params;
+    const { id, id_empleado } = req.params;
     connection.query('UPDATE clientes SET is_active = FALSE WHERE id_cliente = ?', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al eliminar el cliente.' });
@@ -105,6 +124,15 @@ const eliminarCliente = (req, res) => {
             return res.status(404).json({ error: 'Cliente no encontrado.' });
         }
         res.json({ message: 'Cliente eliminado correctamente.' });
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Clientes', 'ELIMINAR', ?);`, 
+                [id_empleado, `Se eliminó el cliente Nº ${id} `], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     });
 }
 

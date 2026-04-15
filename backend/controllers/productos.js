@@ -55,7 +55,7 @@ const mostrarProductoPorId = (req, res) => {
 };
 
 const crearProducto = (req, res) => {
-  const { nombre_producto, codigo_producto, precio_producto, id_categoria } = req.body;
+  const { nombre_producto, codigo_producto, precio_producto, id_categoria, id_empleado } = req.body;
 
   // Validar campos obligatorios
   if (!nombre_producto || !codigo_producto || !precio_producto || !id_categoria) {
@@ -125,6 +125,15 @@ const crearProducto = (req, res) => {
           id_producto,
         });
       });
+      connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Productos', 'CREAR', ?);`, 
+                [id_empleado, `Se creo el producto N° ${results.insertId} con el nombre ${nombre}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     });
   });
 };
@@ -132,7 +141,9 @@ const crearProducto = (req, res) => {
 //editar producto
 const editarProducto = (req, res) => {
     const { id } = req.params;
-    const { nombre_producto, codigo_producto, precio_producto, id_categoria, is_active } = req.body;
+    const { nombre_producto, codigo_producto, precio_producto, id_categoria, is_active, id_empleado } = req.body;
+    console.log(req.body);
+    
 
     // Verificar que el producto exista
     const productoExisteQuery = 'SELECT * FROM productos WHERE id_producto = ?';
@@ -173,7 +184,16 @@ const editarProducto = (req, res) => {
                         return res.status(500).json({ error: 'Error al actualizar el producto' });
                     }
 
-                    return res.json({ message: 'Producto actualizado correctamente' });
+                    res.json({ message: 'Producto actualizado correctamente' });
+                    connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Productos', 'ACTUALIZAR', ?);`, 
+                [id_empleado, `Se actualizo el producto N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
                 }
             );
         });
@@ -184,6 +204,7 @@ const editarProducto = (req, res) => {
 
 const eliminarProducto = (req, res) => {
     const { id } = req.params;
+    const { id_empleado } = req.body;
 
     connection.query('UPDATE productos SET is_active = FALSE WHERE id_producto = ?', [id], (error, results) => {
         if (error) {
@@ -193,7 +214,16 @@ const eliminarProducto = (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
-        return res.json({ message: 'Producto desactivado correctamente' });
+        res.json({ message: 'Producto desactivado correctamente' });
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Productos', 'DESACTIVAR', ?);`, 
+                [id_empleado, `Se desactivo el producto N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     });
 };
 
