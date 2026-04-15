@@ -19,3 +19,5 @@ export const categorias = 'http://localhost:8000/categorias'
 export const TURNOS = 'http://localhost:8000/turnos'
 export const STOCK = 'http://localhost:8000/stock'
 export const informes = 'http://localhost:8000/informes'
+export const AUDITORIASMOVIMIENTOS = 'http://localhost:8000/auditoriasMovimientos'
+

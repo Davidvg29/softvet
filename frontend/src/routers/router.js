@@ -19,5 +19,6 @@ export const TURNOS = "/turnos"
 export const STOCK = "/stock"
 export const INFORME ="/informe"
 export const NOSOTROS = "/quienes-somos"
+export const AUDITORIAS_Y_MOVIMIENTOS = "/auditorias-y-movimientos"
 
 

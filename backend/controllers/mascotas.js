@@ -54,7 +54,7 @@ const mostrarMascotaId = (req, res) => {
 };
 
 const crearMascota = (req, res) => {
-    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente, id_historia_clinica } = req.body;
+    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_cliente, id_historia_clinica, id_empleado } = req.body;
     const validation = crearMascotaValidacion(req.body);
 
     if (validation !== null) {
@@ -68,8 +68,17 @@ const crearMascota = (req, res) => {
             return res.status(500).json({ error: 'Error al crear mascota.' });
         }
         else {
-            return res.status(200).json("Mascota creada exitosamente.");
+            res.status(200).json("Mascota creada exitosamente.");
         }
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Mascotas', 'CREAR', ?);`, 
+                [id_empleado, `Se creo la mascota N° ${results.insertId} con nombre ${nombre_mascota}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     });
 }
 
@@ -77,7 +86,7 @@ const editarMasctoa = (req, res) => {
     const id_mascota = req.params.id;
 
     // Solo campos editables
-    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_historia_clinica } = req.body;
+    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_historia_clinica, id_empleado } = req.body;
 
     const validation = crearMascotaValidacion({
         nombre_mascota,
@@ -143,14 +152,25 @@ const editarMasctoa = (req, res) => {
                     return res.status(404).json({ error: "Mascota no encontrada." });
                 }
 
-                return res.status(200).json("Mascota editada exitosamente.");
+                res.status(200).json("Mascota editada exitosamente.");
+                connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Mascotas', 'ACTUALIZAR', ?);`, 
+                [id_empleado, `Se actualizo la mascota N° ${id_mascota} con nombre ${nombre_mascota}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
             }
+            
         );
     });
 };
 
 const borrarMascota = (req, res) => {
     const id_mascota = req.params.id;
+    const { id_empleado } = req.body;
 
     const queryDeleteMascota = `update mascotas set is_active = false where id_mascota = ?;`
     connection.query(queryDeleteMascota, [id_mascota], (error, results) => {
@@ -160,12 +180,22 @@ const borrarMascota = (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Mascota no encontrada." });
         }
-        return res.status(200).json("Mascota borrada exitosamente.");
+        res.status(200).json("Mascota borrada exitosamente.");
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Mascotas', 'DESACTIVAR', ?);`, 
+                [id_empleado, `Se desactivo la mascota N° ${id_mascota}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     })
 }
 
 const activarMascota = (req, res) => {
     const id_mascota = req.params.id;
+    const { id_empleado } = req.body;
 
     const queryActivarMascota = `update mascotas set is_active = true where id_mascota = ?;`
     connection.query(queryActivarMascota, [id_mascota], (error, results) => {
@@ -175,7 +205,16 @@ const activarMascota = (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).json({ error: "Mascota no encontrada." });
         }
-        return res.status(200).json("Mascota activada exitosamente.");
+        res.status(200).json("Mascota activada exitosamente.");
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Mascotas', 'ACTIVAR', ?);`, 
+                [id_empleado, `Se activo la mascota N° ${id_mascota}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     })
 }
 

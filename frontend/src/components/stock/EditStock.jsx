@@ -4,8 +4,10 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { STOCK, productos } from "../../endpoints/endpoints";
+import { useEmpleadoStore } from "../../zustand/empleado";
 
 const EditStock = ({ id_stock, onClose, onUpdate }) => {
+  const {empleado} = useEmpleadoStore()
   const initialState = {
     id_producto: "",
     cantidad: "",
@@ -33,7 +35,8 @@ const EditStock = ({ id_stock, onClose, onUpdate }) => {
           cantidad: data.cantidad,
           observaciones_stock: data.observaciones_stock || "",
           id_sucursal: data.id_sucursal,
-          nombre_producto: nombreProducto.data.nombre_producto
+          nombre_producto: nombreProducto.data.nombre_producto,
+          id_empleado: empleado ? empleado.id_empleado : null,
         });
       } catch (error) {
         console.error("Error al cargar el stock:", error);
@@ -79,6 +82,7 @@ const EditStock = ({ id_stock, onClose, onUpdate }) => {
         cantidad: Number(formData.cantidad),
         observaciones_stock: formData.observaciones_stock || null,
         id_sucursal: Number(formData.id_sucursal),
+        id_empleado: empleado?.id_empleado,
       };
 
       const response = await axios.put(`${STOCK}/editar/${id_stock}`, payload, {

@@ -193,7 +193,7 @@ const crearHistoriaClinica = (req, res) => {
 
 const editarHistoriaClinica = (req, res) => {
     const { id } = req.params;
-    const { observaciones_generales } = req.body;
+    const { historiaClinica, id_empleado } = req.body;
 
     const query = `
         UPDATE historia_clinica 
@@ -201,7 +201,7 @@ const editarHistoriaClinica = (req, res) => {
         WHERE id_historia_clinica = ?
     `;
 
-    connection.query(query, [observaciones_generales, id], (error, results) => {
+    connection.query(query, [historiaClinica.observaciones_generales, id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: "Error al actualizar la historia clínica." });
         }
@@ -209,14 +209,23 @@ const editarHistoriaClinica = (req, res) => {
             return res.status(404).json({ error: "Historia clínica no encontrada." });
         }
         res.json({ message: "Historia clínica actualizada correctamente." });
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Historia clinica', 'ACTUALIZAR', ?);`, 
+                [id_empleado, `Se actualizo la Historia Clinica N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     });
 };
 
 
 const eliminarHistoriaClinica = (req, res) => {
     const { id } = req.params;
+    const { id_empleado } = req.body;
 
- 
     const queryUpdateMascota = `
         UPDATE mascotas 
         SET id_historia_clinica = NULL 
@@ -242,6 +251,15 @@ const eliminarHistoriaClinica = (req, res) => {
             }
 
             res.json({ message: "Historia clínica eliminada correctamente (la mascota no fue eliminada)." });
+            connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Historia clinica', 'ELIMINAR', ?);`, 
+                [id_empleado, `Se elimino la Historia Clinica N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
         });
     });
 };
