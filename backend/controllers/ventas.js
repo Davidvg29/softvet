@@ -82,6 +82,7 @@ const queryEditarVenta = `update ventas set total = ?, id_cliente = ?, id_emplea
 
 const borrarVenta = (req, res) => {
     const id_venta = req.params.id_venta;
+    const id_empleado = req.body.id_empleado;
     const queryDeleteVenta = `update ventas set is_active = false where id_venta = ?;`
     connection.query(queryDeleteVenta, [id_venta], (error, results) => {
         if (error) {
@@ -92,10 +93,20 @@ const borrarVenta = (req, res) => {
         }
         return res.status(200).json('Venta borrada exitosamente');
     })
+    connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Ventas', 'DESACTIVAR', ?);`, 
+                [id_empleado, `Se desactivo la venta N° ${id_venta}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
 }
 
 const activarVenta = (req, res) => {
     const id_venta = req.params.id_venta;
+    const id_empleado = req.body.id_empleado;
     const queryActivarVenta = `update ventas set is_active = true where id_venta = ?;`
     connection.query(queryActivarVenta, [id_venta], (error, results) => {
         if (error) {
@@ -106,6 +117,15 @@ const activarVenta = (req, res) => {
         }
         return res.status(200).json('Venta activada exitosamente');
     })
+    connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Ventas', 'ACTIVAR', ?);`, 
+                [id_empleado, `Se activo la venta N° ${id_venta}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
 }
 
 module.exports = {

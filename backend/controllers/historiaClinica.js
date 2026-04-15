@@ -173,6 +173,15 @@ const crearHistoriaClinica = (req, res) => {
                     });
                 }
             );
+            connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Historia clinica', 'CREAR', ?);`, 
+                [id_empleado, `Se creo la Historia Clinica N° ${resultHC.insertId} para la mascota N° ${id_mascota}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
         });
     });
 };
