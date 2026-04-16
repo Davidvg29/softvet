@@ -3,6 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
+import * as XLSX from 'xlsx'; // <-- Nueva importación
 
 const MainAuditoriasMovimientos = () => {
   const [auditoriasMovimientos, setAuditoriasMovimientos] = useState([]);
@@ -58,6 +59,40 @@ const MainAuditoriasMovimientos = () => {
     });
   };
 
+  // Función para descargar Excel
+  const handleDescargarExcel = () => {
+    // data con nombres de columnas amigables
+    const datosParaExcel = auditoriasFiltradas.map((auditoria) => ({
+      'Fecha y Hora': formatearFecha(auditoria.fecha_hora),
+      'Módulo': auditoria.modulo,
+      'Acción': auditoria.accion,
+      'Descripción': auditoria.descripcion,
+      'Nombre Empleado': auditoria.nombre_empleado,
+      'DNI Empleado': auditoria.dni_empleado
+    }));
+
+    // hoja de trabajo (worksheet) a partir del JSON
+    const hoja = XLSX.utils.json_to_sheet(datosParaExcel);
+
+    //  ancho de las columnas para que se vea mejor
+    const anchosColumnas = [
+      { wch: 20 }, // Fecha y Hora
+      { wch: 15 }, // Módulo
+      { wch: 15 }, // Acción
+      { wch: 50 }, // Descripción
+      { wch: 25 }, // Nombre Empleado
+      { wch: 15 }  // DNI Empleado
+    ];
+    hoja['!cols'] = anchosColumnas;
+
+    //Creamos el libro de trabajo (workbook) y agregamos la hoja
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, "Auditorias");
+
+    // Guardamos el archivo
+    XLSX.writeFile(libro, "Reporte_Auditorias.xlsx");
+  };
+
   // Botones de estilo para la paginación
   const botonPaginacionStyle = {
     backgroundColor: "#6f42c1",
@@ -68,6 +103,20 @@ const MainAuditoriasMovimientos = () => {
     transition: "all 0.1s ease",
     padding: "8px 20px",
     borderRadius: "10px"
+  };
+
+  // Estilo para el botón de Excel
+  const botonExcelStyle = {
+    backgroundColor: "#198754",
+    border: "none",
+    fontWeight: "bold",
+    color: "#fff",
+    boxShadow: "0 4px 0 #146c43",
+    transition: "all 0.1s ease",
+    padding: "10px 20px",
+    borderRadius: "10px",
+    marginLeft: "15px",
+    whiteSpace: "nowrap"
   };
 
   return (
@@ -113,12 +162,12 @@ const MainAuditoriasMovimientos = () => {
 
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
         
-        {/* Buscador */}
+        {/* Buscador y Botón de Descarga */}
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
             type="text"
             placeholder="Buscar por módulo, acción, empleado o descripción..."
-            className="w-50 mx-3"
+            className="w-50"
             style={{ width: '700px' }}
             value={busqueda}
             onChange={(e) => {
@@ -126,6 +175,20 @@ const MainAuditoriasMovimientos = () => {
               setPaginaActual(1); // Volvemos a la pag 1 si cambia la búsqueda
             }}
           />
+          
+          <Button 
+            style={botonExcelStyle}
+            onClick={handleDescargarExcel}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <i className="bi bi-file-earmark-excel me-2"></i>
+            Descargar Excel
+          </Button>
         </div>
 
         {/* Contenedor principal de la tabla y paginación */}

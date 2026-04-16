@@ -61,6 +61,35 @@ const MainVentas = () => {
     venta.dni_cliente.toString().includes(busqueda)
   );
 
+  // ── Paginación ──────────────────────────────────────────
+  const [paginaActual, setPaginaActual] = useState(1);
+  const elementosPorPagina = 5;
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [busqueda]);
+
+  const indiceUltimoElemento = paginaActual * elementosPorPagina;
+  const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina;
+  const ventasPaginados = ventasFiltrados.slice(
+    indicePrimerElemento,
+    indiceUltimoElemento
+  );
+  const totalPaginas = Math.ceil(
+    ventasFiltrados.length / elementosPorPagina
+  );
+
+  const botonPaginacionStyle = {
+    backgroundColor: "#6f42c1",
+    border: "none",
+    fontWeight: "bold",
+    color: "#fff",
+    boxShadow: "0 4px 0 #59359a",
+    transition: "all 0.1s ease",
+    padding: "8px 20px",
+    borderRadius: "10px",
+  };
+
   const borrarVentas = async (id_venta) => {
     const confirmacion = await Swal.fire({
       title: '¿Eliminar Venta?',
@@ -227,8 +256,8 @@ const MainVentas = () => {
             </thead>
 
             <tbody>
-              {ventasFiltrados.length > 0 ? (
-                ventasFiltrados.map((venta) => (
+              {ventasPaginados.length > 0 ? (
+                ventasPaginados.map((venta) => (
                   <tr
                     key={venta.id_venta}
                     style={{
@@ -340,6 +369,50 @@ const MainVentas = () => {
               )}
             </tbody>
           </Table>
+
+          {/* ── Controles de Paginación ── */}
+          {totalPaginas > 1 && (
+            <div className="d-flex justify-content-center align-items-center mt-4">
+              <Button
+                style={{
+                  ...botonPaginacionStyle,
+                  opacity: paginaActual === 1 ? 0.5 : 1,
+                  cursor: paginaActual === 1 ? 'not-allowed' : 'pointer',
+                }}
+                disabled={paginaActual === 1}
+                onClick={() => setPaginaActual(paginaActual - 1)}
+              >
+                Anterior
+              </Button>
+
+              <span
+                className="mx-4"
+                style={{
+                  fontWeight: "bold",
+                  color: "#6f42c1",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Página {paginaActual} de {totalPaginas}
+              </span>
+
+              <Button
+                style={{
+                  ...botonPaginacionStyle,
+                  opacity:
+                    paginaActual === totalPaginas ? 0.5 : 1,
+                  cursor:
+                    paginaActual === totalPaginas
+                      ? "not-allowed"
+                      : "pointer",
+                }}
+                disabled={paginaActual === totalPaginas}
+                onClick={() => setPaginaActual(paginaActual + 1)}
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
