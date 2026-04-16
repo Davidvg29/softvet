@@ -3,14 +3,59 @@ const nodemailer = require("nodemailer");
 
 // Obtener todos los clientes
 const mostrarClientes = (req, res) => {
+    // 1. Recibir parámetros (con valores por defecto por si no llegan)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const search = req.query.search || '';
+    
+    // 2. Calcular el Offset
+    const offset = (page - 1) * limit;
 
-    connection.query('SELECT * FROM clientes WHERE is_active = TRUE', (error, results) => {
-        if (error) {
-            return res.status(500).json({ error: 'Error al obtener los clientes.' });
+    // 3. Preparar la consulta base y los parámetros dinámicos
+    let baseQuery = 'FROM clientes WHERE is_active = TRUE';
+    let queryParams = [];
+
+    // Si hay texto en el buscador, agregamos la condición LIKE
+    if (search) {
+        baseQuery += ' AND (LOWER(nombre_cliente) LIKE ? OR dni_cliente LIKE ?)';
+        const searchParam = `%${search.toLowerCase()}%`;
+        queryParams.push(searchParam, searchParam);
+    }
+
+    // 4. Primera consulta: Saber cuántos registros totales hay (para calcular totalPaginas)
+    const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
+    
+    connection.query(countQuery, queryParams, (errorCount, resultsCount) => {
+        if (errorCount) {
+            return res.status(500).json({ error: 'Error al contar los clientes.' });
         }
-        res.json(results);
+
+        const totalItems = resultsCount[0].total;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        // 5. Segunda consulta: Traer solo el tramo de datos solicitado
+        const dataQuery = `SELECT * ${baseQuery} ORDER BY id_cliente DESC LIMIT ? OFFSET ?`;
+        const dataParams = [...queryParams, limit, offset]; // Agregamos limit y offset al final
+
+        connection.query(dataQuery, dataParams, (errorData, resultsData) => {
+            if (errorData) {
+                return res.status(500).json({ error: 'Error al obtener los clientes.' });
+            }
+
+            // 6. Devolvemos un objeto con los datos y la metadata de paginación
+            res.json({
+                data: resultsData,
+                pagination: {
+                    totalItems,
+                    totalPages,
+                    currentPage: page
+                }
+            });
+        });
     });
 }
+
+// Asegúrate de exportarlo como lo hacías antes
 
 // Obtener un cliente por ID
 const mostrarClientePorId = (req, res) => {

@@ -19,8 +19,9 @@ const MainCliente = () => {
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
 
-  // ── Paginación ──────────────────────────────────────────
+  // ── Paginación (Ahora manejada por el backend) ──────────
   const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
   const elementosPorPagina = 5;
   // ────────────────────────────────────────────────────────
 
@@ -46,28 +47,30 @@ const MainCliente = () => {
 
   const cargarCLientes = async () => {
     try {
-      const response = await axios.get(`${clientes}/ver`, { withCredentials: true });
-      setCliente(response.data.reverse());
+      const response = await axios.get(`${clientes}/ver`, { 
+        withCredentials: true,
+        params: {
+          page: paginaActual,
+          limit: elementosPorPagina,
+          search: busqueda
+        }
+      });
+      // Actualizamos con la nueva estructura que manda el backend
+      setCliente(response.data.data);
+      setTotalPaginas(response.data.pagination.totalPages);
     } catch (error) {
       console.error('Error al cargar los CLientes:', error);
     }
   };
 
   useEffect(() => {
-    cargarCLientes();
-  }, []);
+    // Debounce: Espera 300ms después de que el usuario deja de escribir para buscar
+    const delayDebounceFn = setTimeout(() => {
+      cargarCLientes();
+    }, 300);
 
-  // 1. Filtrado
-  const clientesFiltrados = cliente.filter((cliente) =>
-    cliente.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
-    cliente.dni_cliente.toString().includes(busqueda)
-  );
-
-  // 2. Paginación sobre el resultado filtrado
-  const indiceUltimoElemento = paginaActual * elementosPorPagina;
-  const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina;
-  const clientesPaginados = clientesFiltrados.slice(indicePrimerElemento, indiceUltimoElemento);
-  const totalPaginas = Math.ceil(clientesFiltrados.length / elementosPorPagina);
+    return () => clearTimeout(delayDebounceFn);
+  }, [paginaActual, busqueda]);
 
   // Estilo reutilizable para los botones de paginación
   const botonPaginacionStyle = {
@@ -209,8 +212,8 @@ const MainCliente = () => {
             </thead>
 
             <tbody>
-              {clientesPaginados.length > 0 ? (
-                clientesPaginados.map((cliente) => (
+              {cliente.length > 0 ? (
+                cliente.map((cliente) => (
                   <tr
                     key={cliente.id_cliente}
                     style={{ backgroundColor: "#fff", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "12px", transition: "transform 0.15s ease, box-shadow 0.15s ease", transform: "translateY(0)" }}
