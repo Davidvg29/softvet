@@ -5,8 +5,12 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import { clientes } from '../../endpoints/endpoints';
 import validationCrearClientes from '../../validations/validationCrearClientes';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 function CrearCliente({ onClose, onUpdate }) {
+  
+  const empleadoStore = useEmpleadoStore((state) => state.empleado);
+
   const initialState = {
     nombre_cliente: "",
     dni_cliente: "",
@@ -14,6 +18,7 @@ function CrearCliente({ onClose, onUpdate }) {
     celular_cliente: "",
     mail_cliente: ""
   };
+  
   const [formData, setFormdata] = useState(initialState);
   
   const handleChange = (e) => {
@@ -46,9 +51,14 @@ if (validation.length !== 0) {
     });
   }
 
-console.log("🟣 Datos enviados:", formData);
+
+  const datosFinales = {
+      ...formData,
+      id_empleado: empleadoStore?.id_empleado 
+    };
+console.log("🟣 Datos enviados:", datosFinales);
     try {
-      const response = await axios.post(`${clientes}/crear`, formData, { withCredentials: true });
+      const response = await axios.post(`${clientes}/crear`, datosFinales, { withCredentials: true });
       console.log(response.data);
       
       if (response.status === 200 || response.status === 201) {

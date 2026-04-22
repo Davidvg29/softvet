@@ -49,12 +49,7 @@ const MainEmpleado = () => {
     cargarEmpleados();
   }, []);
 
-  const empleadosFiltrados = empleado.filter((empleado) =>
-    empleado.nombre_empleado.toLowerCase().includes(busqueda.toLowerCase())
-  );
-
   const borrarEmpleados = async (id) => {
-
     const confirmacion = await Swal.fire({
       title: '¿Eliminar Empleado?',
       text: 'Esta acción no se puede deshacer.',
@@ -69,11 +64,9 @@ const MainEmpleado = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-
       const response = await axios.delete(`${empleados}/eliminar/${id}`, { withCredentials: true });
 
       if (response.status === 200) {
-
         await Swal.fire({
           icon: 'success',
           title: 'Eliminado correctamente',
@@ -81,15 +74,12 @@ const MainEmpleado = () => {
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#6f42c1',
         });
-
         cargarEmpleados();
       } else {
         throw new Error('Respuesta inesperada del servidor.');
       }
     } catch (error) {
       console.error('Error al eliminar el empleado:', error);
-
-
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -100,45 +90,80 @@ const MainEmpleado = () => {
     }
   };
 
+  // ── Paginación y Filtrado ──────────────────────────────────────────
+  const [paginaActual, setPaginaActual] = useState(1);
+  const elementosPorPagina = 5;
+
+  // 1. Filtrado
+  const empleadosFiltrados = empleado.filter((emp) =>
+    emp.nombre_empleado.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  // Resetear a la primera página cuando el usuario busca algo
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [busqueda]);
+
+  // 2. Paginación sobre el resultado filtrado
+  const indiceUltimoElemento = paginaActual * elementosPorPagina;
+  const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina;
+  
+  const empleadosPaginados = empleadosFiltrados.slice(indicePrimerElemento, indiceUltimoElemento);
+  const totalPaginas = Math.ceil(empleadosFiltrados.length / elementosPorPagina);
+
+  // Estilo reutilizable para los botones de paginación
+  const botonPaginacionStyle = {
+    backgroundColor: "#6f42c1",
+    border: "none",
+    fontWeight: "bold",
+    color: "#fff",
+    boxShadow: "0 4px 0 #59359a",
+    transition: "all 0.1s ease",
+    padding: "8px 20px",
+    borderRadius: "10px"
+  };
+
   return (
     <>
       <div className="text-center">
-  <h1
-    className="fw-bold animate-title p-2 mb-2 d-inline-block"
-    style={{
-      background: "linear-gradient(90deg, #6f42c1, #8f41aeff)",
-      fontSize: "2.5rem",
-      color: "#ffffffff",
-      marginTop: "10px",
-      letterSpacing: "2px",
-      textTransform: "uppercase",
-      borderRadius: "12px",
-    }}
-  ><i className="bi-person-badge-fill" style={{marginRight: "8px"}}></i>
-    EMPLEADOS
-  </h1>
-</div>
+        <h1
+          className="fw-bold animate-title p-2 mb-2 d-inline-block"
+          style={{
+            background: "linear-gradient(90deg, #6f42c1, #8f41aeff)",
+            fontSize: "2.5rem",
+            color: "#ffffffff",
+            marginTop: "10px",
+            letterSpacing: "2px",
+            textTransform: "uppercase",
+            borderRadius: "12px",
+          }}
+        >
+          <i className="bi-person-badge-fill" style={{ marginRight: "8px" }}></i>
+          EMPLEADOS
+        </h1>
+      </div>
 
-<style>
-{`
-  .animate-title {
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeSlide 0.6s ease-out forwards;
-  }
+      <style>
+        {`
+          .animate-title {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeSlide 0.6s ease-out forwards;
+          }
 
-  @keyframes fadeSlide {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`}
-</style>
+          @keyframes fadeSlide {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
+
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
@@ -177,7 +202,6 @@ const MainEmpleado = () => {
               e.target.style.boxShadow = "0 6px 0 #6f42c1";
             }}
           >
-
             Crear un nuevo Empleado
           </Button>
         </div>
@@ -223,8 +247,9 @@ const MainEmpleado = () => {
             </thead>
 
             <tbody>
-              {empleadosFiltrados.length > 0 ? (
-                empleadosFiltrados.map((empleado) => (
+              {/* CORRECCIÓN 2: Iterar sobre 'empleadosPaginados' en lugar de 'empleadosFiltrados' */}
+              {empleadosPaginados.length > 0 ? (
+                empleadosPaginados.map((empleado) => (
                   <tr
                     key={empleado.id_empleado}
                     style={{
@@ -345,6 +370,31 @@ const MainEmpleado = () => {
               )}
             </tbody>
           </Table>
+
+          {/* ── Controles de Paginación ── */}
+          {totalPaginas > 1 && (
+            <div className="d-flex justify-content-center align-items-center mt-4">
+              <Button
+                style={{ ...botonPaginacionStyle, opacity: paginaActual === 1 ? 0.5 : 1, cursor: paginaActual === 1 ? 'not-allowed' : 'pointer' }}
+                disabled={paginaActual === 1}
+                onClick={() => setPaginaActual(paginaActual - 1)}
+              >
+                Anterior
+              </Button>
+
+              <span className="mx-4" style={{ fontWeight: "bold", color: "#6f42c1", fontSize: "1.1rem" }}>
+                Página {paginaActual} de {totalPaginas}
+              </span>
+
+              <Button
+                style={{ ...botonPaginacionStyle, opacity: paginaActual === totalPaginas ? 0.5 : 1, cursor: paginaActual === totalPaginas ? 'not-allowed' : 'pointer' }}
+                disabled={paginaActual === totalPaginas}
+                onClick={() => setPaginaActual(paginaActual + 1)}
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -363,7 +413,7 @@ const MainEmpleado = () => {
             position: 'relative',
           }}
         >
-          {/* Botón de cerrar (cruz roja más chica y cuadrada) */}
+          {/* Botón de cerrar */}
           <button
             onClick={handleCloseModal}
             aria-label="Cerrar"
@@ -432,4 +482,3 @@ const MainEmpleado = () => {
 };
 
 export default MainEmpleado;
-

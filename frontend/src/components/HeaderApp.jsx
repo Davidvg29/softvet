@@ -12,6 +12,7 @@ import { FaUserTie,
 import { MdPets } from "react-icons/md";
 import axios from 'axios';
 import { empleados } from '../endpoints/endpoints';
+import {ClipboardClock } from "lucide-react"
 
 
 const Header = () => {
@@ -150,6 +151,9 @@ const Header = () => {
 
                          {(rol === "Administrador" || rol === "Recepcionista") && (
                         <Nav.Link as={Link} to="/turnos">  <FaCalendarAlt className="me-2" />Turnos</Nav.Link>
+                        )}
+                        {(rol === "Administrador") && (
+                        <Nav.Link as={Link} to="/auditorias-y-movimientos">  <ClipboardClock  className="me-2" />Auditorias y Movimientos</Nav.Link>
                         )}
 
                         {/* <Nav.Link as={Link} to="/sucursales"> <FaUserShield className="me-2" /> Sucursales</Nav.Link> */}

@@ -4,6 +4,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useEmpleadoStore } from "../../zustand/empleado";
 import { detalleHistoriasClinicas } from "../../endpoints/endpoints";
+import CrearVenta from "../Ventas/CrearVenta";
 
 
 const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
@@ -11,6 +12,8 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
   const empleado = useEmpleadoStore((state) => state.empleado);
   const idEmpleado = empleado?.id_empleado;
   const nombreVeterinario = empleado?.nombre_empleado || "N/A";
+  const [mostrarCrearVenta, setMostrarCrearVenta] = useState(false);
+  const [idVentaGenerada, setIdVentaGenerada] = useState(null);
   
   // Estado para capturar la observación del detalle
   const [observaciones, setObservaciones] = useState("");
@@ -28,8 +31,9 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
     const detalleData = {
         id_historia_clinica: idHistoriaClinica, 
         observaciones: observaciones,
-        id_empleado: idEmpleado, 
-        
+        id_empleado: idEmpleado,
+        id_sucursal: empleado?.id_sucursal || null, 
+        id_venta: idVentaGenerada 
     };
     
     try {
@@ -64,6 +68,10 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
   // Restricción de seguridad
   if (!idHistoriaClinica) {
     return <p className="text-danger p-3">Error: No se ha proporcionado un ID de Historia Clínica para asociar el detalle.</p>;
+  }
+
+  const handleMostrarCrearVenta = () => {
+    setMostrarCrearVenta(true);
   }
 
   return (
@@ -101,7 +109,10 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
 
         {/* Botones */}
         <div className="text-center mt-4">
-          <Button type="submit" style={{ backgroundColor: "#1ab637", border: "none" }}>
+          <Button onClick={handleMostrarCrearVenta} style={{ backgroundColor: "#0e4719", border: "none" }}>
+            Generar Venta
+          </Button>
+          <Button type="submit" style={{ backgroundColor: "#1ab637", border: "none", marginLeft: "10px"}}>
             Guardar Detalle
           </Button>
           <Button
@@ -112,6 +123,15 @@ const DetalleHistoriaClinica = ({ idHistoriaClinica, onClose, onUpdated }) => {
           </Button>
         </div>
       </Form>
+      {mostrarCrearVenta && (
+  <CrearVenta
+    onClose={() => setMostrarCrearVenta(false)}
+    onUpdate={(idVenta) => {
+      setIdVentaGenerada(idVenta);
+      setMostrarCrearVenta(false);
+    }}
+  />
+)}
     </div>
   );
 };

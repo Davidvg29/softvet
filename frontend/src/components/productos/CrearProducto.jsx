@@ -5,13 +5,16 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import { productos, categorias } from '../../endpoints/endpoints';
 import validationCrearProductos from '../../validations/validationCrearProductos';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 function CrearProducto({ onClose, onUpdate }) {
+  const {empleado} = useEmpleadoStore()
   const initialState = {
     nombre_producto: "",
     codigo_producto: "",
     precio_producto: "",
-    id_categoria: ""
+    id_categoria: "",
+    id_empleado: empleado ? empleado.id_empleado : null,
   };
   const [formData, setFormdata] = useState(initialState);
   const [categoria, setCategorias] = useState([]);

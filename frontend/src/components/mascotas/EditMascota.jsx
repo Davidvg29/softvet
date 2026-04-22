@@ -5,8 +5,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { mascotas, ESPECIES, razas } from "../../endpoints/endpoints";
 import validationCrearMascotas from "../../validations/validationCrearMascotas";
+import { useEmpleadoStore } from "../../zustand/empleado";
 
 const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
+  const {empleado} = useEmpleadoStore()
   const [formData, setFormData] = useState({
     nombre_mascota: "",
     edad_mascota: "",
@@ -97,6 +99,7 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
         {
           ...formData,
           id_especie: especieSeleccionada,
+          id_empleado: empleado?.id_empleado
         },
         { withCredentials: true }
       );

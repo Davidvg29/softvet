@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import {
-  Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog, LineChart
+  Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog, LineChart, ClipboardClock 
 } from "lucide-react";
 
 import { useEmpleadoStore } from "../../zustand/empleado";
@@ -324,6 +324,12 @@ const Dashboard = () => {
             {(rol === "Administrador") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
                 <DashboardCard to="/informe" label="Informes" Icon={LineChart} index={16} />
+              </Col>
+            )}
+
+            {(rol === "Administrador") && (
+              <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
+                <DashboardCard to="/auditorias-y-movimientos" label="Auditorias y Movimientos" Icon={ClipboardClock } index={17} />
               </Col>
             )}
 

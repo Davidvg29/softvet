@@ -182,3 +182,13 @@ CREATE TABLE detalles_compras (
   FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
   FOREIGN KEY (id_compra) REFERENCES compras(id_compra)
 );
+
+CREATE TABLE auditorias_movimientos (
+  id_auditoria_movimiento INT PRIMARY KEY AUTO_INCREMENT,
+  id_empleado INT,                 -- Quién hizo la acción (lo sacas de la sesión de tu app)
+  modulo VARCHAR(50),              -- Ej: 'Clientes', 'Ventas', 'Stock'
+  accion VARCHAR(50),              -- Ej: 'CREAR', 'ACTUALIZAR', 'ELIMINAR'
+  descripcion TEXT,                -- Ej: 'Se registró la venta #15 por $5000'
+  fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_empleado) REFERENCES empleados(id_empleado) ON DELETE SET NULL
+);

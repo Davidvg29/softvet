@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useEmpleadoStore } from "../../zustand/empleado";
 import validationCrearTurnos from "../../validations/validationCrearTurnos";
-import { TURNOS, clientes, mascotas } from "../../endpoints/endpoints";
+import { TURNOS, clientes, empleados, mascotas } from "../../endpoints/endpoints";
 import Swal from "sweetalert2";
 
 const CrearTurno = ({ onClose, onUpdate }) => {
@@ -18,27 +18,38 @@ const CrearTurno = ({ onClose, onUpdate }) => {
     const [fecha, setFecha] = useState("");
     const [horario, setHorario] = useState("");
     const [horariosDisponibles, setHorariosDisponibles] = useState([]);
+    const [veterinarios, setVeterinarios] = useState([]);
+    const [veterinarioSeleccionado, setVeterinarioSeleccionado] = useState(null);
 
     const [turno, setTurno] = useState({
         motivo_turno: "",
         id_cliente: "",
         id_mascota: "",
-        id_empleado: empleado?.id_empleado
+        id_empleado: veterinarioSeleccionado
     });
 
     // Validación de roles
     useEffect(() => {
-        if (rolUsuario !== "Veterinario" && rolUsuario !== "Administrador") {
+        if (rolUsuario !== "Recepcionista" && rolUsuario !== "Veterinario" && rolUsuario !== "Administrador") {
             Swal.fire({
                 icon: "error",
                 title: "Acceso Denegado",
-                text: "Solo los usuarios con rol 'veterinario' pueden crear turnos.",
+                // text: "Solo los usuarios con rol 'veterinario' pueden crear turnos.",
                 showConfirmButton: true,
             }).then(() => {
                 onClose();
             });
         }
-    }, [rolUsuario, onClose]);
+        const fetchVeterinarios = async () => {
+            try {
+                const res = await axios.get(`${empleados}/ver`, { withCredentials: true });
+                const vet = res.data.filter(e => e.nombre_rol === "Veterinario");
+                setVeterinarios(vet);
+            } catch (error) {
+                console.error("Error cargando veterinarios:", error);
+            }}
+            fetchVeterinarios();
+        }, [rolUsuario, onClose]);
 
     // Set empleado en el turno
     useEffect(() => {
@@ -184,8 +195,17 @@ const CrearTurno = ({ onClose, onUpdate }) => {
                 <Form.Group as={Row} className="mb-3 align-items-center">
                     <Form.Label column sm="3" className="text-end fw-bold">Veterinario:</Form.Label>
                     <Col sm="9">
-                        <Form.Control type="text" value={nombreVeterinario} readOnly disabled style={{ backgroundColor: '#e9ecef' }} />
-                    </Col>
+                            <Form.Select value={turno.id_empleado || ""} onChange={(e) => {
+                                const id = e.target.value; setVeterinarioSeleccionado(id);
+                                setTurno(prev => ({
+                                    ...prev,
+                                    id_empleado: id
+                            }));}}>
+                                <option value="">Seleccione un veterinario</option>
+                                {veterinarios.map(v => (<option key={v.id_empleado} value={v.id_empleado}>{v.nombre_empleado}</option>
+                                ))}
+                            </Form.Select>
+                        </Col>
                 </Form.Group>
 
                 {/* Cliente */}

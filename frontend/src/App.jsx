@@ -11,7 +11,7 @@ import Roles from './pages/Roles';
 import Clientes from './pages/Clientes';
 import Mascotas from './pages/Mascotas.jsx'
 import Empleados from './pages/Empleados'
-import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS, TURNOS, STOCK, NOSOTROS, INFORME } from './routers/router';
+import { HOME, ROLES, PROVEEDORES, INICIAR_SESION, EMPLEADOS, ESPECIES, DASHBOARD, VENTAS, RAZAS, CLIENTES, MASCOTAS,HISTORIAS_CLINICAS ,PRODUCTOS, SUCURSALES, CATEGORIAS, TURNOS, STOCK, NOSOTROS, INFORME, AUDITORIAS_Y_MOVIMIENTOS } from './routers/router';
 import Razas from './pages/Razas';
 import HistoriaClinica from './pages/HistoriaClinica.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
@@ -25,6 +25,7 @@ import Informe from './pages/Informe.jsx';
 import Nosotros from './pages/Nosotros.jsx';
 import MailRestablecerContraseña from './pages/MailRestablecerContraseña.jsx';
 import RestablecerContraseña from './pages/RestablecerContraseña.jsx';
+import AuditoriasMovimientosPage from './pages/AuditoriasMovimientos.jsx';
 // import Compras from './pages/Compras.jsx';
 
 function App() {
@@ -54,6 +55,8 @@ function App() {
         <Route path={STOCK} element={<Stock/>}/>
         <Route path={INFORME} element={<Informe/>}/>
         <Route path={NOSOTROS} element={<Nosotros/>}/>
+        <Route path={AUDITORIAS_Y_MOVIMIENTOS} element={<AuditoriasMovimientosPage/>}/>
+        
         
       </Route>
       {/* fin grupo de rutas privadas */}

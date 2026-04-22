@@ -13,12 +13,9 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
     const [historiaClinica, setHistoriaClinica] = useState(null);
     const [detallesClinicos, setDetallesClinicos] = useState([]);
 
-
     const [showModal, setShowModal] = useState(false);
     const [fromType, setFromType] = useState("");
-
     const [detalleIdParaEditar, setDetalleIdParaEditar] = useState(null);
-
 
     const TITULOS = {
         editarDetalleHistoriaClinica: "Editar Detalle de Historia Clínica",
@@ -38,26 +35,18 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
         }
     };
 
-
-
-    // Función de apertura modal
     const handleOpenModal = (type, detalleId) => {
         setFromType(type);
-
         setDetalleIdParaEditar(detalleId);
         setShowModal(true);
     };
 
-    // Función de cierre de la modal
     const handleCloseModal = () => {
         setShowModal(false);
         setFromType("");
-        setDetalleIdParaEditar(null); // Limpiar el ID al cerrar
+        setDetalleIdParaEditar(null);
     };
 
-
-
-    // Carga de la Historia Clínica General
     useEffect(() => {
         if (!id) return;
         const cargarhistoriaClinica = async () => {
@@ -71,24 +60,19 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
         cargarhistoriaClinica();
     }, [id]);
 
-    // Carga de los Detalles Clínicos
     useEffect(() => {
         cargarDetalleHistoriaClinica();
-    }, [id, mostrarDetalles]); // Depende del ID de la HC
+    }, [id, mostrarDetalles]);
 
-    // Función para recargar los detalles después de una edición exitosa
     const handleDetalleActualizado = () => {
-        handleCloseModal(); // 1. Cerrar el modal
-        cargarDetalleHistoriaClinica(); // 2. Recargar la lista de detalles
+        handleCloseModal();
+        cargarDetalleHistoriaClinica();
     };
-
 
     if (!historiaClinica) return <p>Cargando historia Clínica...</p>;
 
-
     return (
         <>
-
             <Card className="m-4 p-4 shadow" style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", color: "#000" }}>
                 <Card.Body>
                     <Card.Title className="mb-3 text-center">
@@ -115,7 +99,6 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                     </Card.Text>
                 </Card.Body>
             </Card>
-            {/* deatlles clinicos */}
 
             {mostrarDetalles && (
                 <>
@@ -135,12 +118,8 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                                     borderLeft: "5px solid #007bff",
                                     transition: "transform 0.2s",
                                 }}
-                                onMouseEnter={(e) =>
-                                    (e.currentTarget.style.transform = "scale(1.01)")
-                                }
-                                onMouseLeave={(e) =>
-                                    (e.currentTarget.style.transform = "scale(1.0)")
-                                }
+                                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
+                                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1.0)")}
                             >
                                 <Card.Body>
                                     <Row className="mb-2 align-items-center">
@@ -150,123 +129,64 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                                             </Card.Title>
                                         </Col>
                                         <Col className="text-end">
-                                            {(rolUsuario === "Administrador" ||
-                                                rolUsuario === "Veterinario") && (
-                                                    <Button
-                                                        variant="warning"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                            handleOpenModal(
-                                                                "editarDetalleHistoriaClinica",
-                                                                detalle.id_detalle_historia_clinica
-                                                            )
-                                                        }
-                                                    >
-                                                        ✏️ Editar Detalle
-                                                    </Button>
-                                                )}
+                                            {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+                                                <Button
+                                                    variant="warning"
+                                                    size="sm"
+                                                    onClick={() => handleOpenModal("editarDetalleHistoriaClinica", detalle.id_detalle_historia_clinica)}
+                                                >
+                                                    ✏️ Editar Detalle
+                                                </Button>
+                                            )}
                                         </Col>
                                     </Row>
 
                                     <hr className="my-2" />
 
                                     <Card.Text>
-                                        <strong>Fecha:</strong>{" "}
-                                        {new Date(detalle.fecha_atencion).toLocaleString("es-AR", {
-                                            day: "2-digit",
-                                            month: "2-digit",
-                                            year: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
+                                        <strong>Fecha:</strong> {new Date(detalle.fecha_atencion).toLocaleString("es-AR")}
                                     </Card.Text>
 
                                     <Card.Text>
-                                        <strong>Veterinario:</strong>{" "}
-                                        {detalle.veterinario_atencion || "No asignado"}
+                                        <strong>Veterinario:</strong> {detalle.veterinario_atencion || "No asignado"}
                                     </Card.Text>
 
                                     <Card.Text className="mt-3">
-                                        <strong>Diagnóstico / Observaciones:</strong>{" "}
-                                        {detalle.diagnostico_detalle}
+                                        <strong>Diagnóstico / Observaciones:</strong> {detalle.diagnostico_detalle}
                                     </Card.Text>
+
+                                    {/* --- NUEVA SECCIÓN DE PRODUCTOS --- */}
+                                    <div className="mt-3">
+                                        <strong>Productos/Servicios:</strong>
+                                        {detalle.productos_vendidos && detalle.productos_vendidos.length > 0 ? (
+                                            <ul className="mt-2" style={{ listStyleType: "circle" }}>
+                                                {detalle.productos_vendidos.map((prod, pIdx) => (
+                                                    <li key={pIdx}>
+                                                        {prod.producto} - Cantidad: {prod.cantidad}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="text-muted ms-2 italic">Sin productos registrados</span>
+                                        )}
+                                    </div>
+                                    {/* ---------------------------------- */}
+                                    
                                 </Card.Body>
                             </Card>
                         ))
                     ) : (
-                        <p className="text-center text-muted">
-                            Aún no hay detalles de atención para esta historia clínica.
-                        </p>
+                        <p className="text-center text-muted">Aún no hay detalles de atención.</p>
                     )}
 
-                    {/* ========== MODAL DE EDITAR DETALLE ========== */}
-                    <Modal
-                        show={showModal}
-                        onHide={handleCloseModal}
-                        centered
-                        backdrop="static"
-                        size="lg"
-                    >
-                        <div
-                            style={{
-                                background: "linear-gradient(135deg, #FFD700, #32CD32)",
-                                padding: "25px",
-                                boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)",
-                                position: "relative",
-                            }}
-                        >
-                            {/* Cerrar */}
-                            <button
-                                onClick={handleCloseModal}
-                                aria-label="Cerrar"
-                                style={{
-                                    position: "absolute",
-                                    top: "8px",
-                                    right: "8px",
-                                    width: "28px",
-                                    height: "28px",
-                                    borderRadius: "6px",
-                                    border: "none",
-                                    backgroundColor: "#e74c3c",
-                                    color: "white",
-                                    fontSize: "18px",
-                                    fontWeight: "bold",
-                                    cursor: "pointer",
-                                    boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                                    transition: "all 0.2s ease",
-                                }}
-                            >
-                                ✕
-                            </button>
-
-                            <div
-                                style={{
-                                    backgroundColor: "#cfcfcf",
-                                    padding: "30px 60px",
-                                    textAlign: "center",
-                                    width: "700px",
-                                    margin: "auto",
-                                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-                                    borderRadius: "12px",
-                                }}
-                            >
-                                <h4
-                                    style={{
-                                        fontWeight: "bold",
-                                        textDecoration: "underline",
-                                        marginBottom: "25px",
-                                    }}
-                                >
-                                    {TITULOS[fromType]}
-                                </h4>
-
+                    <Modal show={showModal} onHide={handleCloseModal} centered backdrop="static" size="lg">
+                        <div style={{ background: "linear-gradient(135deg, #FFD700, #32CD32)", padding: "25px", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)", position: "relative" }}>
+                            <button onClick={handleCloseModal} style={{ position: "absolute", top: "8px", right: "8px", width: "28px", height: "28px", borderRadius: "6px", border: "none", backgroundColor: "#e74c3c", color: "white", cursor: "pointer" }}>✕</button>
+                            <div style={{ backgroundColor: "#cfcfcf", padding: "30px 60px", textAlign: "center", width: "700px", margin: "auto", borderRadius: "12px" }}>
+                                <h4 style={{ fontWeight: "bold", textDecoration: "underline", marginBottom: "25px" }}>{TITULOS[fromType]}</h4>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                                     {fromType === "editarDetalleHistoriaClinica" && (
-                                        <EditarDetalleHistoriaClinica
-                                            id={detalleIdParaEditar}
-                                            onClose={handleCloseModal}
-                                            onUpdated={handleDetalleActualizado}
-                                        />
+                                        <EditarDetalleHistoriaClinica id={detalleIdParaEditar} onClose={handleCloseModal} onUpdated={handleDetalleActualizado} />
                                     )}
                                 </div>
                             </div>
@@ -274,8 +194,8 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                     </Modal>
                 </>
             )}
-            </>
+        </>
     );
-}
+};
 
-            export default VerHistoriaClinica;
+export default VerHistoriaClinica;

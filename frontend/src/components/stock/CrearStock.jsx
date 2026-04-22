@@ -4,8 +4,10 @@ import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { STOCK, productos } from "../../endpoints/endpoints";
+import { useEmpleadoStore } from "../../zustand/empleado";
 
 const CrearStock = ({ onClose, onUpdate }) => {
+  const {empleado} = useEmpleadoStore()
   const initialState = {
     id_producto: "",
     cantidad: "",
@@ -82,6 +84,7 @@ const CrearStock = ({ onClose, onUpdate }) => {
         observaciones_stock: formData.observaciones_stock || null,
         id_producto: Number(formData.id_producto),
         id_sucursal: Number(formData.id_sucursal),
+        id_empleado: empleado?.id_empleado,
       };
 
       const response = await axios.post(`${STOCK}/crear`, payload, {
