@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import {
-  Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog, LineChart, ClipboardClock 
+  Users, UserCog, Truck, Dna, CreditCard, ShoppingCart, Layers, Package, FileText, PawPrint, ShieldCheck, CalendarClock, Tags, Building2, Dog, LineChart, ClipboardClock
 } from "lucide-react";
 
 import { useEmpleadoStore } from "../../zustand/empleado";
@@ -14,7 +14,7 @@ import { useTurnosStore } from "../../zustand/turnos";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { clientes as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL, TURNOS } from "../../endpoints/endpoints";
+import { CLIENTES as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL, TURNOS } from "../../endpoints/endpoints";
 
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
@@ -41,7 +41,7 @@ const Dashboard = () => {
     const getClientes = async () => {
       try {
         const { data } = await axios.get(`${CLIENTES_URL}/ver`, { withCredentials: true });
-        setClientes(data);
+        setClientes(data.data);
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
       }
@@ -72,7 +72,7 @@ const Dashboard = () => {
         console.error("Error al obtener las Historias Clinicas:", error);
       }
     };
-    const getTurnos = async()=>{
+    const getTurnos = async () => {
       try {
         const { data } = await axios.get(`${TURNOS}/ver`, { withCredentials: true });
         setTurnos(data)
@@ -140,7 +140,7 @@ const Dashboard = () => {
                 position: "absolute",
                 top: "-6px",
                 right: "-6px",
-                background: "#ff4d6d",
+                background: "rgb(246, 14, 149)",
                 color: "white",
                 width: "32px",
                 height: "32px",
@@ -307,7 +307,7 @@ const Dashboard = () => {
             </Col> */}
             {(rol === "Administrador" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12}  count={turnosPendientes.length}/>
+                <DashboardCard to="/turnos" label="Turnos" Icon={CalendarClock} index={12} count={turnosPendientes.length} />
               </Col>
             )}
 
@@ -329,7 +329,7 @@ const Dashboard = () => {
 
             {(rol === "Administrador") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/auditorias-y-movimientos" label="Auditorias y Movimientos" Icon={ClipboardClock } index={17} />
+                <DashboardCard to="/auditorias-y-movimientos" label="Auditorias y Movimientos" Icon={ClipboardClock} index={17} />
               </Col>
             )}
 
