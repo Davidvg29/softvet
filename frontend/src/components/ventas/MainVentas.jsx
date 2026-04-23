@@ -299,6 +299,7 @@ console.log(empleado);
                   borderRadius: "10px",
                 }}
               >
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Fecha</th>
                 <th style={{ padding: "14px" }}>Hora</th>
                 <th style={{ padding: "14px" }}>Cliente</th>
@@ -329,6 +330,9 @@ console.log(empleado);
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      {venta.id_venta ?? ''}
+                    </td>
                     <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
                       {venta.fecha_hora?.slice(0, 10) ?? ''}
                     </td>

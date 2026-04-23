@@ -271,6 +271,7 @@ const MainCliente = () => {
           <Table hover responsive style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 12px" }}>
             <thead>
               <tr style={{ background: "linear-gradient(90deg, #6f42c1, #9b59b6)", color: "#fff", textAlign: "center", fontSize: "18px", borderRadius: "10px" }}>
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Nombre Cliente</th>
                 <th style={{ padding: "14px" }}>Dni Cliente</th>
                 <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>Acciones</th>
@@ -286,6 +287,7 @@ const MainCliente = () => {
                     onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)";    e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";  }}
                   >
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>{cliente.id_cliente}</td>
                     <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>{cliente.nombre_cliente}</td>
                     <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>{cliente.dni_cliente}</td>
                     <td style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", padding: "12px", border: "none" }}>
