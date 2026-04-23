@@ -382,7 +382,7 @@ const MainTurnos = () => {
               </Button>
 
               {/* Botón ELIMINAR */}
-              <Button
+              {/* <Button
                 style={{
                   backgroundColor: "#dc3545",
                   border: "none",
@@ -402,7 +402,7 @@ const MainTurnos = () => {
                 onClick={() => borrarTurnos(turno.id_turno)}
               >
                 Eliminar
-              </Button>
+              </Button> */}
             </td>
           </tr>
         ))

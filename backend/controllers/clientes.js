@@ -12,7 +12,8 @@ const mostrarClientes = (req, res) => {
     const offset = (page - 1) * limit;
 
     // 3. Preparar la consulta base y los parámetros dinámicos
-    let baseQuery = 'FROM clientes WHERE is_active = TRUE';
+    // CORRECCIÓN AQUÍ: Agregamos "WHERE 1=1" para poder concatenar "AND" sin romper el SQL
+    let baseQuery = 'FROM clientes WHERE 1=1'; 
     let queryParams = [];
 
     // Si hay texto en el buscador, agregamos la condición LIKE
@@ -34,7 +35,8 @@ const mostrarClientes = (req, res) => {
         const totalPages = Math.ceil(totalItems / limit);
 
         // 5. Segunda consulta: Traer solo el tramo de datos solicitado
-        const dataQuery = `SELECT * ${baseQuery} ORDER BY id_cliente DESC LIMIT ? OFFSET ?`;
+        // CAMBIO PRINCIPAL AQUÍ: Agregamos "is_active DESC" antes del id_cliente
+        const dataQuery = `SELECT * ${baseQuery} ORDER BY is_active DESC, id_cliente DESC LIMIT ? OFFSET ?`;
         const dataParams = [...queryParams, limit, offset]; // Agregamos limit y offset al final
 
         connection.query(dataQuery, dataParams, (errorData, resultsData) => {
@@ -181,6 +183,40 @@ const eliminarCliente = (req, res) => {
     });
 }
 
+const activarCliente = (req, res) => {
+    const { id } = req.params;
+    const { id_empleado } = req.body; // Lo tomamos del body para mantener la consistencia con el frontend
+
+    // Cambiamos is_active a TRUE
+    connection.query('UPDATE clientes SET is_active = TRUE WHERE id_cliente = ?', [id], (error, results) => {
+        if (error) {
+            console.error("Error al activar cliente:", error);
+            return res.status(500).json({ error: 'Error al activar el cliente.' });
+        }
+        
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Cliente no encontrado.' });
+        }
+        
+        // Respuesta exitosa al cliente
+        res.json({ message: 'Cliente activado correctamente.' });
+        
+        // Registro en la tabla de auditoría
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Clientes', 'ACTIVAR', ?);`, 
+                [id_empleado, `Se activó el cliente Nº ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                }
+        );
+    });
+};
+
+module.exports = { activarCliente }; // Asegúrate de exportarlo
+
 // Buscar clientes por nombre o DNI
 const buscarClientes = (req, res) => {
     const { query } = req.query;
@@ -263,5 +299,6 @@ module.exports = {
     editarCliente,
     eliminarCliente,
     buscarClientes,
-    contactarFormLanding
+    contactarFormLanding,
+    activarCliente
 };

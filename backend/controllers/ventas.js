@@ -8,7 +8,8 @@ const verVentas = (req, res) => {
         empleados.id_empleado, empleados.nombre_empleado
         from ventas
         left join clientes on clientes.id_cliente = ventas.id_cliente
-        left join empleados on empleados.id_empleado = ventas.id_empleado;`
+        left join empleados on empleados.id_empleado = ventas.id_empleado
+        order by ventas.is_active;`
     connection.query(queryGetVentas, (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener las ventas' });

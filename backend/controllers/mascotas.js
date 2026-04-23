@@ -12,7 +12,7 @@ const mostrarMascotas = (req, res) => {
     left join razas on razas.id_raza = mascotas.id_raza
     left join especies on razas.id_especie = especies.id_especie 
     left join clientes on clientes.id_cliente = mascotas.id_cliente
-	where mascotas.is_active = true
+    order by mascotas.is_active asc
     ;`;
     connection.query(queryGetMascotas, (error, results) => {
         if (error) {
