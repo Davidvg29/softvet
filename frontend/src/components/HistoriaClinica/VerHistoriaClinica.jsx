@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { historiasClinicas, detalleHistoriasClinicas } from '../../endpoints/endpoints';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
+import jsPDF from "jspdf";
+import logovet from "../../assets/logovet.png"
 import { useEmpleadoStore } from '../../zustand/empleado';
 import { Card, Button, Row, Col } from "react-bootstrap";
 import EditarDetalleHistoriaClinica from './EditarDetalleHistoriaClinica';
@@ -69,6 +71,94 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
         cargarDetalleHistoriaClinica();
     };
 
+    const imprimirPDF = () => {
+  if (!detallesClinicos.length) {
+    return Swal.fire("Error", "No hay detalles para imprimir", "error");
+  }
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const margin = 20;
+  let y = 20;
+
+  // LOGO
+  pdf.addImage(logovet, "PNG", margin, y, 40, 20);
+
+  // TÍTULO
+  pdf.setFontSize(18);
+  pdf.text("Historia Clínica", pageWidth / 2, y + 10, { align: "center" });
+
+  y += 30;
+
+  // DATOS GENERALES
+  pdf.setFontSize(12);
+  pdf.text(`Cliente: ${historiaClinica.nombre_cliente}`, margin, y);
+  y += 7;
+  pdf.text(`Mascota: ${historiaClinica.nombre_mascota}`, margin, y);
+  y += 7;
+
+  y += 10;
+
+  // ENCABEZADO
+  pdf.setFillColor(111, 66, 193);
+  pdf.setTextColor(255, 255, 255);
+  pdf.rect(margin, y - 5, pageWidth - margin * 2, 8, "F");
+
+  pdf.text("Fecha", margin + 2, y);
+  pdf.text("Veterinario", margin + 50, y);
+  pdf.text("Diagnóstico", margin + 100, y);
+
+  pdf.setTextColor(0, 0, 0);
+  y += 10;
+
+  // DETALLES
+  detallesClinicos.forEach((d) => {
+
+    if (y > 270) {
+      pdf.addPage();
+      y = 20;
+    }
+
+    // 📅 Fecha
+    let fecha = "N/A";
+    if (d.fecha_atencion) {
+      const partes = d.fecha_atencion.split("T")[0].split("-");
+      fecha = `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    // 👨‍⚕️ Veterinario
+    const vet = d.veterinario_atencion || "Sin asignar";
+
+    // 📝 Diagnóstico
+    const diagnostico = pdf.splitTextToSize(
+      d.diagnostico_detalle || "N/A",
+      80
+    );
+
+    pdf.text(fecha, margin + 2, y);
+    pdf.text(vet, margin + 50, y);
+    pdf.text(diagnostico, margin + 100, y);
+
+    y += 8;
+  });
+
+  y += 10;
+
+  // TOTAL
+  pdf.setFontSize(14);
+  pdf.text(
+    `TOTAL ATENCIONES: ${detallesClinicos.length}`,
+    pageWidth - margin,
+    y,
+    { align: "right" }
+  );
+
+  // PREVIEW
+  const blob = pdf.output("bloburl");
+  window.open(blob, "_blank");
+};
+
     if (!historiaClinica) return <p>Cargando historia Clínica...</p>;
 
     return (
@@ -105,7 +195,14 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                     <h4 className="text-center mt-5 mb-3" style={{ color: "#6f42c1" }}>
                         Historial de Atenciones ({detallesClinicos.length})
                     </h4>
-
+                    <div className="text-center mb-3">
+                        <Button
+                            variant="primary"
+                            onClick={imprimirPDF}
+                        >
+                            🖨️ Imprimir Historia
+                        </Button>
+                    </div>
                     {detallesClinicos && detallesClinicos.length > 0 ? (
                         detallesClinicos.map((detalle, index) => (
                             <Card
@@ -171,7 +268,7 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                                         )}
                                     </div>
                                     {/* ---------------------------------- */}
-                                    
+
                                 </Card.Body>
                             </Card>
                         ))

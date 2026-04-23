@@ -39,7 +39,7 @@ const InformeTurnos = () => {
     try {
       // Cargar Clientes
       const resClientes = await axios.get(clientes + '/ver', { withCredentials: true });
-      setListaClientes(resClientes.data.data);
+      setListaClientes(resClientes.data);
 
       // Cargar Empleados
       const resEmpleados = await axios.get(empleados + '/ver', { withCredentials: true });
