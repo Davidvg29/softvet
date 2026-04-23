@@ -10,6 +10,7 @@ import { empleados } from '../../endpoints/endpoints';
 import CrearEmpleado from './CrearEmpleado';
 import VerEmpleado from './VerEmpleado';
 import EditEmpleado from './EditEmpleado';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 const MainEmpleado = () => {
   const [empleado, setEmpleado] = useState([]);
@@ -17,6 +18,8 @@ const MainEmpleado = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
+
+  const empleadoCurrent = useEmpleadoStore((state) => state.empleado);
 
   const TITULOS = {
     crear: 'Nuevo Empleado',
@@ -64,7 +67,7 @@ const MainEmpleado = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-      const response = await axios.delete(`${empleados}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${empleados}/eliminar/${id}`, { data:{id_empleado:empleadoCurrent.id_empleado},withCredentials: true });
 
       if (response.status === 200) {
         await Swal.fire({
@@ -122,6 +125,54 @@ const MainEmpleado = () => {
     padding: "8px 20px",
     borderRadius: "10px"
   };
+
+// ── Lógica para Activar el Empleado ─────────────────────────────────────────
+  const activarEmpleadoFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Empleado?',
+      text: 'El empleado volverá a estar activo en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      const response = await axios.put(
+        `${empleados}/activar/${id}`, 
+        { id_empleado: empleadoCurrent.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activado correctamente',
+          text: 'El empleado ha sido activado con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarEmpleados(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar el empleado:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar el empleado. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+console.log(empleado);
 
   return (
     <>
@@ -336,28 +387,52 @@ const MainEmpleado = () => {
                         Editar
                       </Button>
 
-                      {/* Botón ELIMINAR */}
-                      <Button
-                        style={{
-                          backgroundColor: "#dc3545",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #a71d2a",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #a71d2a";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #a71d2a";
-                        }}
-                        onClick={() => borrarEmpleados(empleado.id_empleado)}
-                      >
-                        Eliminar
-                      </Button>
+                      {/* Botón ELIMINAR / ACTIVAR */}
+                      {empleado.is_active ? (
+                        <Button
+                          style={{
+                            backgroundColor: "#dc3545",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #a71d2a",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => borrarEmpleados(empleado.id_empleado)}
+                        >
+                          Eliminar
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{
+                            backgroundColor: "#e8e8e8",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#040404",
+                            boxShadow: "0 3px 0 #de2437",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => activarEmpleadoFront(empleado.id_empleado)}
+                        >
+                          Activar
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))
