@@ -26,6 +26,11 @@ const MainCliente = () => {
   // ────────────────────────────────────────────────────────
 
   const empleadoStore = useEmpleadoStore((state) => state.empleado);
+  const rolUsuario = empleadoStore?.nombre_rol || "";
+  // Si es Administrador, ve todos. Si no, solo ve los que están activos.
+  const clientesAMostrar = rolUsuario === "Administrador" 
+    ? cliente 
+    : cliente.filter((c) => c.is_active); 
 
   const TITULOS = {
     crear: 'Nuevo Cliente',
@@ -125,6 +130,67 @@ const MainCliente = () => {
     }
   };
 
+  // ── Lógica para Activar el Cliente ─────────────────────────────────────────
+  const activarClienteFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Cliente?',
+      text: 'El cliente volverá a estar activo en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      const response = await axios.put(
+        `${clientes}/activar/${id}`, 
+        { id_empleado: empleadoStore.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activado correctamente',
+          text: 'El cliente ha sido activado con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarCLientes(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar el cliente:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar el cliente. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+
+  // Validación para Activar
+  const handleActivarConPermiso = (id) => {
+    if (rolUsuario !== "Administrador") {
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: "No tienes permisos. Solo el Administrador puede activar clientes.",
+        confirmButtonColor: "#6f42c1",
+      });
+      return;
+    }
+    activarClienteFront(id);
+  };
+
   return (
     <>
       <div className="text-center">
@@ -212,8 +278,8 @@ const MainCliente = () => {
             </thead>
 
             <tbody>
-              {cliente.length > 0 ? (
-                cliente.map((cliente) => (
+              {clientesAMostrar.length > 0 ? (
+                clientesAMostrar.map((cliente) => (
                   <tr
                     key={cliente.id_cliente}
                     style={{ backgroundColor: "#fff", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "12px", transition: "transform 0.15s ease, box-shadow 0.15s ease", transform: "translateY(0)" }}
@@ -245,12 +311,22 @@ const MainCliente = () => {
                         Agregar Mascota
                       </Button>
 
-                      <Button style={{ backgroundColor: "#dc3545", border: "none", fontWeight: "bold", color: "#fff", boxShadow: "0 3px 0 #a71d2a", transition: "all 0.1s ease" }}
-                        onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 5px 0 #a71d2a"; }}
-                        onMouseLeave={(e) => { e.target.style.transform = "translateY(0)";    e.target.style.boxShadow = "0 3px 0 #a71d2a"; }}
-                        onClick={() => borrarClientes(cliente.id_cliente)}>
-                        Eliminar
-                      </Button>
+                      {/* Botón ELIMINAR / ACTIVAR */}
+                      {cliente.is_active ? (
+                        <Button style={{ backgroundColor: "#dc3545", border: "none", fontWeight: "bold", color: "#fff", boxShadow: "0 3px 0 #a71d2a", transition: "all 0.1s ease" }}
+                          onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 5px 0 #a71d2a"; }}
+                          onMouseLeave={(e) => { e.target.style.transform = "translateY(0)";    e.target.style.boxShadow = "0 3px 0 #a71d2a"; }}
+                          onClick={() => borrarClientes(cliente.id_cliente)}>
+                          Eliminar
+                        </Button>
+                      ) : (
+                        <Button style={{ backgroundColor: "#e8e8e8", border: "none", fontWeight: "bold", color: "#040404", boxShadow: "0 3px 0 #de2437", transition: "all 0.1s ease" }}
+                          onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 5px 0 #a71d2a"; }}
+                          onMouseLeave={(e) => { e.target.style.transform = "translateY(0)";    e.target.style.boxShadow = "0 3px 0 #a71d2a"; }}
+                          onClick={() => activarClienteFront(cliente.id_cliente)}>
+                          Activar
+                        </Button>
+                      )}
 
                     </td>
                   </tr>

@@ -44,8 +44,7 @@ const MainVentas = () => {
   const cargarVentas = async () => {
     try {
       const {data} = await axios.get(`${VENTAS}/ver`, { withCredentials: true });
-      const ventasFilter = data.reverse().filter((v)=>(v.is_active == 1))
-      setVentas(ventasFilter || []);
+      setVentas(data.reverse() || []);
     } catch (error) {
       console.error('Error al cargar las ventas:', error);
       setVentas([]);
@@ -56,10 +55,15 @@ const MainVentas = () => {
     cargarVentas();
   }, []);
 
-  const ventasFiltrados = ventas.filter((venta) =>
-    venta.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
-    venta.dni_cliente.toString().includes(busqueda)
-  );
+  const ventasFiltrados = ventas.filter((venta) => {
+    const coincideBusqueda = 
+      venta.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
+      venta.dni_cliente.toString().includes(busqueda);
+    // *Nota: Asegúrate de que la propiedad del rol se llame 'rol' en tu objeto empleado,
+    const puedeVer = empleado?.nombre_rol === 'Administrador' ? true : venta.is_active;
+
+    return coincideBusqueda && puedeVer;
+  });
 
   // ── Paginación ──────────────────────────────────────────
   const [paginaActual, setPaginaActual] = useState(1);
@@ -133,6 +137,55 @@ const MainVentas = () => {
       });
     }
   };
+
+  // ── Lógica para Activar la Venta ─────────────────────────────────────────
+  const activarVentaFront = async (id_venta) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Venta?',
+      text: 'La venta volverá a estar activa en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      // Usamos el endpoint de activar (asumiendo que en tu backend armaste la ruta /activar/:id)
+      const response = await axios.put(
+        `${VENTAS}/activar/${id_venta}`, 
+        { id_empleado: empleado.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activada correctamente',
+          text: 'La venta ha sido activada con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarVentas(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar la venta:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar la venta. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+console.log(empleado);
 
   return (
     <>
@@ -336,27 +389,52 @@ const MainVentas = () => {
                         Editar
                       </Button>
 
-                      <Button
-                        style={{
-                          backgroundColor: "#dc3545",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #a71d2a",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #a71d2a";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #a71d2a";
-                        }}
-                        onClick={() => borrarVentas(venta.id_venta)}
-                      >
-                        Eliminar
-                      </Button>
+                      {/* Botón ELIMINAR / ACTIVAR */}
+                      {venta.is_active ? (
+                        <Button
+                          style={{
+                            backgroundColor: "#dc3545",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #a71d2a",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => borrarVentas(venta.id_venta)}
+                        >
+                          Eliminar
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{
+                            backgroundColor: "#e8e8e8",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#040404",
+                            boxShadow: "0 3px 0 #de2437",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => activarVentaFront(venta.id_venta)}
+                        >
+                          Activar
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))
