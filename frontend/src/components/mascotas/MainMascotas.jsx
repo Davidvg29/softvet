@@ -275,6 +275,7 @@ const MainMascota = () => {
                   borderRadius: "10px",
                 }}
               >
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Nombre Mascota</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>DNI Cliente</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Acciones</th>
@@ -302,6 +303,15 @@ const MainMascota = () => {
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
+                    <td style={{
+                      padding: "14px 20px",
+                      fontWeight: "500",
+                      textAlign: "center",
+                      color: "#333",
+                      border: "none",
+                    }}>
+                      {m.id_mascota}
+                    </td>
                     <td style={{
                       padding: "14px 20px",
                       fontWeight: "500",

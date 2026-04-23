@@ -250,6 +250,9 @@ const MainEspecies = () => {
         }}
       >
         <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+          N°
+        </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
           Nombre Especie
         </th>
         <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
@@ -279,6 +282,17 @@ const MainEspecies = () => {
               e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
             }}
           >
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {especie.id_especie}
+            </td>
             <td
               style={{
                 padding: "14px 20px",
