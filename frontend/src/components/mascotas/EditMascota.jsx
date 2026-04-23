@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { mascotas, ESPECIES, razas } from "../../endpoints/endpoints";
 import validationCrearMascotas from "../../validations/validationCrearMascotas";
 import { useEmpleadoStore } from "../../zustand/empleado";
+import { FormGroup } from "react-bootstrap";
 
 const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
   const { empleado } = useEmpleadoStore();
@@ -158,62 +159,79 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
   return (
     <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px" }}>
       <Form onSubmit={handleSubmit}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "15px 20px",
+            textAlign: "left",
+          }}
+        >          <Form.Group>
+            <Form.Label><strong>Nombre Mascota:</strong></Form.Label>
+            <Form.Control
+              type="text"
+              name="nombre_mascota"
+              value={formData.nombre_mascota}
+              onChange={handleChange}
+              placeholder="Nombre"
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label><strong>Edad:</strong></Form.Label>
+            <Form.Control
+              type="number"
+              name="edad_mascota"
+              value={formData.edad_mascota}
+              onChange={handleChange}
+              placeholder="Edad"
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label><strong>Sexo:</strong></Form.Label>
+            <Form.Select
+              name="sexo_mascota"
+              value={formData.sexo_mascota}
+              onChange={handleChange}
+            >
+              <option value="">Sexo</option>
+              <option value="Macho">Macho</option>
+              <option value="Hembra">Hembra</option>
+            </Form.Select>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label><strong>Especie:</strong></Form.Label>
+            <Form.Select
+              value={especieSeleccionada}
+              onChange={(e) => {
+                setEspecieSeleccionada(e.target.value);
+                setFormData({ ...formData, id_raza: "" });
+              }}
+            >
+              <option value="">Especie</option>
+              {listaEspecies.map((esp) => (
+                <option key={esp.id_especie} value={String(esp.id_especie)}>
+                  {esp.nombre_especie}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
-          <Form.Control
-            type="text"
-            name="nombre_mascota"
-            value={formData.nombre_mascota}
-            onChange={handleChange}
-            placeholder="Nombre"
-          />
-
-          <Form.Control
-            type="number"
-            name="edad_mascota"
-            value={formData.edad_mascota}
-            onChange={handleChange}
-            placeholder="Edad"
-          />
-
-          <Form.Select
-            name="sexo_mascota"
-            value={formData.sexo_mascota}
-            onChange={handleChange}
-          >
-            <option value="">Sexo</option>
-            <option value="Macho">Macho</option>
-            <option value="Hembra">Hembra</option>
-          </Form.Select>
-
-          <Form.Select
-            value={especieSeleccionada}
-            onChange={(e) => {
-              setEspecieSeleccionada(e.target.value);
-              setFormData({ ...formData, id_raza: "" });
-            }}
-          >
-            <option value="">Especie</option>
-            {listaEspecies.map((esp) => (
-              <option key={esp.id_especie} value={String(esp.id_especie)}>
-                {esp.nombre_especie}
-              </option>
-            ))}
-          </Form.Select>
-
-          <Form.Select
-            name="id_raza"
-            value={formData.id_raza}
-            onChange={handleChange}
-            disabled={!especieSeleccionada}
-          >
-            <option value="">Raza</option>
-            {listaRazas.map((r) => (
-              <option key={r.id_raza} value={String(r.id_raza)}>
-                {r.nombre_raza}
-              </option>
-            ))}
-          </Form.Select>
+          <Form.Group>
+            <Form.Label><strong>Raza:</strong></Form.Label>
+            <Form.Select
+              name="id_raza"
+              value={formData.id_raza}
+              onChange={handleChange}
+              disabled={!especieSeleccionada}
+            >
+              <option value="">Raza</option>
+              {listaRazas.map((r) => (
+                <option key={r.id_raza} value={String(r.id_raza)}>
+                  {r.nombre_raza}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
 
         </div>
 
