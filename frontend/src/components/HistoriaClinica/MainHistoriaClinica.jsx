@@ -427,7 +427,7 @@ const MainHistoriaClinica = () => {
 
 
 
-                        {/* {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+                        {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
                           <Button
                             style={{
                               backgroundColor: "#dc3545",
@@ -449,7 +449,7 @@ const MainHistoriaClinica = () => {
                           >
                             Eliminar
                           </Button>
-                        )} */}
+                        )}
                       </td>
 
                     </tr>
