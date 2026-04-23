@@ -8,7 +8,8 @@ import validationCrearMascotas from "../../validations/validationCrearMascotas";
 import { useEmpleadoStore } from "../../zustand/empleado";
 
 const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
-  const {empleado} = useEmpleadoStore()
+  const { empleado } = useEmpleadoStore();
+
   const [formData, setFormData] = useState({
     nombre_mascota: "",
     edad_mascota: "",
@@ -20,30 +21,44 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
   const [listaRazas, setListaRazas] = useState([]);
   const [especieSeleccionada, setEspecieSeleccionada] = useState("");
 
-  // Cargar datos iniciales
+  const [mascotaData, setMascotaData] = useState(null);
+
+  // 🔹 1. Cargar especies + mascota
   useEffect(() => {
     const fetchData = async () => {
       try {
         const esp = await axios.get(`${ESPECIES}/ver`, {
           withCredentials: true,
         });
-        console.log("ESPECIES:", esp.data);
         setListaEspecies(esp.data);
 
-        const mascotaRes = await axios.get(`${mascotas}/ver/${id_mascota}`, { withCredentials: true });
+        const mascotaRes = await axios.get(
+          `${mascotas}/ver/${id_mascota}`,
+          { withCredentials: true }
+        );
+
         const m = mascotaRes.data;
+        setMascotaData(m);
 
         setFormData({
-          nombre_mascota: m.nombre_mascota,
-          edad_mascota: m.edad_mascota,
-          sexo_mascota: m.sexo_mascota,
-          id_raza: m.id_raza,
+          nombre_mascota: m.nombre_mascota || "",
+          edad_mascota: m.edad_mascota || "",
+          sexo_mascota: m.sexo_mascota || "",
+          id_raza: m.id_raza ? String(m.id_raza) : "",
         });
 
-        setEspecieSeleccionada(m.id_especie);
-
-        const razasRes = await axios.get(`${razas}/porEspecie/${m.id_especie}`, { withCredentials: true });
-        setListaRazas(razasRes.data);
+        // 👉 si viene id_especie lo usamos
+        if (m.id_especie) {
+          setEspecieSeleccionada(String(m.id_especie));
+        } else if (m.nombre_especie) {
+          // 👉 fallback si NO viene id_especie
+          const especieEncontrada = esp.data.find(
+            (e) => e.nombre_especie === m.nombre_especie
+          );
+          if (especieEncontrada) {
+            setEspecieSeleccionada(String(especieEncontrada.id_especie));
+          }
+        }
 
       } catch (err) {
         console.error(err);
@@ -53,21 +68,40 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
     fetchData();
   }, [id_mascota]);
 
-  // Cargar razas cuando cambia la especie
+  // 🔹 2. Cargar razas según especie
   useEffect(() => {
     if (!especieSeleccionada) return;
 
     const fetchRazas = async () => {
       try {
-        const r = await axios.get(`${razas}/porEspecie/${especieSeleccionada}`, { withCredentials: true });
+        const r = await axios.get(
+          `${razas}/porEspecie/${especieSeleccionada}`,
+          { withCredentials: true }
+        );
+
         setListaRazas(r.data);
+
+        // 👉 si NO tenemos id_raza pero sí nombre, lo resolvemos acá
+        if (mascotaData && !mascotaData.id_raza && mascotaData.nombre_raza) {
+          const razaEncontrada = r.data.find(
+            (ra) => ra.nombre_raza === mascotaData.nombre_raza
+          );
+
+          if (razaEncontrada) {
+            setFormData((prev) => ({
+              ...prev,
+              id_raza: String(razaEncontrada.id_raza),
+            }));
+          }
+        }
+
       } catch (err) {
         console.error(err);
       }
     };
 
     fetchRazas();
-  }, [especieSeleccionada]);
+  }, [especieSeleccionada, mascotaData]);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,7 +109,6 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación
     const validation = validationCrearMascotas(
       formData.nombre_mascota,
       formData.edad_mascota,
@@ -99,7 +132,7 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
         {
           ...formData,
           id_especie: especieSeleccionada,
-          id_empleado: empleado?.id_empleado
+          id_empleado: empleado?.id_empleado,
         },
         { withCredentials: true }
       );
@@ -123,131 +156,70 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
   };
 
   return (
-    <div
-      style={{
-        backgroundColor: "#cfcfcf",
-        borderRadius: "10px",
-        padding: "25px 40px",
-        color: "#000",
-      }}
-    >
-    <Form onSubmit={handleSubmit}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "15px 20px",
-            textAlign: "left",
-          }}
-        >
-          <Form.Group>
-            <Form.Label><strong>Nombre Mascota:</strong></Form.Label>
-            <Form.Control
-              type="text"
-              name="nombre_mascota"
-              value={formData.nombre_mascota}
-              onChange={handleChange}
-              placeholder="Nombre de la Mascota"
-              style={{ borderRadius: "8px" }}
-            />
-          </Form.Group>
+    <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px" }}>
+      <Form onSubmit={handleSubmit}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
 
-          <Form.Group>
-            <Form.Label><strong>Edad:</strong></Form.Label>
-            <Form.Control
-              type="number"
-              name="edad_mascota"
-              value={formData.edad_mascota}
-              onChange={handleChange}
-              placeholder="Edad de la Mascota"
-              style={{ borderRadius: "8px" }}
-            />
-          </Form.Group>
+          <Form.Control
+            type="text"
+            name="nombre_mascota"
+            value={formData.nombre_mascota}
+            onChange={handleChange}
+            placeholder="Nombre"
+          />
 
-          <Form.Group>
-            <Form.Label><strong>Sexo:</strong></Form.Label>
-            <Form.Select
-              name="sexo_mascota"
-              value={formData.sexo_mascota}
-              onChange={handleChange}
-              style={{ borderRadius: "8px" }}
-            >
-              <option value="">Seleccionar...</option>
-              <option value="Macho">Macho</option>
-              <option value="Hembra">Hembra</option>
-            </Form.Select>
-          </Form.Group>
+          <Form.Control
+            type="number"
+            name="edad_mascota"
+            value={formData.edad_mascota}
+            onChange={handleChange}
+            placeholder="Edad"
+          />
 
-          <Form.Group>
-            <Form.Label><strong>Especie:</strong></Form.Label>
-            <Form.Select
-              value={especieSeleccionada}
-              onChange={(e) => {
-                setEspecieSeleccionada(e.target.value);
-                setFormData({ ...formData, id_raza: "" });
-              }}
-              style={{ borderRadius: "8px" }}
-            >
-              <option value="">Seleccionar especie...</option>
-              {listaEspecies.map((esp) => (
-                <option key={esp.id_especie} value={esp.id_especie}>
-                  {esp.nombre_especie}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+          <Form.Select
+            name="sexo_mascota"
+            value={formData.sexo_mascota}
+            onChange={handleChange}
+          >
+            <option value="">Sexo</option>
+            <option value="Macho">Macho</option>
+            <option value="Hembra">Hembra</option>
+          </Form.Select>
 
-          <Form.Group>
-            <Form.Label><strong>Raza:</strong></Form.Label>
-            <Form.Select
-              name="id_raza"
-              value={formData.id_raza}
-              onChange={handleChange}
-              style={{ borderRadius: "8px" }}
-              disabled={!especieSeleccionada}
-            >
-              <option value="">Seleccionar raza...</option>
-              {listaRazas.map((raza) => (
-                <option key={raza.id_raza} value={raza.id_raza}>
-                  {raza.nombre_raza}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+          <Form.Select
+            value={especieSeleccionada}
+            onChange={(e) => {
+              setEspecieSeleccionada(e.target.value);
+              setFormData({ ...formData, id_raza: "" });
+            }}
+          >
+            <option value="">Especie</option>
+            {listaEspecies.map((esp) => (
+              <option key={esp.id_especie} value={String(esp.id_especie)}>
+                {esp.nombre_especie}
+              </option>
+            ))}
+          </Form.Select>
+
+          <Form.Select
+            name="id_raza"
+            value={formData.id_raza}
+            onChange={handleChange}
+            disabled={!especieSeleccionada}
+          >
+            <option value="">Raza</option>
+            {listaRazas.map((r) => (
+              <option key={r.id_raza} value={String(r.id_raza)}>
+                {r.nombre_raza}
+              </option>
+            ))}
+          </Form.Select>
+
         </div>
 
-        {/* BOTONES */}
-        <div style={{ textAlign: "center", marginTop: "25px" }}>
-          <Button
-            type="submit"
-            style={{
-              backgroundColor: "#5a7edc",
-              border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              marginRight: "10px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #3c5bb3",
-              transition: "all 0.1s ease",
-            }}
-          >
-            Guardar
-          </Button>
-
-          <Button
-            onClick={onClose}
-            style={{
-              backgroundColor: "#e74c3c",
-              border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #b33a2b",
-              transition: "all 0.1s ease",
-            }}
-          >
+        <div className="text-center mt-4">
+          <Button type="submit">Guardar</Button>
+          <Button onClick={onClose} className="ms-2" variant="danger">
             Cancelar
           </Button>
         </div>

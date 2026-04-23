@@ -82,11 +82,11 @@ const crearMascota = (req, res) => {
     });
 }
 
-const editarMasctoa = (req, res) => {
+const editarMascota = (req, res) => {
     const id_mascota = req.params.id;
 
-    // Solo campos editables
-    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_historia_clinica, id_empleado } = req.body;
+    // ❌ Sacamos id_historia_clinica
+    const { nombre_mascota, edad_mascota, sexo_mascota, id_raza, id_empleado } = req.body;
 
     const validation = crearMascotaValidacion({
         nombre_mascota,
@@ -100,7 +100,7 @@ const editarMasctoa = (req, res) => {
         return res.status(400).json({ error: validation });
     }
 
-    // 1) Obtener cliente actual
+    // 1) Obtener cliente actual (NO se modifica)
     const queryGetCliente = `
         SELECT id_cliente 
         FROM mascotas 
@@ -119,15 +119,14 @@ const editarMasctoa = (req, res) => {
 
         const id_cliente_actual = results[0].id_cliente;
 
-        // 2) UPDATE
+        // 2) UPDATE (🔥 SIN tocar id_historia_clinica)
         const queryUpdate = `
             UPDATE mascotas
             SET nombre_mascota = ?, 
                 edad_mascota = ?, 
                 sexo_mascota = ?, 
                 id_raza = ?, 
-                id_cliente = ?,        -- ← se mantiene igual
-                id_historia_clinica = ?
+                id_cliente = ?
             WHERE id_mascota = ?
         `;
 
@@ -138,8 +137,7 @@ const editarMasctoa = (req, res) => {
                 edad_mascota,
                 sexo_mascota,
                 id_raza,
-                id_cliente_actual,         // ← siempre el mismo cliente
-                id_historia_clinica ?? null,
+                id_cliente_actual,
                 id_mascota
             ],
             (error, results) => {
@@ -152,18 +150,24 @@ const editarMasctoa = (req, res) => {
                     return res.status(404).json({ error: "Mascota no encontrada." });
                 }
 
-                res.status(200).json("Mascota editada exitosamente.");
-                connection.query(`
-                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
-                VALUES (?, 'Mascotas', 'ACTUALIZAR', ?);`, 
-                [id_empleado, `Se actualizo la mascota N° ${id_mascota} con nombre ${nombre_mascota}`], 
-                (errorAuditoria) => {
-                    if (errorAuditoria) {
-                        console.error("Error al registrar auditoría:", errorAuditoria);
+                // Auditoría
+                connection.query(
+                    `INSERT INTO auditorias_movimientos 
+                    (id_empleado, modulo, accion, descripcion) 
+                    VALUES (?, 'Mascotas', 'ACTUALIZAR', ?)`,
+                    [
+                        id_empleado,
+                        `Se actualizó la mascota N° ${id_mascota} con nombre ${nombre_mascota}`
+                    ],
+                    (errorAuditoria) => {
+                        if (errorAuditoria) {
+                            console.error("Error al registrar auditoría:", errorAuditoria);
+                        }
                     }
-                })
+                );
+
+                res.status(200).json("Mascota editada exitosamente.");
             }
-            
         );
     });
 };
@@ -247,7 +251,7 @@ module.exports = {
     mostrarMascotas,
     mostrarMascotaId,
     crearMascota,
-    editarMasctoa,
+    editarMascota,
     borrarMascota,
     activarMascota,
     mostrarMascotasPorCliente
