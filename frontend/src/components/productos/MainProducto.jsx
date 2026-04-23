@@ -42,7 +42,7 @@ const MainProducto = () => {
     try {
       const response = await axios.get(`${productos}/ver`, { withCredentials: true });
       console.log("Respuesta del backend:", response.data);
-      setProducto(response.data.reverse());
+      setProducto(response.data);
     } catch (error) {
       console.error('Error al cargar los Productos:', error);
     }
@@ -166,6 +166,68 @@ const MainProducto = () => {
       return;
     }
     borrarProductos(id);
+  };
+
+  // Lógica para Activar el Producto
+  const activarProductoFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Producto?',
+      text: 'El producto volverá a estar disponible en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      // Usamos PUT y enviamos el id_empleado en el body para la auditoría
+      const response = await axios.put(
+        `${productos}/activar/${id}`, 
+        { id_empleado: empleado.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activado correctamente',
+          text: 'El producto ha sido activado con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+
+        cargarProductos(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar el Producto:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar el Producto. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+
+  // Validación para Activar
+  const handleActivarConPermiso = (id) => {
+    if (rolUsuario !== "Administrador") {
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: "Solo el Administrador puede activar productos.",
+        confirmButtonColor: "#6f42c1",
+      });
+      return;
+    }
+    activarProductoFront(id);
   };
 
   return (
@@ -408,9 +470,9 @@ const MainProducto = () => {
                 Editar
               </Button>
 
-
-              {/* Botón ELIMINAR */}
-              <Button
+              {/* Botón ELIMINAR / ACTIVAR */}
+              {producto.producto_is_active ? (
+                <Button
                 style={{
                   backgroundColor: "#dc3545",
                   border: "none",
@@ -431,6 +493,30 @@ const MainProducto = () => {
               >
                 Dar Baja
               </Button>
+              ) : (
+              <Button
+                style={{
+                  backgroundColor: "#e8e8e8",
+                  border: "none",
+                  fontWeight: "bold",
+                  color: "#040404",
+                  boxShadow: "0 3px 0 #de2437",
+                  transition: "all 0.1s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                }}
+                /* AQUÍ ESTÁ EL CAMBIO PRINCIPAL  */
+                onClick={() => handleActivarConPermiso(producto.id_producto)}
+              >
+                Activar
+              </Button>
+              )}
             </td>
           </tr>
         ))
