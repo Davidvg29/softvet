@@ -52,10 +52,15 @@ const MainProducto = () => {
     cargarProductos();
   }, []);
 
-  const productosFiltrados = producto.filter((producto) =>
-  producto.nombre_producto.toLowerCase().includes(busqueda.toLowerCase()) ||
-  producto.codigo_producto.toString().includes(busqueda)
-);
+  const productosFiltrados = producto.filter((prod) => {
+    const coincideBusqueda = 
+      prod.nombre_producto.toLowerCase().includes(busqueda.toLowerCase()) ||
+      prod.codigo_producto.toString().includes(busqueda);
+
+    const puedeVer = rolUsuario === 'Administrador' ? true : prod.producto_is_active;
+
+    return coincideBusqueda && puedeVer;
+  });
 
   // ── Paginación ──────────────────────────────────────────
   const [paginaActual, setPaginaActual] = useState(1);
@@ -156,15 +161,15 @@ const MainProducto = () => {
 
   // Validación para Dar de Baja
   const handleBorrarConPermiso = (id) => {
-    if (rolUsuario !== "Administrador") {
-      Swal.fire({
-        icon: "error",
-        title: "Acceso Denegado",
-        text: "Solo el Administrador puede dar de baja productos.",
-        confirmButtonColor: "#6f42c1",
-      });
-      return;
-    }
+    // if (rolUsuario !== "Administrador") {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Acceso Denegado",
+    //     text: "Solo el Administrador puede dar de baja productos.",
+    //     confirmButtonColor: "#6f42c1",
+    //   });
+    //   return;
+    // }
     borrarProductos(id);
   };
 

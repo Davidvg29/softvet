@@ -7,7 +7,7 @@ const { autenticarRoles } = require('../middlewares/autenticarRoles');
 router.get('/ver', verifyToken, verVentas);
 router.post('/crear', verifyToken, crearVenta);
 router.put('/editar/:id_venta', verifyToken, editarVenta);
-router.put('/borrar/:id_venta', verifyToken, autenticarRoles(["Administrador"]), borrarVenta);
-router.put('/activar/:id_venta', verifyToken, autenticarRoles(["Administrador"]), activarVenta);
+router.put('/borrar/:id_venta', verifyToken, autenticarRoles(["Administrador", "Recepcionista"]), borrarVenta);
+router.put('/activar/:id_venta', verifyToken, autenticarRoles(["Administrador", "Recepcionista"]), activarVenta);
 
 module.exports = router;
