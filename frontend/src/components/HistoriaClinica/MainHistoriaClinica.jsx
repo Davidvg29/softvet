@@ -123,8 +123,7 @@ const MainHistoriaClinica = () => {
 
   // Mantiene el mismo orden que tenías en la tabla
   const historiasOrdenadas = [...historiaClinicaFiltrados]
-    .sort((a, b) => b.id_historia_clinica - a.id_historia_clinica)
-    .reverse();
+    .sort((a, b) => b.id_historia_clinica - a.id_historia_clinica);
 
   const indiceUltimoElemento = paginaActual * elementosPorPagina;
   const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina;
