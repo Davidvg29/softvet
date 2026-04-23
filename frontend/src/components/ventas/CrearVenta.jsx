@@ -299,42 +299,43 @@ const CrearVenta = ({ onClose, onUpdate, cargarVentas }) => {
             )}
           </Form.Group>
 
-          {/* CANTIDAD */}
-          <Form.Group>
-            <Form.Label><strong>Cantidad:</strong></Form.Label>
-            <Form.Control
-              type="number"
-              name="cantidad"
-              value={detalleVenta.cantidad}
-              min="1"
-              onChange={handleDetalleVenta}
-              style={{ borderRadius: "8px", width: "80px" }}
-            />
-          </Form.Group>
+         {/* CANTIDAD + BOTÓN */}
+<div style={{ display: "flex", alignItems: "end", gap: "10px" }}>
+  
+  <Form.Group>
+    <Form.Label><strong>Cantidad:</strong></Form.Label>
+    <Form.Control
+      type="number"
+      name="cantidad"
+      value={detalleVenta.cantidad}
+      min="1"
+      onChange={handleDetalleVenta}
+      style={{ borderRadius: "8px", width: "80px" }}
+    />
+  </Form.Group>
 
+  <Button
+    type="button"
+    onClick={agregarItem}
+    style={{
+      height: "38px",
+      padding: "0 15px",
+      backgroundColor: "#4ec04eff",
+      border: "none",
+      borderRadius: "10px",
+      fontWeight: "bold",
+      color: "#fff",
+      boxShadow: "0 4px 0 #3cb364ff",
+      display: "flex",
+      alignItems: "center",
+      gap: "5px",
+      marginBottom: "2px"
+    }}
+  >
+    + Agregar
+  </Button>
 
-
-          {/* BOTÓN AÑADIR */}
-          <Button
-            type="button"
-            onClick={agregarItem}
-            style={{
-              width: "50px",
-              height: "50px",
-              backgroundColor: "#4ec04eff",
-              border: "none",
-              borderRadius: "20px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #3cb364ff",
-              fontSize: "30px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            +
-          </Button>
+</div>
         </div>
 
         {/* TABLA DE ITEMS */}

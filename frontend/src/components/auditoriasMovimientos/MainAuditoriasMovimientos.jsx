@@ -135,7 +135,7 @@ const MainAuditoriasMovimientos = () => {
           }}
         >
           <i className="bi bi-clock-history" style={{ marginRight: "8px" }}></i>
-          AUDITORIAS Y MOVIMIENTOS
+          AUDITORIAS
         </h1>
       </div>
 
