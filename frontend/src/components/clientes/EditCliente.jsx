@@ -8,16 +8,16 @@ import validationCrearClientes from "../../validations/validationCrearClientes";
 import { useEmpleadoStore } from "../../zustand/empleado";
 
 const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
-  const [formData, setFormData] = useState({ 
-    nombre_cliente: "", 
-    dni_cliente: "", 
-    direccion_cliente: "", 
-    celular_cliente: "", 
+  const [formData, setFormData] = useState({
+    nombre_cliente: "",
+    dni_cliente: "",
+    direccion_cliente: "",
+    celular_cliente: "",
     mail_cliente: ""
   });
 
   const empleadoStore = useEmpleadoStore((state) => state.empleado);
-  
+
   useEffect(() => {
     const fetchCliente = async () => {
       try {
@@ -40,7 +40,7 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
   }, [id_cliente]);
 
 
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -49,16 +49,16 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
     });
   };
 
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const validation = validationCrearClientes(
- 
-      formData.nombre_cliente, 
-      formData.dni_cliente, 
-      formData.direccion_cliente, 
-      formData.celular_cliente, 
+
+      formData.nombre_cliente,
+      formData.dni_cliente,
+      formData.direccion_cliente,
+      formData.celular_cliente,
       formData.mail_cliente
     );
     if (validation.length !== 0) {
@@ -72,7 +72,7 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
 
     const datosFinales = {
       ...formData,
-      id_empleado: empleadoStore?.id_empleado 
+      id_empleado: empleadoStore?.id_empleado
     };
     try {
       const response = await axios.put(
@@ -94,7 +94,7 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
         onClose();
       }
     } catch (error) {
-      
+
       console.error("Error al editar el cliente:", error);
       Swal.fire({
         icon: "error",
@@ -106,122 +106,184 @@ const EditCliente = ({ id_cliente, onClose, onUpdate }) => {
   };
   return (
     <div
-        style={{
-          backgroundColor: "#cfcfcf",
-          borderRadius: "10px",
-          padding: "25px 40px",
-          color: "#000",
-        }}
-      >
-
-        <Form onSubmit={handleSubmit}>
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: "15px 20px",
-      textAlign: "left",
-    }}
-  >
-
-    <Form.Group>
-      <Form.Label><strong>Nombre:</strong></Form.Label>
-      <Form.Control
-        type="text"
-        name="nombre_cliente"
-        value={formData.nombre_cliente}
-        onChange={handleChange}
-        placeholder="Nombre del cliente"
-        style={{ borderRadius: "8px" }}
-      />
-    </Form.Group>
-
-    <Form.Group>
-      <Form.Label><strong>DNI:</strong></Form.Label>
-      <Form.Control
-        type="text"
-        name="dni_cliente"
-        value={formData.dni_cliente}
-        onChange={handleChange}
-        placeholder="DNI del cliente"
-        style={{ borderRadius: "8px" }}
-      />
-    </Form.Group>
-
-    <Form.Group>
-      <Form.Label><strong>Dirección:</strong></Form.Label>
-      <Form.Control
-        type="text"
-        name="direccion_cliente"
-        value={formData.direccion_cliente}
-        onChange={handleChange}
-        placeholder="Dirección del cliente"
-        style={{ borderRadius: "8px" }}
-      />
-    </Form.Group>
-
-    <Form.Group>
-      <Form.Label><strong>Teléfono:</strong></Form.Label>
-      <Form.Control
-        type="text"
-        name="celular_cliente"
-        value={formData.celular_cliente}
-        onChange={handleChange}
-        placeholder="celular del cliente"
-        style={{ borderRadius: "8px" }}
-      />
-    </Form.Group>
-
-    <Form.Group>
-      <Form.Label><strong>Mail:</strong></Form.Label>
-      <Form.Control
-        type="email"
-        name="mail_cliente"
-        value={formData.mail_cliente}
-        onChange={handleChange}
-        placeholder="Email del cliente"
-        style={{ borderRadius: "8px" }}
-      />
-    </Form.Group>
-  </div>
-
-  
-  <div style={{ textAlign: "center", marginTop: "25px" }}>
-    <Button
-      type="submit"
       style={{
-        backgroundColor: "#5a7edc",
-        border: "none",
-        borderRadius: "20px",
-        padding: "10px 28px",
-        marginRight: "10px",
-        fontWeight: "bold",
-        color: "#fff",
-        boxShadow: "0 4px 0 #3c5bb3",
-        transition: "all 0.1s ease",
+        borderRadius: "10px",
+        padding: "25px 40px",
+        color: "#000",
       }}
     >
-      Guardar Cambios
-    </Button>
 
-    <Button
-      onClick={onClose}
-      style={{
-        backgroundColor: "#e74c3c",
-        border: "none",
-        borderRadius: "20px",
-        padding: "10px 28px",
-        fontWeight: "bold",
-        color: "#fff",
-        boxShadow: "0 4px 0 #b33a2b",
-        transition: "all 0.1s ease",
-      }}
-    >
-      Cancelar
-    </Button>
-  </div>
-</Form>
-      </div>
+      <Form onSubmit={handleSubmit}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "15px 20px",
+            textAlign: "left",
+          }}
+        >
+
+          <Form.Group>
+            <Form.Label><strong>Nombre:</strong></Form.Label>
+            <Form.Control
+              type="text"
+              name="nombre_cliente"
+              value={formData.nombre_cliente}
+              onChange={handleChange}
+              placeholder="Nombre del cliente"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label><strong>DNI:</strong></Form.Label>
+            <Form.Control
+              type="text"
+              name="dni_cliente"
+              value={formData.dni_cliente}
+              onChange={handleChange}
+              placeholder="DNI del cliente"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label><strong>Dirección:</strong></Form.Label>
+            <Form.Control
+              type="text"
+              name="direccion_cliente"
+              value={formData.direccion_cliente}
+              onChange={handleChange}
+              placeholder="Dirección del cliente"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label><strong>Teléfono:</strong></Form.Label>
+            <Form.Control
+              type="text"
+              name="celular_cliente"
+              value={formData.celular_cliente}
+              onChange={handleChange}
+              placeholder="celular del cliente"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Label><strong>Mail:</strong></Form.Label>
+            <Form.Control
+              type="email"
+              name="mail_cliente"
+              value={formData.mail_cliente}
+              onChange={handleChange}
+              placeholder="Email del cliente"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </Form.Group>
+        </div>
+
+
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
+          <Button
+            type="submit"
+            style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+              color: "#fff",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
+          >
+            Guardar Cambios
+          </Button>
+
+          <Button
+            onClick={onClose}
+            style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
+          >
+            Cancelar
+          </Button>
+        </div>
+      </Form>
+    </div>
   )
 }
 

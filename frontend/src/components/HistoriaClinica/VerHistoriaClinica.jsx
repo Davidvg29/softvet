@@ -209,10 +209,10 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                                 key={detalle.id_detalle_historia_clinica}
                                 className="m-4 p-4 shadow border-info"
                                 style={{
-                                    backgroundColor: index % 2 === 0 ? "#e6f2ff" : "#f0f0f0",
+                                    backgroundColor: index % 2 === 0 ? "#e4d0f5" : "#b48acc",
                                     borderRadius: "10px",
-                                    color: "#000",
-                                    borderLeft: "5px solid #007bff",
+                                    color: "#000000",
+                                    borderLeft: "10px solid #9d00ff",
                                     transition: "transform 0.2s",
                                 }}
                                 onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
@@ -276,19 +276,148 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                         <p className="text-center text-muted">Aún no hay detalles de atención.</p>
                     )}
 
-                    <Modal show={showModal} onHide={handleCloseModal} centered backdrop="static" size="lg">
-                        <div style={{ background: "linear-gradient(135deg, #FFD700, #32CD32)", padding: "25px", boxShadow: "0 8px 30px rgba(0, 0, 0, 0.3)", position: "relative" }}>
-                            <button onClick={handleCloseModal} style={{ position: "absolute", top: "8px", right: "8px", width: "28px", height: "28px", borderRadius: "6px", border: "none", backgroundColor: "#e74c3c", color: "white", cursor: "pointer" }}>✕</button>
-                            <div style={{ backgroundColor: "#cfcfcf", padding: "30px 60px", textAlign: "center", width: "700px", margin: "auto", borderRadius: "12px" }}>
-                                <h4 style={{ fontWeight: "bold", textDecoration: "underline", marginBottom: "25px" }}>{TITULOS[fromType]}</h4>
-                                <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                                    {fromType === "editarDetalleHistoriaClinica" && (
-                                        <EditarDetalleHistoriaClinica id={detalleIdParaEditar} onClose={handleCloseModal} onUpdated={handleDetalleActualizado} />
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </Modal>
+                    <Modal
+  key={fromType}
+  show={showModal}
+  onHide={handleCloseModal}
+  centered
+  backdrop="static"
+  contentClassName="bg-transparent border-0 shadow-none"
+  dialogClassName="bg-transparent"
+  style={{ "--bs-modal-width": "850px" }} // 👈 balance ideal
+>
+  <div
+    style={{
+      maxWidth: "850px",
+      width: "100%",
+      margin: "auto",
+
+      backdropFilter: "blur(12px)",
+      background: "rgba(255,255,255,0.9)",
+      borderRadius: "18px",
+      padding: "22px",
+      position: "relative",
+
+      border: "2px solid #6f42c1",
+      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+      animation: "modalFade 0.3s ease",
+    }}
+  >
+    {/* Glow */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "22px",
+        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+        pointerEvents: "none",
+      }}
+    />
+
+    {/* Cerrar */}
+    <button
+      onClick={handleCloseModal}
+      style={{
+        position: "absolute",
+        top: "14px",
+        right: "14px",
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "none",
+        background: "#f3f0ff",
+        color: "#6f42c1",
+        fontSize: "18px",
+        cursor: "pointer",
+        transition: "0.2s",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+    >
+      ✕
+    </button>
+
+    {/* HEADER */}
+    <div style={{ textAlign: "center", marginBottom: "20px" }}>
+      <div
+        style={{
+          width: "55px",
+          height: "55px",
+          borderRadius: "16px",
+          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          marginBottom: "10px",
+          color: "#fff",
+          fontSize: "22px",
+          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+        }}
+      >
+        <i className="bi-pencil-square"></i>
+      </div>
+
+      <h3
+        style={{
+          fontWeight: "700",
+          color: "#6f42c1",
+          marginBottom: "4px",
+        }}
+      >
+        {TITULOS[fromType]}
+      </h3>
+
+      <div
+        style={{
+          width: "70px",
+          height: "4px",
+          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+          margin: "10px auto 0",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
+
+    {/* CONTENIDO */}
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "18px",
+        padding: "24px",
+        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+        maxHeight: "70vh", 
+        overflowY: "auto", 
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        {fromType === "editarDetalleHistoriaClinica" && (
+          <EditarDetalleHistoriaClinica
+            id={detalleIdParaEditar}
+            onClose={handleCloseModal}
+            onUpdated={handleDetalleActualizado}
+          />
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* Animación */}
+  <style>
+    {`
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    `}
+  </style>
+</Modal>
                 </>
             )}
         </>

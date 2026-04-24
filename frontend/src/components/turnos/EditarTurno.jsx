@@ -200,7 +200,7 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
     };
 
     return (
-        <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
+        <div style={{  borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
             <h3 className="text-center mb-4">Editar Turno</h3>
 
             <Form className="px-5" onSubmit={handleConfirmAndSubmit}>
@@ -208,7 +208,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                 <Form.Group as={Row} className="mb-3 align-items-center">
                     <Form.Label column sm="3" className="text-end fw-bold">Veterinario:</Form.Label>
                     <Col sm="9">
-                        <Form.Control type="text" value={nombreVeterinario} readOnly disabled style={{ backgroundColor: '#e9ecef' }} />
+                        <Form.Control type="text" value={nombreVeterinario} readOnly disabled style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }} />
                     </Col>
                 </Form.Group>
 
@@ -221,6 +229,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                             placeholder="Buscar por nombre o DNI"
                             value={busquedaCliente}
                             onChange={(e) => buscarCliente(e.target.value)}
+                            style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
                         />
                         {clientesEncontrados.length > 0 && (
                             <div className="border mt-1 p-2 bg-white">
@@ -243,6 +260,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                             value={turno.id_mascota}
                             onChange={handleChange}
                             disabled={!clienteSeleccionado}
+                            style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
                         >
                             <option value="">Seleccione una mascota</option>
                             {mascotasCliente.map(m => (
@@ -262,6 +288,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                             name="estado"
                             value={turno.estado}
                             onChange={handleChange}
+                            style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
                         >
                             <option value="Pendiente">Pendiente</option>
                             <option value="Confirmado">Confirmado</option>
@@ -282,6 +317,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                             value={turno.motivo_turno}
                             onChange={handleChange}
                             disabled={!clienteSeleccionado}
+                            style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
                         />
                     </Col>
                 </Form.Group>
@@ -295,6 +339,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                             value={fecha}
                             onChange={(e) => buscarHorarios(e.target.value)}
                             disabled={!clienteSeleccionado}
+                            style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
                         />
                     </Col>
                 </Form.Group>
@@ -304,7 +357,15 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                     <Form.Group as={Row} className="mb-3 align-items-center">
                         <Form.Label column sm="3" className="text-end fw-bold">Horario:</Form.Label>
                         <Col sm="9">
-                            <Form.Select value={horario} onChange={(e) => setHorario(e.target.value)}>
+                            <Form.Select value={horario} onChange={(e) => setHorario(e.target.value)} style={{ borderRadius: "8px" }}
+                            onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}>
                                 <option value="">Seleccione un horario</option>
                                 {horariosDisponibles.map((h, i) => (
                                     <option key={i} value={h}>{h}</option>
@@ -315,9 +376,61 @@ const EditarTurno = ({ id_turno, onClose, onUpdate }) => {
                 )}
 
                 {/* Botones */}
-                <div style={{ textAlign: "center", marginTop: "20px" }}>
-                    <Button type="submit" style={{ backgroundColor: "#5a7edc", border: "none" }}>Guardar</Button>
-                    <Button style={{ backgroundColor: "#e74c3c", border: "none", marginLeft: "10px" }} onClick={onClose}>Cancelar</Button>
+                <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
+          <Button
+           type="submit" 
+           style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+              color: "#fff",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
+          >
+            Guardar
+          </Button>
+                    <Button 
+                    onClick={onClose}
+                    style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
+          >
+            Cancelar
+          </Button>
                 </div>
             </Form>
         </div>

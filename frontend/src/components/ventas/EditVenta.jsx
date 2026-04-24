@@ -263,7 +263,7 @@ if (clienteActual) {
   // RENDER
   // -------------------
   return (
-    <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
+    <div style={{ borderRadius: "10px", padding: "25px 40px", color: "#000" }}>
       <Form onSubmit={guardarCambios}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px 20px", textAlign: "left" }}>
 
@@ -281,6 +281,15 @@ if (clienteActual) {
               }}
               onFocus={() => setMostrarListaCliente(true)}
               autoComplete="off"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
 
             {mostrarListaCliente && busquedaCliente && (
@@ -344,6 +353,15 @@ if (clienteActual) {
               }}
               onFocus={() => setMostrarListaProducto(true)}
               autoComplete="off"
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
 
             {mostrarListaProducto && busquedaProducto && (
@@ -399,6 +417,7 @@ if (clienteActual) {
           </Form.Group>
 
           {/* CANTIDAD */}
+          <div style={{ display: "flex", alignItems: "end", gap: "10px" }}>
           <Form.Group>
             <Form.Label><strong>Cantidad:</strong></Form.Label>
             <Form.Control
@@ -408,30 +427,40 @@ if (clienteActual) {
               value={detalleVenta.cantidad}
               onChange={handleDetalleVenta}
               style={{ width: "80px", borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
           {/* BOTÓN AÑADIR */}
           <Button
-            type="button"
-            onClick={agregarItem}
-            style={{
-              width: "50px",
-              height: "50px",
-              backgroundColor: "#4ec04eff",
-              border: "none",
-              borderRadius: "20px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #3cb364ff",
-              fontSize: "30px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            +
-          </Button>
+    type="button"
+    onClick={agregarItem}
+    style={{
+      height: "38px",
+      padding: "0 15px",
+      backgroundColor: "#4ec04eff",
+      border: "none",
+      borderRadius: "10px",
+      fontWeight: "bold",
+      color: "#fff",
+      boxShadow: "0 4px 0 #3cb364ff",
+      display: "flex",
+      alignItems: "center",
+      gap: "5px",
+      marginBottom: "2px"
+    }}
+  >
+    + Agregar
+  </Button>
+
+          </div>
 
         </div>
 
@@ -501,33 +530,60 @@ if (clienteActual) {
 
         <div><p><strong>Total: ${venta.total || 0}</strong></p></div>
 
-        <div style={{ textAlign: "center", marginTop: "25px" }}>
+             {/* BOTONES */}
+
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
           <Button
             type="submit"
             style={{
-              backgroundColor: "#5a7edc",
+              padding: "12px 30px",
+              borderRadius: "14px",
               border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              marginRight: "10px",
-              fontWeight: "bold",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
               color: "#fff",
-              boxShadow: "0 4px 0 #3c5bb3",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
             }}
           >
-            Guardar cambios
+            Guardar Cambios
           </Button>
 
           <Button
             onClick={onClose}
             style={{
-              backgroundColor: "#e74c3c",
+              padding: "12px 30px",
+              borderRadius: "14px",
               border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #b33a2b"
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
             }}
           >
             Cancelar

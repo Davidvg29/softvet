@@ -42,34 +42,34 @@ function CrearEmpleado({ onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     console.log("FormData antes de validar:", formData);
 
     const validation = validationCrearEmpleados(
-  formData.usuario,
-  formData.contrasena,
-  formData.nombre_empleado,
-  formData.dni_empleado,
-  formData.direccion_empleado,
-  formData.telefono_empleado,
-  formData.mail_empleado,
-  formData.id_rol
-);
+      formData.usuario,
+      formData.contrasena,
+      formData.nombre_empleado,
+      formData.dni_empleado,
+      formData.direccion_empleado,
+      formData.telefono_empleado,
+      formData.mail_empleado,
+      formData.id_rol
+    );
 
-if (validation.length !== 0) {
-    return Swal.fire({
-      icon: "warning",
-      title: "Atención",
-      text: validation,
-      confirmButtonColor: "#6f42c1",
-    });
-  }
+    if (validation.length !== 0) {
+      return Swal.fire({
+        icon: "warning",
+        title: "Atención",
+        text: validation,
+        confirmButtonColor: "#6f42c1",
+      });
+    }
 
-console.log("🟣 Datos enviados:", formData);
+    console.log("🟣 Datos enviados:", formData);
     try {
       const response = await axios.post(`${empleados}/crear`, formData, { withCredentials: true });
       console.log(response.data);
-      
+
       if (response.status === 200 || response.status === 201) {
 
         await Swal.fire({
@@ -84,27 +84,26 @@ console.log("🟣 Datos enviados:", formData);
         if (onClose) onClose();
       }
     } catch (error) {
-  console.error("Error al guardar Empleado:", error);
+      console.error("Error al guardar Empleado:", error);
 
-  const msg =
-    error.response?.data?.message ||
-    error.response?.data?.error ||
-    "Hubo un problema al guardar el empleado.";
+      const msg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "Hubo un problema al guardar el empleado.";
 
-  Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: msg,
-    confirmButtonText: "Aceptar",
-  });
-}
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: msg,
+        confirmButtonText: "Aceptar",
+      });
+    }
   };
 
   return (
 
     <div
       style={{
-        backgroundColor: "#cfcfcf",
         borderRadius: "10px",
         padding: "25px 40px",
         color: "#000",
@@ -129,6 +128,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="Usuario del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -141,6 +148,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="Contraseña del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -153,6 +168,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="Nombre del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -165,6 +188,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="DNI del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -177,6 +208,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="Dirección del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -189,6 +228,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="Teléfono del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -201,6 +248,14 @@ console.log("🟣 Datos enviados:", formData);
               onChange={handleChange}
               placeholder="Email del empleado"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -211,6 +266,14 @@ console.log("🟣 Datos enviados:", formData);
               value={formData.id_rol}
               onChange={handleChange}
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             >
               <option value="">Seleccionar un rol</option>
               {roles.map((rol) => (
@@ -223,19 +286,34 @@ console.log("🟣 Datos enviados:", formData);
         </div>
 
         {/* BOTONES */}
-        <div style={{ textAlign: "center", marginTop: "25px" }}>
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
           <Button
             type="button" onClick={handleSubmit}
             style={{
-              backgroundColor: "#5a7edc",
+              padding: "12px 30px",
+              borderRadius: "14px",
               border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              marginRight: "10px",
-              fontWeight: "bold",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
               color: "#fff",
-              boxShadow: "0 4px 0 #3c5bb3",
-              transition: "all 0.1s ease",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
             }}
           >
             Guardar
@@ -244,14 +322,22 @@ console.log("🟣 Datos enviados:", formData);
           <Button
             onClick={onClose}
             style={{
-              backgroundColor: "#e74c3c",
+              padding: "12px 30px",
+              borderRadius: "14px",
               border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #b33a2b",
-              transition: "all 0.1s ease",
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
             }}
           >
             Cancelar
