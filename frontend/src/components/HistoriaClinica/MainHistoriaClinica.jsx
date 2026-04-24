@@ -26,6 +26,9 @@ const MainHistoriaClinica = () => {
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState("");
 
+  const [fechaDesde, setFechaDesde] = useState('');
+  const [fechaHasta, setFechaHasta] = useState('');
+
   //funcion de apertura modal
   const handleOpenModal = (type, id = null) => {
     setFromType(type);
@@ -39,6 +42,58 @@ const MainHistoriaClinica = () => {
     setFromType("");
   };
 
+  const obtenerFechaFormateada = (diasRestar = 0) => {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - diasRestar);
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleFiltroRapido = (dias) => {
+    const hoy = obtenerFechaFormateada(0);
+    const desde = obtenerFechaFormateada(dias);
+
+    setFechaDesde(desde);
+    setFechaHasta(hoy);
+
+    handleBuscarPorFechas(desde, hoy); // 🔥 ejecuta búsqueda automática
+  };
+
+  const handleBuscarPorFechas = async (overrideDesde = null, overrideHasta = null) => {
+    const fDesde = overrideDesde || fechaDesde;
+    const fHasta = overrideHasta || fechaHasta;
+
+    if (!fDesde || !fHasta) {
+      Swal.fire("Error", "Seleccioná ambas fechas", "warning");
+      return;
+    }
+
+    if (new Date(fDesde) > new Date(fHasta)) {
+      Swal.fire("Error", "La fecha desde no puede ser mayor a la hasta", "warning");
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`${historiasClinicas}/ver`, {
+        params: {
+          fechaDesde: fDesde,
+          fechaHasta: fHasta,
+        },
+        withCredentials: true,
+      });
+
+      setHistoriaClinica(data);
+      setPaginaActual(1); // 🔥 clave para evitar bug de paginación
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "No se pudo filtrar", "error");
+    }
+  };
+
   const TITULOS = {
 
     crearhistoriaClinica: "Crear Historia Clinica",
@@ -47,11 +102,27 @@ const MainHistoriaClinica = () => {
     detalleHistoriaClinica: "Detalle Historia Clinica",
   };
 
+  const botonAccionStyle = {
+    backgroundColor: "#6f42c1", border: "none", fontWeight: "bold", color: "#fff",
+    boxShadow: "0 4px 0 #59359a", transition: "all 0.1s ease", padding: "10px 20px", borderRadius: "10px", whiteSpace: "nowrap"
+  };
+  const botonRapidoStyle = {
+    backgroundColor: "#e2d9f3", color: "#6f42c1", border: "1px solid #6f42c1",
+    fontWeight: "bold", transition: "all 0.15s ease", padding: "8px 15px", borderRadius: "8px", whiteSpace: "nowrap"
+  };
+
+  const botonLimpiar = () => {
+    setFechaDesde('');
+    setFechaHasta('');
+    cargarHistoriaClinica();
+    setPaginaActual(1);
+  };
+
   const cargarHistoriaClinica = async () => {
     try {
-
-      const { data } = await axios.get(`${historiasClinicas}/ver`, { withCredentials: true });
-      // console.log(data);
+      const { data } = await axios.get(`${historiasClinicas}/ver`, {
+        withCredentials: true
+      });
       setHistoriaClinica(data);
     } catch (error) {
       console.error("Error al cargar las Historia Clinica:", error);
@@ -119,7 +190,7 @@ const MainHistoriaClinica = () => {
 
   useEffect(() => {
     setPaginaActual(1);
-  }, [busqueda]);
+  }, [busqueda, fechaDesde, fechaHasta]);
 
   // Mantiene el mismo orden que tenías en la tabla
   const historiasOrdenadas = [...historiaClinicaFiltrados]
@@ -171,7 +242,7 @@ const MainHistoriaClinica = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`${historiasClinicas}/eliminar/${id_historia_clinica}`,{data:{id_empleado: empleado.id_empleado}, withCredentials: true});
+      await axios.delete(`${historiasClinicas}/eliminar/${id_historia_clinica}`, { data: { id_empleado: empleado.id_empleado }, withCredentials: true });
       Swal.fire("Eliminado", "La historia clínica fue eliminada correctamente.", "success");
       cargarHistoriaClinica();
     } catch (error) {
@@ -180,27 +251,29 @@ const MainHistoriaClinica = () => {
     }
   };
 
+
+
   return (
     <>
-    <div className="text-center">
-  <h1
-    className="fw-bold animate-title p-2 mb-2 d-inline-block"
-    style={{
-      background: "linear-gradient(90deg, #6f42c1, #8f41aeff)",
-      fontSize: "2.5rem",
-      color: "#ffffffff",
-      marginTop: "10px",
-      letterSpacing: "2px",
-      textTransform: "uppercase",
-      borderRadius: "12px",
-    }}
-  ><i className="bi-heart-pulse-fill" style={{marginRight: "8px"}}></i>
-    HISTORIA CLINICA
-  </h1>
-</div>
+      <div className="text-center">
+        <h1
+          className="fw-bold animate-title p-2 mb-2 d-inline-block"
+          style={{
+            background: "linear-gradient(90deg, #6f42c1, #8f41aeff)",
+            fontSize: "2.5rem",
+            color: "#ffffffff",
+            marginTop: "10px",
+            letterSpacing: "2px",
+            textTransform: "uppercase",
+            borderRadius: "12px",
+          }}
+        ><i className="bi-heart-pulse-fill" style={{ marginRight: "8px" }}></i>
+          HISTORIA CLINICA
+        </h1>
+      </div>
 
-<style>
-{`
+      <style>
+        {`
   .animate-title {
     opacity: 0;
     transform: translateY(10px);
@@ -218,8 +291,63 @@ const MainHistoriaClinica = () => {
     }
   }
 `}
-</style>
+      </style>
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5" >
+        {/* Fila superior: Filtros de fecha y Botones Rápidos */}
+        <div className="d-flex align-items-center gap-2 p-3 bg-light rounded shadow-sm border flex-wrap" style={{ borderColor: '#e0e0e0' }}>
+          <span className="fw-bold text-secondary">Desde:</span>
+          <Form.Control
+            type="date"
+            value={fechaDesde}
+            onChange={(e) => setFechaDesde(e.target.value)}
+            style={{ width: 'auto' }}
+          />
+
+          <span className="fw-bold text-secondary ms-2">Hasta:</span>
+          <Form.Control
+            type="date"
+            value={fechaHasta}
+            onChange={(e) => setFechaHasta(e.target.value)}
+            style={{ width: 'auto' }}
+          />
+
+          <Button
+            style={botonAccionStyle}
+            onClick={() => handleBuscarPorFechas()}
+            className=""
+            onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+          >
+            <i className="bi bi-search "></i>
+          </Button>
+          <Button
+            style={botonAccionStyle}
+            onClick={() => botonLimpiar()}
+            className=""
+            onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+          >
+            <i className="bi bi-trash3"></i>
+          </Button>
+
+          <div className="d-flex gap-2 ms-3 border-start ps-3" style={{ borderColor: '#ccc' }}>
+            <Button
+              style={botonRapidoStyle}
+              className="btn-rapido"
+              onClick={() => handleFiltroRapido(1)}
+            >
+              Último día
+            </Button>
+            <Button
+              style={botonRapidoStyle}
+              className="btn-rapido"
+              onClick={() => handleFiltroRapido(3)}
+            >
+              Últimos 3 días
+            </Button>
+          </div>
+        </div>
+
         <div className=' d-flex justify-content-center align-items-center m-3 w-75'  >
           <Form.Control
             type="text"
@@ -313,89 +441,89 @@ const MainHistoriaClinica = () => {
             </thead>
             <tbody className=''>
               {historiasPaginadas.length > 0 ? (
-                  historiasPaginadas.map((historiaClinica, index) => (
-                    <tr key={index}
+                historiasPaginadas.map((historiaClinica, index) => (
+                  <tr key={index}
+                    style={{
+                      backgroundColor: "#fff",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                      borderRadius: "12px",
+                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                      transform: "translateY(0)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-3px)";
+                      e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                    }}
+                  >
+                    <td
                       style={{
-                        backgroundColor: "#fff",
-                        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                        borderRadius: "12px",
-                        transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                        transform: "translateY(0)",
+                        padding: "14px 20px",
+                        fontWeight: "500",
+                        textAlign: "center",
+                        color: "#333",
+                        border: "none",
                       }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-3px)";
-                        e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)";
+                    >{historiaClinica.id_historia_clinica}</td>
+                    <td
+                      style={{
+                        padding: "14px 20px",
+                        fontWeight: "500",
+                        textAlign: "center",
+                        color: "#333",
+                        border: "none",
                       }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                    >{historiaClinica.nombre_cliente}</td>
+                    <td
+                      style={{
+                        padding: "14px 20px",
+                        fontWeight: "500",
+                        textAlign: "center",
+                        color: "#333",
+                        border: "none",
+                      }}
+                    >{historiaClinica.dni_cliente}</td>
+                    <td
+                      style={{
+                        padding: "14px 20px",
+                        fontWeight: "500",
+                        textAlign: "center",
+                        color: "#333",
+                        border: "none",
+                      }}
+                    >{historiaClinica.nombre_mascota}</td>
+                    <td
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "12px",
+                        border: "none",
                       }}
                     >
-                      <td
+                      <Button
                         style={{
-                          padding: "14px 20px",
-                          fontWeight: "500",
-                          textAlign: "center",
-                          color: "#333",
+                          backgroundColor: "#1ab637",
                           border: "none",
+                          fontWeight: "bold",
+                          color: "#fff",
+                          boxShadow: "0 3px 0 #138a28",
+                          transition: "all 0.1s ease",
                         }}
-                      >{historiaClinica.id_historia_clinica}</td>
-                      <td
-                        style={{
-                          padding: "14px 20px",
-                          fontWeight: "500",
-                          textAlign: "center",
-                          color: "#333",
-                          border: "none",
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = "translateY(-2px)";
+                          e.target.style.boxShadow = "0 5px 0 #138a28";
                         }}
-                      >{historiaClinica.nombre_cliente}</td>
-                      <td
-                        style={{
-                          padding: "14px 20px",
-                          fontWeight: "500",
-                          textAlign: "center",
-                          color: "#333",
-                          border: "none",
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = "translateY(0)";
+                          e.target.style.boxShadow = "0 3px 0 #138a28";
                         }}
-                      >{historiaClinica.dni_cliente}</td>
-                      <td
-                        style={{
-                          padding: "14px 20px",
-                          fontWeight: "500",
-                          textAlign: "center",
-                          color: "#333",
-                          border: "none",
-                        }}
-                      >{historiaClinica.nombre_mascota}</td>
-                      <td
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: "10px",
-                          padding: "12px",
-                          border: "none",
-                        }}
-                      >
-                        <Button
-                          style={{
-                            backgroundColor: "#1ab637",
-                            border: "none",
-                            fontWeight: "bold",
-                            color: "#fff",
-                            boxShadow: "0 3px 0 #138a28",
-                            transition: "all 0.1s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = "translateY(-2px)";
-                            e.target.style.boxShadow = "0 5px 0 #138a28";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = "translateY(0)";
-                            e.target.style.boxShadow = "0 3px 0 #138a28";
-                          }}
-                          onClick={() => handleOpenModal("verhistoriaClinica", historiaClinica.id_historia_clinica)}>Ver</Button>
-                        {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+                        onClick={() => handleOpenModal("verhistoriaClinica", historiaClinica.id_historia_clinica)}>Ver</Button>
+                      {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
                         <Button
                           style={{
                             whiteSpace: "nowrap",
@@ -417,29 +545,29 @@ const MainHistoriaClinica = () => {
                           }}
                           onClick={() => handleOpenModal("detalleHistoriaClinica", historiaClinica.id_historia_clinica)}>Agregar Detalle</Button>
 
-                        )}
-                        <Button
-                          style={{
-                            backgroundColor: "#ffc107",
-                            border: "none",
-                            fontWeight: "bold",
-                            color: "#333",
-                            boxShadow: "0 3px 0 #d39e00",
-                            transition: "all 0.1s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = "translateY(-2px)";
-                            e.target.style.boxShadow = "0 5px 0 #d39e00";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = "translateY(0)";
-                            e.target.style.boxShadow = "0 3px 0 #d39e00";
-                          }}
-                          onClick={() => handleOpenModal("editarhistoriaClinica", historiaClinica.id_historia_clinica)} >Editar</Button>
+                      )}
+                      <Button
+                        style={{
+                          backgroundColor: "#ffc107",
+                          border: "none",
+                          fontWeight: "bold",
+                          color: "#333",
+                          boxShadow: "0 3px 0 #d39e00",
+                          transition: "all 0.1s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.transform = "translateY(-2px)";
+                          e.target.style.boxShadow = "0 5px 0 #d39e00";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.transform = "translateY(0)";
+                          e.target.style.boxShadow = "0 3px 0 #d39e00";
+                        }}
+                        onClick={() => handleOpenModal("editarhistoriaClinica", historiaClinica.id_historia_clinica)} >Editar</Button>
 
 
 
-                        {/* {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
+                      {/* {(rolUsuario === "Administrador" || rolUsuario === "Veterinario") && (
                           <Button
                             style={{
                               backgroundColor: "#dc3545",
@@ -462,10 +590,10 @@ const MainHistoriaClinica = () => {
                             Eliminar
                           </Button>
                         )} */}
-                      </td>
+                    </td>
 
-                    </tr>
-                  ))
+                  </tr>
+                ))
               ) : (
                 <tr>
                   <td colSpan="2" style={{ textAlign: "center", padding: "20px" }}>
@@ -522,151 +650,151 @@ const MainHistoriaClinica = () => {
         </div>
       </div>
       <Modal
-  key={fromType}
-  show={showModal}
-  onHide={handleCloseModal}
-  centered
-  backdrop="static"
-  contentClassName="bg-transparent border-0 shadow-none"
-  dialogClassName="bg-transparent"
-  style={{ "--bs-modal-width": "900px" }} // 👈 más ancho para HC
->
-  <div
-    style={{
-      maxWidth: "900px",
-      width: "100%",
-      margin: "auto",
-
-      backdropFilter: "blur(12px)",
-      background: "rgba(255,255,255,0.9)",
-      borderRadius: "18px",
-      padding: "22px",
-      position: "relative",
-
-      border: "2px solid #6f42c1",
-      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
-      animation: "modalFade 0.3s ease",
-    }}
-  >
-    {/* Glow */}
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        borderRadius: "22px",
-        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
-        pointerEvents: "none",
-      }}
-    />
-
-    {/* Cerrar */}
-    <button
-      onClick={handleCloseModal}
-      style={{
-        position: "absolute",
-        top: "14px",
-        right: "14px",
-        width: "38px",
-        height: "38px",
-        borderRadius: "50%",
-        border: "none",
-        background: "#f3f0ff",
-        color: "#6f42c1",
-        fontSize: "18px",
-        cursor: "pointer",
-        transition: "0.2s",
-      }}
-      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
-      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
-    >
-      ✕
-    </button>
-
-    {/* HEADER */}
-    <div style={{ textAlign: "center", marginBottom: "25px" }}>
-      <div
-        style={{
-          width: "55px",
-          height: "55px",
-          borderRadius: "16px",
-          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "auto",
-          marginBottom: "10px",
-          color: "#fff",
-          fontSize: "22px",
-          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
-        }}
+        key={fromType}
+        show={showModal}
+        onHide={handleCloseModal}
+        centered
+        backdrop="static"
+        contentClassName="bg-transparent border-0 shadow-none"
+        dialogClassName="bg-transparent"
+        style={{ "--bs-modal-width": "900px" }} // 👈 más ancho para HC
       >
-        <i className="bi-journal-medical"></i>
-      </div>
+        <div
+          style={{
+            maxWidth: "900px",
+            width: "100%",
+            margin: "auto",
 
-      <h3
-        style={{
-          fontWeight: "700",
-          color: "#6f42c1",
-          marginBottom: "4px",
-        }}
-      >
-        {TITULOS[fromType]}
-      </h3>
+            backdropFilter: "blur(12px)",
+            background: "rgba(255,255,255,0.9)",
+            borderRadius: "18px",
+            padding: "22px",
+            position: "relative",
 
-      <div
-        style={{
-          width: "70px",
-          height: "4px",
-          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
-          margin: "10px auto 0",
-          borderRadius: "10px",
-        }}
-      />
-    </div>
-
-    {/* CONTENIDO */}
-    <div
-      style={{
-        background: "#ffffff",
-        borderRadius: "18px",
-        padding: "28px",
-        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        {fromType === "crearhistoriaClinica" && (
-          <CrearHistoriaClinica
-            onClose={handleCloseModal}
-            onUpdated={cargarHistoriaClinica}
+            border: "2px solid #6f42c1",
+            boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+            animation: "modalFade 0.3s ease",
+          }}
+        >
+          {/* Glow */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "22px",
+              boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+              pointerEvents: "none",
+            }}
           />
-        )}
 
-        {fromType === "verhistoriaClinica" && (
-          <VerHistoriaClinica id={historiaClinicaId} />
-        )}
+          {/* Cerrar */}
+          <button
+            onClick={handleCloseModal}
+            style={{
+              position: "absolute",
+              top: "14px",
+              right: "14px",
+              width: "38px",
+              height: "38px",
+              borderRadius: "50%",
+              border: "none",
+              background: "#f3f0ff",
+              color: "#6f42c1",
+              fontSize: "18px",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+            onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+          >
+            ✕
+          </button>
 
-        {fromType === "detalleHistoriaClinica" && (
-          <DetalleHistoriaClinica
-            idHistoriaClinica={historiaClinicaId}
-            onClose={handleCloseModal}
-            onUpdated={cargarHistoriaClinica}
-          />
-        )}
+          {/* HEADER */}
+          <div style={{ textAlign: "center", marginBottom: "25px" }}>
+            <div
+              style={{
+                width: "55px",
+                height: "55px",
+                borderRadius: "16px",
+                background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "auto",
+                marginBottom: "10px",
+                color: "#fff",
+                fontSize: "22px",
+                boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              }}
+            >
+              <i className="bi-journal-medical"></i>
+            </div>
 
-        {fromType === "editarhistoriaClinica" && (
-          <EditarHistoriaClinica
-            id={historiaClinicaId}
-            onClose={handleCloseModal}
-            onUpdated={cargarHistoriaClinica}
-          />
-        )}
-      </div>
-    </div>
-  </div>
+            <h3
+              style={{
+                fontWeight: "700",
+                color: "#6f42c1",
+                marginBottom: "4px",
+              }}
+            >
+              {TITULOS[fromType]}
+            </h3>
 
-  {/* Animación */}
-  <style>
-    {`
+            <div
+              style={{
+                width: "70px",
+                height: "4px",
+                background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+                margin: "10px auto 0",
+                borderRadius: "10px",
+              }}
+            />
+          </div>
+
+          {/* CONTENIDO */}
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: "18px",
+              padding: "28px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              {fromType === "crearhistoriaClinica" && (
+                <CrearHistoriaClinica
+                  onClose={handleCloseModal}
+                  onUpdated={cargarHistoriaClinica}
+                />
+              )}
+
+              {fromType === "verhistoriaClinica" && (
+                <VerHistoriaClinica id={historiaClinicaId} />
+              )}
+
+              {fromType === "detalleHistoriaClinica" && (
+                <DetalleHistoriaClinica
+                  idHistoriaClinica={historiaClinicaId}
+                  onClose={handleCloseModal}
+                  onUpdated={cargarHistoriaClinica}
+                />
+              )}
+
+              {fromType === "editarhistoriaClinica" && (
+                <EditarHistoriaClinica
+                  id={historiaClinicaId}
+                  onClose={handleCloseModal}
+                  onUpdated={cargarHistoriaClinica}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Animación */}
+        <style>
+          {`
       @keyframes modalFade {
         from {
           opacity: 0;
@@ -678,8 +806,8 @@ const MainHistoriaClinica = () => {
         }
       }
     `}
-  </style>
-</Modal>
+        </style>
+      </Modal>
     </>
   )
 }

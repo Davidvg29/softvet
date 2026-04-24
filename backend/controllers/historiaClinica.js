@@ -4,32 +4,26 @@ const { connection } = require('../config/bd/dataBase');
 // Obtener todas las historias clínicas
 
 const mostrarHistoriasClinicas = (req, res) => {
+    const { fechaDesde, fechaHasta } = req.query;
 
-    const querymostrarHC = `
+    let query = `
         SELECT 
             hc.id_historia_clinica,
             hc.fecha_apertura,
             hc.observaciones_generales,
-
             m.id_mascota,
             m.nombre_mascota,
-            
             c.id_cliente,
             c.nombre_cliente,
             c.dni_cliente,
-
             dhc.observaciones AS diagnostico,
             dhc.fecha_hora AS fecha_ultima_atencion,
-
             e.nombre_empleado AS veterinario
         FROM historia_clinica hc
-        
         LEFT JOIN mascotas m 
             ON m.id_historia_clinica = hc.id_historia_clinica
-
         LEFT JOIN clientes c
             ON m.id_cliente = c.id_cliente
-
         LEFT JOIN (
             SELECT dhc2.*
             FROM detalle_historia_clinica dhc2
@@ -42,14 +36,27 @@ const mostrarHistoriasClinicas = (req, res) => {
             AND dhc2.fecha_hora = ult.max_fecha
         ) dhc
         ON hc.id_historia_clinica = dhc.id_historia_clinica
-
         LEFT JOIN empleados e 
             ON dhc.id_empleado = e.id_empleado
-
-        ORDER BY hc.fecha_apertura DESC
     `;
 
-    connection.query(querymostrarHC, (error, results) => {
+    let params = [];
+
+    if (fechaDesde && fechaHasta) {
+        query += ` 
+        WHERE DATE(COALESCE(dhc.fecha_hora, hc.fecha_apertura)) 
+        BETWEEN ? AND ?`;
+        params.push(fechaDesde, fechaHasta);
+    } else {
+        // 🔥 por defecto últimos 2 días
+        query += ` 
+        WHERE DATE(COALESCE(dhc.fecha_hora, hc.fecha_apertura)) 
+        >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)`;
+    }
+
+    query += ` ORDER BY hc.id_historia_clinica DESC`;
+
+    connection.query(query, params, (error, results) => {
         if (error) {
             console.log("Error SQL:", error);
             return res.status(500).json({ error: 'Error al obtener las historias clínicas.' });
