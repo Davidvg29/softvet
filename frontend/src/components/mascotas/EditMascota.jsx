@@ -157,7 +157,7 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
   };
 
   return (
-    <div style={{ backgroundColor: "#cfcfcf", borderRadius: "10px", padding: "25px 40px" }}>
+    <div style={{ borderRadius: "10px", padding: "25px 40px" }}>
       <Form onSubmit={handleSubmit}>
         <div
           style={{
@@ -174,6 +174,15 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
               value={formData.nombre_mascota}
               onChange={handleChange}
               placeholder="Nombre"
+              style={{ borderRadius: "8px" }}
+      onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
           <Form.Group>
@@ -184,6 +193,15 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
               value={formData.edad_mascota}
               onChange={handleChange}
               placeholder="Edad"
+              style={{ borderRadius: "8px" }}
+      onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
           <Form.Group>
@@ -192,6 +210,15 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
               name="sexo_mascota"
               value={formData.sexo_mascota}
               onChange={handleChange}
+              style={{ borderRadius: "8px" }}
+      onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             >
               <option value="">Sexo</option>
               <option value="Macho">Macho</option>
@@ -205,6 +232,15 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
               onChange={(e) => {
                 setEspecieSeleccionada(e.target.value);
                 setFormData({ ...formData, id_raza: "" });
+              }}
+              style={{ borderRadius: "8px" }}
+      onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
               }}
             >
               <option value="">Especie</option>
@@ -223,6 +259,15 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
               value={formData.id_raza}
               onChange={handleChange}
               disabled={!especieSeleccionada}
+              style={{ borderRadius: "8px" }}
+      onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             >
               <option value="">Raza</option>
               {listaRazas.map((r) => (
@@ -235,9 +280,60 @@ const EditMascota = ({ id_mascota, onClose, onUpdate }) => {
 
         </div>
 
-        <div className="text-center mt-4">
-          <Button type="submit">Guardar</Button>
-          <Button onClick={onClose} className="ms-2" variant="danger">
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
+          <Button
+           type="submit"
+          style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+              color: "#fff",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
+          >
+            Guardar Cambios
+          </Button>
+
+<Button
+  onClick={onClose}
+  style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
+          >
             Cancelar
           </Button>
         </div>
