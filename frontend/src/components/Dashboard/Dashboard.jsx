@@ -11,10 +11,15 @@ import { useMascotasStore } from "../../zustand/mascota";
 import { useEmpleadosStore } from "../../zustand/empleados";
 import { useHCStore } from "../../zustand/historiasClinicas";
 import { useTurnosStore } from "../../zustand/turnos";
+import { useRazasStore } from "../../zustand/razas";
+import { useEspeciesStore } from "../../zustand/especies";
+import { useCategoriasStore } from "../../zustand/categorias";
+import { useStockStore } from "../../zustand/stock";
+import { useVentasStore } from "../../zustand/ventas";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { CLIENTES as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL, TURNOS } from "../../endpoints/endpoints";
+import { CLIENTES as CLIENTES_URL, productos as PRODUCTOS_URL, mascotas as MASCOTAS_URL, empleados as EMPLEADOS_URL, historiasClinicas as HISTORIASCLINICAS_URL, TURNOS, razas as RAZAS_URL, ESPECIES as ESPECIES_URL, categorias as CATEGORIAS_URL, STOCK as STOCK_URL, VENTAS as VENTAS_URL } from "../../endpoints/endpoints";
 
 const Dashboard = () => {
   const empleado = useEmpleadoStore((state) => state.empleado);
@@ -25,6 +30,11 @@ const Dashboard = () => {
   const { mascotas, setMascotas } = useMascotasStore();
   const { hc: historiasClinicas, setHistoriasClinicas: setHistoriasClinicas } = useHCStore();
   const { turnos, setTurnos } = useTurnosStore();
+  const { razas, setRazas } = useRazasStore();
+  const { especies, setEspecies } = useEspeciesStore();
+  const { categorias, setCategorias } = useCategoriasStore();
+  const { stock, setStock } = useStockStore();
+  const { ventas, setVentas } = useVentasStore();
   const [turnosPendientes, setTurnosPendientes] = useState([])
 
   useEffect(() => {
@@ -72,6 +82,50 @@ const Dashboard = () => {
         console.error("Error al obtener las Historias Clinicas:", error);
       }
     };
+    const getRazas = async () => {
+      try {
+        const res = await axios.get(`${RAZAS_URL}/ver`, { withCredentials: true });
+        setRazas(res.data);
+      } catch (error) {
+        console.error("Error al obtener las razas:", error);
+      }
+    };
+    const getEspecies = async () => {
+      try {
+        const res = await axios.get(`${ESPECIES_URL}/ver`, { withCredentials: true });
+        setEspecies(res.data);
+      } catch (error) {
+        console.error("Error al obtener las especies:", error);
+      }
+    };
+    const getCategorias = async () => {
+      try {
+        const res = await axios.get(`${CATEGORIAS_URL}/ver`, { withCredentials: true });
+        setCategorias(res.data);
+      } catch (error) {
+        console.error("Error al obtener las categorías:", error);
+      }
+    };
+    const getStock = async () => {
+      try {
+        const { data } = await axios.get(`${STOCK_URL}/ver`, { withCredentials: true });
+        // Aplicamos la misma lógica de seguridad que con clientes
+        const contenido = Array.isArray(data) ? data : (data.data || []);
+        setStock(contenido);
+      } catch (error) {
+        console.error("Error al obtener el stock:", error);
+      }
+    };
+    const getVentas = async () => {
+      try {
+        const res = await axios.get(`${VENTAS_URL}/ver`, { withCredentials: true });
+        // Usamos la lógica de seguridad por si viene como data.data
+        const contenido = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        setVentas(contenido);
+      } catch (error) {
+        console.error("Error al obtener las ventas:", error);
+      }
+    };
     const getTurnos = async () => {
       try {
         const { data } = await axios.get(`${TURNOS}/ver`, { withCredentials: true });
@@ -81,14 +135,20 @@ const Dashboard = () => {
       } catch (error) {
         console.error("Error al obtener turnos:", error);
       }
-    }
+    };
+
     getEmpleados();
     getClientes();
     getProductos();
     getMascotas();
     getHC();
+    getRazas();
+    getEspecies();
+    getCategorias();
+    getStock();
+    getVentas();
     getTurnos()
-  }, [setEmpleados, setClientes, setProductos, setMascotas, setHistoriasClinicas, setTurnos]);
+  }, [setEmpleados, setClientes, setProductos, setMascotas, setHistoriasClinicas, setRazas, setEspecies, setCategorias, setStock, setVentas, setTurnos]);
 
   // ESTILO BASE DE LAS CARDS
   const baseCardStyle = {
@@ -267,7 +327,7 @@ const Dashboard = () => {
 
             {(rol === "Administrador" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/ventas" label="Ventas" Icon={CreditCard} index={4} />
+                <DashboardCard to="/ventas" label="Ventas" Icon={CreditCard} index={4} count={ventas?.length} />
               </Col>
             )}
 
@@ -283,7 +343,7 @@ const Dashboard = () => {
 
             {(rol === "Administrador") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/stock" label="Stock" Icon={Layers} index={6} />
+                <DashboardCard to="/stock" label="Stock" Icon={Layers} index={6} count={stock?.length} />
               </Col>
             )}
 
@@ -293,13 +353,13 @@ const Dashboard = () => {
 
             {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/especies" label="Especies" Icon={Dna} index={3} />
+                <DashboardCard to="/especies" label="Especies" Icon={Dna} index={3} count={especies?.length} />
               </Col>
             )}
 
             {(rol === "Administrador" || rol === "Veterinario" || rol === "Recepcionista") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/razas" label="Razas" Icon={PawPrint} index={9} />
+                <DashboardCard to="/razas" label="Razas" Icon={PawPrint} index={9} count={razas?.length} />
               </Col>
             )}
             {/* <Col xs="auto" className="mb-3"  style={{ width: "200px", height: "180px" }}>
@@ -313,7 +373,7 @@ const Dashboard = () => {
 
             {(rol === "Administrador") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/categorias" label="Categorias" Icon={Tags} index={13} />
+                <DashboardCard to="/categorias" label="Categorias" Icon={Tags} index={13} count={categorias?.length} />
               </Col>
             )}
 
