@@ -224,7 +224,6 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
   return (
     <div
       style={{
-        backgroundColor: "#cfcfcf",
         borderRadius: "10px",
         padding: "25px 40px",
         color: "#000"
@@ -246,7 +245,8 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
               value={nombreVeterinario} // Muestra el nombre del veterinario
               readOnly // Hace que el campo sea de solo lectura
               disabled // Deshabilita la interacción (opcional)
-              style={{ backgroundColor: '#e9ecef' }} // Estilo para indicar que es de solo lectura
+              style={{ backgroundColor: '#e9ecef', borderRadius: "8px" 
+              }} // Estilo para indicar que es de solo lectura
             />
           </Col>
         </Form.Group>
@@ -262,6 +262,15 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
               placeholder="Buscar por nombre o DNI"
               value={busquedaCliente}
               onChange={(e) => buscarCliente(e.target.value)}
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }} 
             />
 
             {/* RESULTADOS */}
@@ -308,6 +317,15 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
                 handleChange(e);
               }}
               disabled={!clienteSeleccionado}
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             >
               <option value="">Seleccione una mascota</option>
               {mascotasCliente.map((m) => (
@@ -336,6 +354,15 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
               placeholder="Detalle general"
               value={historiaClinica.observaciones_generales}
               onChange={handleChange}
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Col>
         </Form.Group>
@@ -352,22 +379,73 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
               placeholder="Detalle inicial del diagnóstico"
               value={historiaClinica.observaciones}
               onChange={handleChange}
+              style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Col>
         </Form.Group>
 
         {/* BOTONES */}
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
           <Button
             type="submit" // Sigue siendo 'submit' para que se active handleConfirmAndSubmit
-            style={{ backgroundColor: "#5a7edc", border: "none" }}
+            style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+              color: "#fff",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
           >
             Guardar
           </Button>
 
           <Button
-            style={{ backgroundColor: "#e74c3c", border: "none", marginLeft: "10px" }}
             onClick={onClose}
+            style={{
+              padding: "12px 30px",
+              borderRadius: "14px",
+              border: "none",
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
+            }}
           >
             Cancelar
           </Button>

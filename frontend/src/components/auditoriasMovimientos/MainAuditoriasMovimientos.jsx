@@ -135,7 +135,7 @@ const MainAuditoriasMovimientos = () => {
           }}
         >
           <i className="bi bi-clock-history" style={{ marginRight: "8px" }}></i>
-          AUDITORIAS Y MOVIMIENTOS
+          AUDITORIAS
         </h1>
       </div>
 
@@ -223,6 +223,7 @@ const MainAuditoriasMovimientos = () => {
                   borderRadius: "10px",
                 }}
               >
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Fecha y Hora</th>
                 <th style={{ padding: "14px" }}>Módulo</th>
                 <th style={{ padding: "14px" }}>Acción</th>
@@ -252,6 +253,9 @@ const MainAuditoriasMovimientos = () => {
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
+                    <td style={{ padding: "14px 20px", fontWeight: "bold", textAlign: "center", color: "#6f42c1", border: "none" }}>
+                      {auditoria.id_auditoria_movimiento}
+                    </td>
                     <td
                       style={{
                         padding: "14px 20px",

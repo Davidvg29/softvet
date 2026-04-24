@@ -50,7 +50,7 @@ const Dashboard = () => {
 
     const getClientes = async () => {
       try {
-        const { data } = await axios.get(`${CLIENTES_URL}/ver`, { withCredentials: true });
+        const { data } = await axios.get(`${CLIENTES_URL}/ver?limit=1000`, { withCredentials: true });
         setClientes(data.data);
       } catch (error) {
         console.error("Error al obtener los clientes:", error);
@@ -389,7 +389,7 @@ const Dashboard = () => {
 
             {(rol === "Administrador") && (
               <Col xs="auto" className="mb-3" style={{ width: "200px", height: "180px" }}>
-                <DashboardCard to="/auditorias-y-movimientos" label="Auditorias y Movimientos" Icon={ClipboardClock} index={17} />
+                <DashboardCard to="/auditorias-y-movimientos" label="Auditorias" Icon={ClipboardClock} index={17} />
               </Col>
             )}
 

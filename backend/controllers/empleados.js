@@ -93,10 +93,11 @@ const obtenerInfoEmpleadoAutenticado = (req, res) => {
 const mostrarEmpleados = (req, res) => {
 
     connection.query(`
-        SELECT e.id_empleado, e.usuario, e.nombre_empleado, e.dni_empleado, e.direccion_empleado, e.telefono_empleado, e.mail_empleado, r.nombre_rol
+        SELECT e.id_empleado, e.usuario, e.nombre_empleado, e.dni_empleado, e.direccion_empleado, e.telefono_empleado, e.mail_empleado,e.is_active, r.nombre_rol
         FROM empleados e
         LEFT JOIN roles r ON e.id_rol = r.id_rol
-        WHERE e.is_active = TRUE`, (error, results) => {
+        order by e.is_active DESC
+        `, (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener los empleados.' });
         }
@@ -234,6 +235,7 @@ const editarEmpleado = (req, res) => {
 // Eliminar un empleado
 const eliminarEmpleado = (req, res) => {
     const { id } = req.params;
+    const { id_empleado } = req.body;
     connection.query('UPDATE empleados SET is_active = FALSE WHERE id_empleado = ?', [id], (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al eliminar el empleado.' });
@@ -242,8 +244,46 @@ const eliminarEmpleado = (req, res) => {
             return res.status(404).json({ error: 'Empleado no encontrado.' });
         }
         res.json({ message: 'Empleado eliminado correctamente.' });
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Empleados', 'DESACTIVAR', ?);`, 
+                [id_empleado, `Se desactivo el empleado N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                })
     });
 }
+
+const activarEmpleado = (req, res) => {
+    const { id } = req.params;
+    const { id_empleado } = req.body; 
+
+    connection.query('UPDATE empleados SET is_active = TRUE WHERE id_empleado = ?', [id], (error, results) => {
+        if (error) {
+            console.error("Error en la consulta:", error);
+            return res.status(500).json({ error: 'Error al activar el empleado.' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Empleado no encontrado.' });
+        }
+
+        res.json({ message: 'Empleado activado correctamente.' });
+
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Empleados', 'ACTIVAR', ?);`, 
+                [id_empleado, `Se activó el empleado N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                }
+        );
+    });
+};
 
 const mailRestablecerContraseña = async (req, res) => {
     const { email } = req.params;
@@ -361,5 +401,6 @@ module.exports = {
     obtenerInfoEmpleadoAutenticado,
     logout,
     mailRestablecerContraseña,
-    restablecerContraseña
+    restablecerContraseña,
+    activarEmpleado
 };

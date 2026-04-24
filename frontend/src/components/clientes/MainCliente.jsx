@@ -26,6 +26,11 @@ const MainCliente = () => {
   // ────────────────────────────────────────────────────────
 
   const empleadoStore = useEmpleadoStore((state) => state.empleado);
+  const rolUsuario = empleadoStore?.nombre_rol || "";
+  // Si es Administrador, ve todos. Si no, solo ve los que están activos.
+  const clientesAMostrar = rolUsuario === "Administrador" 
+    ? cliente 
+    : cliente.filter((c) => c.is_active); 
 
   const TITULOS = {
     crear: 'Nuevo Cliente',
@@ -125,6 +130,67 @@ const MainCliente = () => {
     }
   };
 
+  // ── Lógica para Activar el Cliente ─────────────────────────────────────────
+  const activarClienteFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Cliente?',
+      text: 'El cliente volverá a estar activo en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      const response = await axios.put(
+        `${clientes}/activar/${id}`, 
+        { id_empleado: empleadoStore.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activado correctamente',
+          text: 'El cliente ha sido activado con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarCLientes(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar el cliente:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar el cliente. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+
+  // Validación para Activar
+  const handleActivarConPermiso = (id) => {
+    if (rolUsuario !== "Administrador") {
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: "No tienes permisos. Solo el Administrador puede activar clientes.",
+        confirmButtonColor: "#6f42c1",
+      });
+      return;
+    }
+    activarClienteFront(id);
+  };
+
   return (
     <>
       <div className="text-center">
@@ -205,6 +271,7 @@ const MainCliente = () => {
           <Table hover responsive style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 12px" }}>
             <thead>
               <tr style={{ background: "linear-gradient(90deg, #6f42c1, #9b59b6)", color: "#fff", textAlign: "center", fontSize: "18px", borderRadius: "10px" }}>
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Nombre Cliente</th>
                 <th style={{ padding: "14px" }}>Dni Cliente</th>
                 <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>Acciones</th>
@@ -212,14 +279,15 @@ const MainCliente = () => {
             </thead>
 
             <tbody>
-              {cliente.length > 0 ? (
-                cliente.map((cliente) => (
+              {clientesAMostrar.length > 0 ? (
+                clientesAMostrar.map((cliente) => (
                   <tr
                     key={cliente.id_cliente}
                     style={{ backgroundColor: "#fff", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", borderRadius: "12px", transition: "transform 0.15s ease, box-shadow 0.15s ease", transform: "translateY(0)" }}
                     onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.15)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)";    e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";  }}
                   >
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>{cliente.id_cliente}</td>
                     <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>{cliente.nombre_cliente}</td>
                     <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>{cliente.dni_cliente}</td>
                     <td style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", padding: "12px", border: "none" }}>
@@ -245,12 +313,22 @@ const MainCliente = () => {
                         Agregar Mascota
                       </Button>
 
-                      <Button style={{ backgroundColor: "#dc3545", border: "none", fontWeight: "bold", color: "#fff", boxShadow: "0 3px 0 #a71d2a", transition: "all 0.1s ease" }}
-                        onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 5px 0 #a71d2a"; }}
-                        onMouseLeave={(e) => { e.target.style.transform = "translateY(0)";    e.target.style.boxShadow = "0 3px 0 #a71d2a"; }}
-                        onClick={() => borrarClientes(cliente.id_cliente)}>
-                        Eliminar
-                      </Button>
+                      {/* Botón ELIMINAR / ACTIVAR */}
+                      {cliente.is_active ? (
+                        <Button style={{ backgroundColor: "#dc3545", border: "none", fontWeight: "bold", color: "#fff", boxShadow: "0 3px 0 #a71d2a", transition: "all 0.1s ease" }}
+                          onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 5px 0 #a71d2a"; }}
+                          onMouseLeave={(e) => { e.target.style.transform = "translateY(0)";    e.target.style.boxShadow = "0 3px 0 #a71d2a"; }}
+                          onClick={() => borrarClientes(cliente.id_cliente)}>
+                          Eliminar
+                        </Button>
+                      ) : (
+                        <Button style={{ backgroundColor: "#e8e8e8", border: "none", fontWeight: "bold", color: "#040404", boxShadow: "0 3px 0 #de2437", transition: "all 0.1s ease" }}
+                          onMouseEnter={(e) => { e.target.style.transform = "translateY(-2px)"; e.target.style.boxShadow = "0 5px 0 #a71d2a"; }}
+                          onMouseLeave={(e) => { e.target.style.transform = "translateY(0)";    e.target.style.boxShadow = "0 3px 0 #a71d2a"; }}
+                          onClick={() => activarClienteFront(cliente.id_cliente)}>
+                          Activar
+                        </Button>
+                      )}
 
                     </td>
                   </tr>
@@ -293,25 +371,165 @@ const MainCliente = () => {
         </div>
       </div>
 
-      <Modal show={showModal} onHide={handleCloseModal} centered backdrop="static" size="lg">
-        <div style={{ background: 'linear-gradient(135deg, #FFD700, #32CD32)', padding: '25px', boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)', position: 'relative' }}>
-          <button onClick={handleCloseModal} aria-label="Cerrar"
-            style={{ position: 'absolute', top: '8px', right: '8px', width: '28px', height: '28px', borderRadius: '6px', border: 'none', backgroundColor: '#e74c3c', color: 'white', fontSize: '18px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.3)', transition: 'all 0.2s ease' }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = '#c0392b')}
-            onMouseLeave={(e) => (e.target.style.backgroundColor = '#e74c3c')}
-          >✕</button>
+      <Modal
+  key={fromType}
+  show={showModal}
+  onHide={handleCloseModal}
+  centered
+  backdrop="static"
+  contentClassName="bg-transparent border-0 shadow-none"
+  dialogClassName="bg-transparent"
+  style={{ "--bs-modal-width": "800px" }}
+>
+  <div
+    style={{
+      maxWidth: "800px",
+      width: "100%",
+      margin: "auto",
 
-          <div style={{ backgroundColor: '#cfcfcf', padding: '30px 60px', textAlign: 'center', width: '700px', margin: 'auto', boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)', borderRadius: '12px' }}>
-            <h4 style={{ fontWeight: 'bold', textDecoration: 'underline', marginBottom: '25px' }}>{TITULOS[fromType]}</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {fromType === 'crear'          && <CrearCliente onClose={handleCloseModal} onUpdate={cargarCLientes} />}
-              {fromType === 'ver'            && <VerCliente id_cliente={clienteId} />}
-              {fromType === 'editar'         && <EditCliente id_cliente={clienteId} onClose={handleCloseModal} onUpdate={cargarCLientes} />}
-              {fromType === 'agregarMascota' && <CrearMascota id_cliente={clienteId} onClose={handleCloseModal} onUpdate={cargarCLientes} />}
-            </div>
-          </div>
-        </div>
-      </Modal>
+      backdropFilter: "blur(12px)",
+      background: "rgba(255,255,255,0.9)",
+      borderRadius: "18px",
+      padding: "22px",
+      position: "relative",
+
+      border: "2px solid #6f42c1",
+      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+      animation: "modalFade 0.3s ease",
+    }}
+  >
+    {/* Glow */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "22px",
+        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+        pointerEvents: "none",
+      }}
+    />
+
+    {/* Cerrar */}
+    <button
+      onClick={handleCloseModal}
+      style={{
+        position: "absolute",
+        top: "14px",
+        right: "14px",
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "none",
+        background: "#f3f0ff",
+        color: "#6f42c1",
+        fontSize: "18px",
+        cursor: "pointer",
+        transition: "0.2s",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+    >
+      ✕
+    </button>
+
+    {/* HEADER */}
+    <div style={{ textAlign: "center", marginBottom: "25px" }}>
+      <div
+        style={{
+          width: "55px",
+          height: "55px",
+          borderRadius: "16px",
+          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          marginBottom: "10px",
+          color: "#fff",
+          fontSize: "22px",
+          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+        }}
+      >
+        <i className="bi-people-fill"></i>
+      </div>
+
+      <h3
+        style={{
+          fontWeight: "700",
+          color: "#6f42c1",
+          marginBottom: "4px",
+        }}
+      >
+        {TITULOS[fromType]}
+      </h3>
+
+      <div
+        style={{
+          width: "70px",
+          height: "4px",
+          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+          margin: "10px auto 0",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
+
+    {/* CONTENIDO */}
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "18px",
+        padding: "28px",
+        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        {fromType === "crear" && (
+          <CrearCliente
+            onClose={handleCloseModal}
+            onUpdate={cargarCLientes}
+          />
+        )}
+
+        {fromType === "ver" && (
+          <VerCliente id_cliente={clienteId} />
+        )}
+
+        {fromType === "editar" && (
+          <EditCliente
+            id_cliente={clienteId}
+            onClose={handleCloseModal}
+            onUpdate={cargarCLientes}
+          />
+        )}
+
+        {fromType === "agregarMascota" && (
+          <CrearMascota
+            id_cliente={clienteId}
+            onClose={handleCloseModal}
+            onUpdate={cargarCLientes}
+          />
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* Animación */}
+  <style>
+    {`
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    `}
+  </style>
+</Modal>
     </>
   );
 };

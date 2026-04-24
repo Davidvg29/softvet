@@ -10,6 +10,7 @@ import { empleados } from '../../endpoints/endpoints';
 import CrearEmpleado from './CrearEmpleado';
 import VerEmpleado from './VerEmpleado';
 import EditEmpleado from './EditEmpleado';
+import { useEmpleadoStore } from '../../zustand/empleado';
 
 const MainEmpleado = () => {
   const [empleado, setEmpleado] = useState([]);
@@ -17,6 +18,8 @@ const MainEmpleado = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
+
+  const empleadoCurrent = useEmpleadoStore((state) => state.empleado);
 
   const TITULOS = {
     crear: 'Nuevo Empleado',
@@ -64,7 +67,7 @@ const MainEmpleado = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-      const response = await axios.delete(`${empleados}/eliminar/${id}`, { withCredentials: true });
+      const response = await axios.delete(`${empleados}/eliminar/${id}`, { data:{id_empleado:empleadoCurrent.id_empleado},withCredentials: true });
 
       if (response.status === 200) {
         await Swal.fire({
@@ -122,6 +125,54 @@ const MainEmpleado = () => {
     padding: "8px 20px",
     borderRadius: "10px"
   };
+
+// ── Lógica para Activar el Empleado ─────────────────────────────────────────
+  const activarEmpleadoFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Empleado?',
+      text: 'El empleado volverá a estar activo en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      const response = await axios.put(
+        `${empleados}/activar/${id}`, 
+        { id_empleado: empleadoCurrent.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activado correctamente',
+          text: 'El empleado ha sido activado con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarEmpleados(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar el empleado:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar el empleado. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+console.log(empleado);
 
   return (
     <>
@@ -238,6 +289,9 @@ const MainEmpleado = () => {
                 }}
               >
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+                  N°
+                </th>
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
                   Nombre Empleado
                 </th>
                 <th style={{ padding: "14px", borderTopRightRadius: "10px" }}>
@@ -268,6 +322,17 @@ const MainEmpleado = () => {
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
+                    <td
+                      style={{
+                        padding: "14px 20px",
+                        fontWeight: "500",
+                        textAlign: "center",
+                        color: "#333",
+                        border: "none",
+                      }}
+                    >
+                      {empleado.id_empleado}
+                    </td>
                     <td
                       style={{
                         padding: "14px 20px",
@@ -336,28 +401,52 @@ const MainEmpleado = () => {
                         Editar
                       </Button>
 
-                      {/* Botón ELIMINAR */}
-                      <Button
-                        style={{
-                          backgroundColor: "#dc3545",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #a71d2a",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #a71d2a";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #a71d2a";
-                        }}
-                        onClick={() => borrarEmpleados(empleado.id_empleado)}
-                      >
-                        Eliminar
-                      </Button>
+                      {/* Botón ELIMINAR / ACTIVAR */}
+                      {empleado.is_active ? (
+                        <Button
+                          style={{
+                            backgroundColor: "#dc3545",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #a71d2a",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => borrarEmpleados(empleado.id_empleado)}
+                        >
+                          Eliminar
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{
+                            backgroundColor: "#e8e8e8",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#040404",
+                            boxShadow: "0 3px 0 #de2437",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => activarEmpleadoFront(empleado.id_empleado)}
+                        >
+                          Activar
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -399,84 +488,158 @@ const MainEmpleado = () => {
       </div>
 
       <Modal
-        show={showModal}
-        onHide={handleCloseModal}
-        centered
-        backdrop="static"
-        size="lg"
+  key={fromType}
+  show={showModal}
+  onHide={handleCloseModal}
+  centered
+  backdrop="static"
+  contentClassName="bg-transparent border-0 shadow-none"
+  dialogClassName="bg-transparent"
+  style={{ "--bs-modal-width": "800px" }}
+>
+  <div
+    style={{
+      maxWidth: "800px",
+      width: "100%",
+      margin: "auto",
+
+      backdropFilter: "blur(12px)",
+      background: "rgba(255,255,255,0.9)",
+      borderRadius: "18px",
+      padding: "22px",
+      position: "relative",
+
+      border: "2px solid #6f42c1",
+      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+    }}
+  >
+    {/* Glow decorativo */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "22px",
+        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+        pointerEvents: "none",
+      }}
+    />
+
+    {/* Botón cerrar */}
+    <button
+      onClick={handleCloseModal}
+      style={{
+        position: "absolute",
+        top: "14px",
+        right: "14px",
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "none",
+        background: "#f3f0ff",
+        color: "#6f42c1",
+        fontSize: "18px",
+        cursor: "pointer",
+        transition: "0.2s",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+    >
+      ✕
+    </button>
+
+    {/* HEADER PRO */}
+    <div style={{ textAlign: "center", marginBottom: "25px" }}>
+      <div
+        style={{
+          width: "55px",
+          height: "55px",
+          borderRadius: "16px",
+          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          marginBottom: "10px",
+          color: "#fff",
+          fontSize: "22px",
+          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+        }}
       >
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #FFD700, #32CD32)',
-            padding: '25px',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
-            position: 'relative',
-          }}
-        >
-          {/* Botón de cerrar */}
-          <button
-            onClick={handleCloseModal}
-            aria-label="Cerrar"
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              width: '28px',
-              height: '28px',
-              borderRadius: '6px',
-              border: 'none',
-              backgroundColor: '#e74c3c',
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = '#c0392b')}
-            onMouseLeave={(e) => (e.target.style.backgroundColor = '#e74c3c')}
-          >
-            ✕
-          </button>
+        <i className="bi-person-fill"></i>
+      </div>
 
-          {/* Caja interior del modal */}
-          <div
-            style={{
-              backgroundColor: '#cfcfcf',
-              padding: '30px 60px',
-              textAlign: 'center',
-              width: '700px',
-              margin: 'auto',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              borderRadius: '12px',
-            }}
-          >
-            <h4
-              style={{
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                marginBottom: '25px',
-              }}
-            >
-              {TITULOS[fromType]}
-            </h4>
+      <h3
+        style={{
+          fontWeight: "700",
+          color: "#6f42c1",
+          marginBottom: "4px",
+        }}
+      >
+        {TITULOS[fromType]}
+      </h3>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {fromType === 'crear' && (
-                <CrearEmpleado onClose={handleCloseModal} onUpdate={cargarEmpleados} />
-              )}
-              {fromType === 'ver' && <VerEmpleado id_empleado={empleadoId} />}
-              {fromType === 'editar' && (
-                <EditEmpleado
-                  id_empleado={empleadoId}
-                  onClose={handleCloseModal}
-                  onUpdate={cargarEmpleados}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      </Modal>
+      <div
+        style={{
+          width: "70px",
+          height: "4px",
+          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+          margin: "10px auto 0",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
+
+    {/* CONTENIDO */}
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "18px",
+        padding: "28px",
+        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+        transition: "all 0.3s ease",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        {fromType === "crear" && (
+          <CrearEmpleado
+            onClose={handleCloseModal}
+            onUpdate={cargarEmpleados}
+          />
+        )}
+
+        {fromType === "ver" && (
+          <VerEmpleado id_empleado={empleadoId} />
+        )}
+
+        {fromType === "editar" && (
+          <EditEmpleado
+            id_empleado={empleadoId}
+            onClose={handleCloseModal}
+            onUpdate={cargarEmpleados}
+          />
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* ANIMACIONES */}
+  <style>
+    {`
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    `}
+  </style>
+
+  
+</Modal>
     </>
   );
 };

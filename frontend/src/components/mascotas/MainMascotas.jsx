@@ -139,6 +139,53 @@ const MainMascota = () => {
     }
   };
 
+  // ── Lógica para Activar la Mascota ─────────────────────────────────────────
+  const activarMascotaFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Mascota?',
+      text: 'La mascota volverá a estar activa en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      const response = await axios.put(
+        `${mascotas}/activar/${id}`, 
+        { id_empleado: empleado.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activada correctamente',
+          text: 'La mascota ha sido activada con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarMascotas(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar la mascota:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar la mascota. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+
   return (
     <>
     <div className="text-center">
@@ -228,6 +275,7 @@ const MainMascota = () => {
                   borderRadius: "10px",
                 }}
               >
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Nombre Mascota</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>DNI Cliente</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Acciones</th>
@@ -255,6 +303,15 @@ const MainMascota = () => {
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
+                    <td style={{
+                      padding: "14px 20px",
+                      fontWeight: "500",
+                      textAlign: "center",
+                      color: "#333",
+                      border: "none",
+                    }}>
+                      {m.id_mascota}
+                    </td>
                     <td style={{
                       padding: "14px 20px",
                       fontWeight: "500",
@@ -361,27 +418,52 @@ const MainMascota = () => {
                         Historia Clinica
                       </Button>)}
 
-                      <Button
-                        style={{
-                          backgroundColor: "#dc3545",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #a71d2a",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #a71d2a";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #a71d2a";
-                        }}
-                        onClick={() => borrarMascotas(m.id_mascota)}
-                      >
-                        Dar Baja
-                      </Button>
+                      {/* Botón DAR DE BAJA / ACTIVAR */}
+                      {/* {m.is_active ? (
+                        <Button
+                          style={{
+                            backgroundColor: "#dc3545",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #a71d2a",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => borrarMascotas(m.id_mascota)}
+                        >
+                          Dar Baja
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{
+                            backgroundColor: "#e8e8e8",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#040404",
+                            boxShadow: "0 3px 0 #de2437",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => activarMascotaFront(m.id_mascota)}
+                        >
+                          Activar
+                        </Button>
+                      )} */}
 
                     </td>
                   </tr>

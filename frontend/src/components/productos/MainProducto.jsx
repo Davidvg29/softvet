@@ -42,7 +42,7 @@ const MainProducto = () => {
     try {
       const response = await axios.get(`${productos}/ver`, { withCredentials: true });
       console.log("Respuesta del backend:", response.data);
-      setProducto(response.data.reverse());
+      setProducto(response.data);
     } catch (error) {
       console.error('Error al cargar los Productos:', error);
     }
@@ -52,10 +52,15 @@ const MainProducto = () => {
     cargarProductos();
   }, []);
 
-  const productosFiltrados = producto.filter((producto) =>
-  producto.nombre_producto.toLowerCase().includes(busqueda.toLowerCase()) ||
-  producto.codigo_producto.toString().includes(busqueda)
-);
+  const productosFiltrados = producto.filter((prod) => {
+    const coincideBusqueda = 
+      prod.nombre_producto.toLowerCase().includes(busqueda.toLowerCase()) ||
+      prod.codigo_producto.toString().includes(busqueda);
+
+    const puedeVer = rolUsuario === 'Administrador' ? true : prod.producto_is_active;
+
+    return coincideBusqueda && puedeVer;
+  });
 
   // ── Paginación ──────────────────────────────────────────
   const [paginaActual, setPaginaActual] = useState(1);
@@ -156,16 +161,78 @@ const MainProducto = () => {
 
   // Validación para Dar de Baja
   const handleBorrarConPermiso = (id) => {
+    // if (rolUsuario !== "Administrador") {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Acceso Denegado",
+    //     text: "Solo el Administrador puede dar de baja productos.",
+    //     confirmButtonColor: "#6f42c1",
+    //   });
+    //   return;
+    // }
+    borrarProductos(id);
+  };
+
+  // Lógica para Activar el Producto
+  const activarProductoFront = async (id) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Producto?',
+      text: 'El producto volverá a estar disponible en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde para indicar acción positiva
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      // Usamos PUT y enviamos el id_empleado en el body para la auditoría
+      const response = await axios.put(
+        `${productos}/activar/${id}`, 
+        { id_empleado: empleado.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activado correctamente',
+          text: 'El producto ha sido activado con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+
+        cargarProductos(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar el Producto:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar el Producto. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+
+  // Validación para Activar
+  const handleActivarConPermiso = (id) => {
     if (rolUsuario !== "Administrador") {
       Swal.fire({
         icon: "error",
         title: "Acceso Denegado",
-        text: "Solo el Administrador puede dar de baja productos.",
+        text: "Solo el Administrador puede activar productos.",
         confirmButtonColor: "#6f42c1",
       });
       return;
     }
-    borrarProductos(id);
+    activarProductoFront(id);
   };
 
   return (
@@ -282,6 +349,9 @@ const MainProducto = () => {
         }}
       >
         <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
+          N°
+        </th>
+        <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>
           Nombre Producto
         </th>
         <th style={{ padding: "14px", borderTopLeftRadius: "10px "}}>
@@ -317,6 +387,17 @@ const MainProducto = () => {
               e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
             }}
           >
+            <td
+              style={{
+                padding: "14px 20px",
+                fontWeight: "500",
+                textAlign: "center",
+                color: "#333",
+                border: "none",
+              }}
+            >
+              {producto.id_producto}
+            </td>
             <td
               style={{
                 padding: "14px 20px",
@@ -408,9 +489,9 @@ const MainProducto = () => {
                 Editar
               </Button>
 
-
-              {/* Botón ELIMINAR */}
-              <Button
+              {/* Botón ELIMINAR / ACTIVAR */}
+              {producto.producto_is_active ? (
+                <Button
                 style={{
                   backgroundColor: "#dc3545",
                   border: "none",
@@ -431,6 +512,30 @@ const MainProducto = () => {
               >
                 Dar Baja
               </Button>
+              ) : (
+              <Button
+                style={{
+                  backgroundColor: "#e8e8e8",
+                  border: "none",
+                  fontWeight: "bold",
+                  color: "#040404",
+                  boxShadow: "0 3px 0 #de2437",
+                  transition: "all 0.1s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                }}
+                /* AQUÍ ESTÁ EL CAMBIO PRINCIPAL  */
+                onClick={() => handleActivarConPermiso(producto.id_producto)}
+              >
+                Activar
+              </Button>
+              )}
             </td>
           </tr>
         ))
@@ -488,79 +593,155 @@ const MainProducto = () => {
       </div>
 
       <Modal
+  key={fromType}
   show={showModal}
   onHide={handleCloseModal}
   centered
   backdrop="static"
-  size="lg"
+  contentClassName="bg-transparent border-0 shadow-none"
+  dialogClassName="bg-transparent"
+  style={{ "--bs-modal-width": "750px" }} // 👈 tamaño ideal productos
 >
   <div
     style={{
-      background: 'linear-gradient(135deg, #FFD700, #32CD32)',
-      padding: '25px',
-      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
-      position: 'relative',
+      maxWidth: "750px",
+      width: "100%",
+      margin: "auto",
+
+      backdropFilter: "blur(12px)",
+      background: "rgba(255,255,255,0.9)",
+      borderRadius: "18px",
+      padding: "22px",
+      position: "relative",
+
+      border: "2px solid #6f42c1",
+      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+      animation: "modalFade 0.3s ease",
     }}
   >
-    {/* Botón de cerrar (cruz roja más chica y cuadrada) */}
+    {/* Glow */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "22px",
+        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+        pointerEvents: "none",
+      }}
+    />
+
+    {/* Cerrar */}
     <button
       onClick={handleCloseModal}
-      aria-label="Cerrar"
       style={{
-        position: 'absolute',
-        top: '8px',
-        right: '8px',
-        width: '28px',
-        height: '28px',
-        borderRadius: '6px',
-        border: 'none',
-        backgroundColor: '#e74c3c',
-        color: 'white',
-        fontSize: '18px',
-        fontWeight: 'bold',
-        cursor: 'pointer',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-        transition: 'all 0.2s ease',
+        position: "absolute",
+        top: "14px",
+        right: "14px",
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "none",
+        background: "#f3f0ff",
+        color: "#6f42c1",
+        fontSize: "18px",
+        cursor: "pointer",
+        transition: "0.2s",
       }}
-      onMouseEnter={(e) => (e.target.style.backgroundColor = '#c0392b')}
-      onMouseLeave={(e) => (e.target.style.backgroundColor = '#e74c3c')}
+      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
     >
       ✕
     </button>
 
-    {/* Caja interior del modal */}
-    <div
-      style={{
-        backgroundColor: '#cfcfcf',
-        padding: '30px 60px',
-        textAlign: 'center',
-        width: '700px',
-        margin: 'auto',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-        borderRadius: '12px',
-      }}
-    >
-      <h4
+    {/* HEADER */}
+    <div style={{ textAlign: "center", marginBottom: "25px" }}>
+      <div
         style={{
-          fontWeight: 'bold',
-          textDecoration: 'underline',
-          marginBottom: '25px',
+          width: "55px",
+          height: "55px",
+          borderRadius: "16px",
+          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          marginBottom: "10px",
+          color: "#fff",
+          fontSize: "22px",
+          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+        }}
+      >
+        <i className="bi-box-seam"></i>
+      </div>
+
+      <h3
+        style={{
+          fontWeight: "700",
+          color: "#6f42c1",
+          marginBottom: "4px",
         }}
       >
         {TITULOS[fromType]}
-      </h4>
+      </h3>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {fromType === 'crear' && (
-          <CrearProducto onClose={handleCloseModal} onUpdate={cargarProductos} />
+      <div
+        style={{
+          width: "70px",
+          height: "4px",
+          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+          margin: "10px auto 0",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
+
+    {/* CONTENIDO */}
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "18px",
+        padding: "26px",
+        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        {fromType === "crear" && (
+          <CrearProducto
+            onClose={handleCloseModal}
+            onUpdate={cargarProductos}
+          />
         )}
-        {fromType === 'ver' && <VerProducto id_producto={productoId} />}
-        {fromType === 'editar' && (<EditProducto id_producto={productoId} onClose={handleCloseModal} onUpdate={cargarProductos}
+
+        {fromType === "ver" && (
+          <VerProducto id_producto={productoId} />
+        )}
+
+        {fromType === "editar" && (
+          <EditProducto
+            id_producto={productoId}
+            onClose={handleCloseModal}
+            onUpdate={cargarProductos}
           />
         )}
       </div>
     </div>
   </div>
+
+  {/* Animación */}
+  <style>
+    {`
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    `}
+  </style>
 </Modal>
     </>
   );

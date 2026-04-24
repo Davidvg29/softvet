@@ -44,8 +44,7 @@ const MainVentas = () => {
   const cargarVentas = async () => {
     try {
       const {data} = await axios.get(`${VENTAS}/ver`, { withCredentials: true });
-      const ventasFilter = data.reverse().filter((v)=>(v.is_active == 1))
-      setVentas(ventasFilter || []);
+      setVentas(data.reverse() || []);
     } catch (error) {
       console.error('Error al cargar las ventas:', error);
       setVentas([]);
@@ -56,10 +55,15 @@ const MainVentas = () => {
     cargarVentas();
   }, []);
 
-  const ventasFiltrados = ventas.filter((venta) =>
-    venta.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
-    venta.dni_cliente.toString().includes(busqueda)
-  );
+  const ventasFiltrados = ventas.filter((venta) => {
+    const coincideBusqueda = 
+      venta.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
+      venta.dni_cliente.toString().includes(busqueda);
+    // *Nota: Asegúrate de que la propiedad del rol se llame 'rol' en tu objeto empleado,
+    const puedeVer = empleado?.nombre_rol === 'Administrador' ? true : venta.is_active;
+
+    return coincideBusqueda && puedeVer;
+  });
 
   // ── Paginación ──────────────────────────────────────────
   const [paginaActual, setPaginaActual] = useState(1);
@@ -133,6 +137,55 @@ const MainVentas = () => {
       });
     }
   };
+
+  // ── Lógica para Activar la Venta ─────────────────────────────────────────
+  const activarVentaFront = async (id_venta) => {
+    const confirmacion = await Swal.fire({
+      title: '¿Activar Venta?',
+      text: 'La venta volverá a estar activa en el sistema.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, activar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#28a745', // Verde
+      cancelButtonColor: '#6c757d',
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    try {
+      // Usamos el endpoint de activar (asumiendo que en tu backend armaste la ruta /activar/:id)
+      const response = await axios.put(
+        `${VENTAS}/activar/${id_venta}`, 
+        { id_empleado: empleado.id_empleado }, 
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Activada correctamente',
+          text: 'La venta ha sido activada con éxito.',
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#6f42c1',
+        });
+        
+        cargarVentas(); // Recargamos la tabla
+      } else {
+        throw new Error('Respuesta inesperada del servidor.');
+      }
+    } catch (error) {
+      console.error('Error al activar la venta:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo activar la venta. Inténtalo nuevamente.',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#6f42c1',
+      });
+    }
+  };
+console.log(empleado);
 
   return (
     <>
@@ -246,6 +299,7 @@ const MainVentas = () => {
                   borderRadius: "10px",
                 }}
               >
+                <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>N°</th>
                 <th style={{ padding: "14px", borderTopLeftRadius: "10px" }}>Fecha</th>
                 <th style={{ padding: "14px" }}>Hora</th>
                 <th style={{ padding: "14px" }}>Cliente</th>
@@ -276,6 +330,9 @@ const MainVentas = () => {
                       e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
                     }}
                   >
+                    <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
+                      {venta.id_venta ?? ''}
+                    </td>
                     <td style={{ padding: "14px 20px", fontWeight: "500", textAlign: "center", color: "#333", border: "none" }}>
                       {venta.fecha_hora?.slice(0, 10) ?? ''}
                     </td>
@@ -336,27 +393,52 @@ const MainVentas = () => {
                         Editar
                       </Button>
 
-                      <Button
-                        style={{
-                          backgroundColor: "#dc3545",
-                          border: "none",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          boxShadow: "0 3px 0 #a71d2a",
-                          transition: "all 0.1s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.transform = "translateY(-2px)";
-                          e.target.style.boxShadow = "0 5px 0 #a71d2a";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.transform = "translateY(0)";
-                          e.target.style.boxShadow = "0 3px 0 #a71d2a";
-                        }}
-                        onClick={() => borrarVentas(venta.id_venta)}
-                      >
-                        Eliminar
-                      </Button>
+                      {/* Botón ELIMINAR / ACTIVAR */}
+                      {venta.is_active ? (
+                        <Button
+                          style={{
+                            backgroundColor: "#dc3545",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#fff",
+                            boxShadow: "0 3px 0 #a71d2a",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => borrarVentas(venta.id_venta)}
+                        >
+                          Eliminar
+                        </Button>
+                      ) : (
+                        <Button
+                          style={{
+                            backgroundColor: "#e8e8e8",
+                            border: "none",
+                            fontWeight: "bold",
+                            color: "#040404",
+                            boxShadow: "0 3px 0 #de2437",
+                            transition: "all 0.1s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 5px 0 #a71d2a";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 3px 0 #a71d2a";
+                          }}
+                          onClick={() => activarVentaFront(venta.id_venta)}
+                        >
+                          Activar
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -416,72 +498,159 @@ const MainVentas = () => {
         </div>
       </div>
 
-      <Modal show={showModal} onHide={handleCloseModal} centered backdrop="static" size="lg">
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #FFD700, #32CD32)',
-            padding: '25px',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
-            position: 'relative',
-          }}
-        >
-          <button
-            onClick={handleCloseModal}
-            aria-label="Cerrar"
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              width: '28px',
-              height: '28px',
-              borderRadius: '6px',
-              border: 'none',
-              backgroundColor: '#e74c3c',
-              color: 'white',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = '#c0392b')}
-            onMouseLeave={(e) => (e.target.style.backgroundColor = '#e74c3c')}
-          >
-            ✕
-          </button>
+      <Modal
+  key={fromType}
+  show={showModal}
+  onHide={handleCloseModal}
+  centered
+  backdrop="static"
+  contentClassName="bg-transparent border-0 shadow-none"
+  dialogClassName="bg-transparent"
+  style={{ "--bs-modal-width": "1000px" }} // 👈 MÁS ANCHO (ventas lo necesita)
+>
+  <div
+    style={{
+      maxWidth: "1000px",
+      width: "100%",
+      margin: "auto",
 
-          <div
-            style={{
-              backgroundColor: '#cfcfcf',
-              padding: '30px 20px',
-              textAlign: 'center',
-              width: '100%',
-              margin: 'auto',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-              borderRadius: '12px',
-            }}
-          >
-            <h4 style={{ fontWeight: 'bold', textDecoration: 'underline', marginBottom: '0px' }}>
-              {TITULOS[fromType] || ''}
-            </h4>
+      backdropFilter: "blur(12px)",
+      background: "rgba(255,255,255,0.9)",
+      borderRadius: "18px",
+      padding: "22px",
+      position: "relative",
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              {fromType === 'crear' && (
-                // Descomenta si tenés el componente CrearVenta
-                <CrearVenta onClose={handleCloseModal} onUpdate={cargarVentas} cargarVentas={cargarVentas}/>
-              )}
+      border: "2px solid #6f42c1",
+      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+      animation: "modalFade 0.3s ease",
+    }}
+  >
+    {/* Glow */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "22px",
+        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+        pointerEvents: "none",
+      }}
+    />
 
-              {fromType === 'ver' && <VerVenta venta={ventaSelect} />}
+    {/* Cerrar */}
+    <button
+      onClick={handleCloseModal}
+      style={{
+        position: "absolute",
+        top: "14px",
+        right: "14px",
+        width: "38px",
+        height: "38px",
+        borderRadius: "50%",
+        border: "none",
+        background: "#f3f0ff",
+        color: "#6f42c1",
+        fontSize: "18px",
+        cursor: "pointer",
+        transition: "0.2s",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+    >
+      ✕
+    </button>
 
-              {fromType === 'editar' && (
-                // Descomenta si tenés el componente EditVenta
-                <EditVenta id_venta={ventaId} onClose={handleCloseModal} onUpdate={cargarVentas} />
-                // <div>Editar venta (componente EditVenta aquí)</div>
-              )}
-            </div>
-          </div>
-        </div>
-      </Modal>
+    {/* HEADER */}
+    <div style={{ textAlign: "center", marginBottom: "25px" }}>
+      <div
+        style={{
+          width: "55px",
+          height: "55px",
+          borderRadius: "16px",
+          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          marginBottom: "10px",
+          color: "#fff",
+          fontSize: "22px",
+          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+        }}
+      >
+        <i className="bi-cash-stack"></i>
+      </div>
+
+      <h3
+        style={{
+          fontWeight: "700",
+          color: "#6f42c1",
+          marginBottom: "4px",
+        }}
+      >
+        {TITULOS[fromType] || ""}
+      </h3>
+
+      <div
+        style={{
+          width: "70px",
+          height: "4px",
+          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+          margin: "10px auto 0",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
+
+    {/* CONTENIDO */}
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "18px",
+        padding: "28px",
+        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+        overflowX: "auto", // 👈 clave para tablas
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+        {fromType === "crear" && (
+          <CrearVenta
+            onClose={handleCloseModal}
+            onUpdate={cargarVentas}
+            cargarVentas={cargarVentas}
+          />
+        )}
+
+        {fromType === "ver" && (
+          <VerVenta venta={ventaSelect} />
+        )}
+
+        {fromType === "editar" && (
+          <EditVenta
+            id_venta={ventaId}
+            onClose={handleCloseModal}
+            onUpdate={cargarVentas}
+          />
+        )}
+      </div>
+    </div>
+  </div>
+
+  {/* Animación */}
+  <style>
+    {`
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+          transform: scale(0.94) translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    `}
+  </style>
+</Modal>
     </>
   );
 };

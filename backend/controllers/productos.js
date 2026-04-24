@@ -27,7 +27,7 @@ const mostrarProductos = (req, res) => {
     LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
     LEFT JOIN stock ON stock.id_producto = p.id_producto
     LEFT JOIN sucursales ON sucursales.id_sucursal = stock.id_sucursal
-    WHERE p.is_active = TRUE;
+    order by p.is_active desc;
     `;
     connection.query(sql, (error, results) => {
         if (error) {
@@ -227,10 +227,42 @@ const eliminarProducto = (req, res) => {
     });
 };
 
+const activarProducto = (req, res) => {
+    const { id } = req.params;
+    const { id_empleado } = req.body;
+
+    // Cambiamos is_active a TRUE
+    connection.query('UPDATE productos SET is_active = TRUE WHERE id_producto = ?', [id], (error, results) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Error al activar el producto' });
+        }
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Producto no encontrado' });
+        }
+
+        // Respuesta exitosa al cliente
+        res.json({ message: 'Producto activado correctamente' });
+
+        // Registro en la tabla de auditoría
+        connection.query(`
+                INSERT INTO auditorias_movimientos (id_empleado, modulo, accion, descripcion) 
+                VALUES (?, 'Productos', 'ACTIVAR', ?);`, 
+                [id_empleado, `Se activó el producto N° ${id}`], 
+                (errorAuditoria) => {
+                    if (errorAuditoria) {
+                        console.error("Error al registrar auditoría:", errorAuditoria);
+                    }
+                });
+    });
+};
+
 module.exports = {
     mostrarProductos,
     mostrarProductoPorId,
     crearProducto,
     editarProducto,
-    eliminarProducto
+    eliminarProducto,
+    activarProducto
 };
