@@ -95,7 +95,6 @@ console.log("🟣 Datos enviados:", datosFinales);
 
     <div
       style={{
-        backgroundColor: "#cfcfcf",
         borderRadius: "10px",
         padding: "25px 40px",
         color: "#000",
@@ -132,6 +131,14 @@ console.log("🟣 Datos enviados:", datosFinales);
               onChange={handleChange}
               placeholder="DNI del cliente"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -144,6 +151,14 @@ console.log("🟣 Datos enviados:", datosFinales);
               onChange={handleChange}
               placeholder="Dirección del cliente"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -156,6 +171,14 @@ console.log("🟣 Datos enviados:", datosFinales);
               onChange={handleChange}
               placeholder="Teléfono del cliente"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -168,6 +191,14 @@ console.log("🟣 Datos enviados:", datosFinales);
               onChange={handleChange}
               placeholder="Email del cliente"
               style={{ borderRadius: "8px" }}
+              onFocus={(e) => {
+                e.target.style.border = "1px solid #6f42c1";
+                e.target.style.boxShadow = "0 0 0 0.2rem rgba(111,66,193,0.25)";
+              }}
+              onBlur={(e) => {
+                e.target.style.border = "1px solid #ced4da";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </Form.Group>
 
@@ -175,19 +206,34 @@ console.log("🟣 Datos enviados:", datosFinales);
         </div>
 
         {/* BOTONES */}
-        <div style={{ textAlign: "center", marginTop: "25px" }}>
+        <div
+          style={{
+            marginTop: "30px",
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+          }}
+        >
           <Button
             type="button" onClick={handleSubmit}
             style={{
-              backgroundColor: "#5a7edc",
+              padding: "12px 30px",
+              borderRadius: "14px",
               border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              marginRight: "10px",
-              fontWeight: "bold",
+              background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
               color: "#fff",
-              boxShadow: "0 4px 0 #3c5bb3",
-              transition: "all 0.1s ease",
+              fontWeight: "600",
+              boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
             }}
           >
             Guardar
@@ -196,14 +242,22 @@ console.log("🟣 Datos enviados:", datosFinales);
           <Button
             onClick={onClose}
             style={{
-              backgroundColor: "#e74c3c",
+              padding: "12px 30px",
+              borderRadius: "14px",
               border: "none",
-              borderRadius: "20px",
-              padding: "10px 28px",
-              fontWeight: "bold",
-              color: "#fff",
-              boxShadow: "0 4px 0 #b33a2b",
-              transition: "all 0.1s ease",
+              background: "#f3f4f6",
+              color: "#374151",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 15px 30px rgba(111,66,193,0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "0 10px 25px rgba(111,66,193,0.4)";
             }}
           >
             Cancelar

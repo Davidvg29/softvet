@@ -403,78 +403,161 @@ const MainRaza = () => {
                     )}
                 </div>
             </div>
-            <Modal show={showModal}
-                onHide={handleCloseModal}
-                centered
-                backdrop="static"
-                size="lg">
+            <Modal
+  key={fromType}
+  show={showModal}
+  onHide={handleCloseModal}
+  centered
+  backdrop="static"
+  contentClassName="bg-transparent border-0 shadow-none"
+  dialogClassName="bg-transparent"
+  style={{ "--bs-modal-width": "680px" }}
+>
+  <div
+    style={{
+      maxWidth: "680px",
+      width: "100%",
+      margin: "auto",
 
-                <div
-                    style={{
-                        background: 'linear-gradient(135deg, #FFD700, #32CD32)',
-                        padding: '25px',
-                        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
-                        position: 'relative',
-                    }}
-                >
-                    {/* Botón de cerrar (cruz roja más chica y cuadrada) */}
-                    <button
-                        onClick={handleCloseModal}
-                        aria-label="Cerrar"
-                        style={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            width: '28px',
-                            height: '28px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            backgroundColor: '#e74c3c',
-                            color: 'white',
-                            fontSize: '18px',
-                            fontWeight: 'bold',
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease',
-                        }}
-                        onMouseEnter={(e) => (e.target.style.backgroundColor = '#c0392b')}
-                        onMouseLeave={(e) => (e.target.style.backgroundColor = '#e74c3c')}
-                    >
-                        ✕
-                    </button>
+      backdropFilter: "blur(12px)",
+      background: "rgba(255,255,255,0.9)",
+      borderRadius: "18px",
+      padding: "20px",
+      position: "relative",
 
-                    {/* Caja interior del modal */}
-                    <div
-                        style={{
-                            backgroundColor: '#cfcfcf',
-                            padding: '30px 60px',
-                            textAlign: 'center',
-                            width: '700px',
-                            margin: 'auto',
-                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
-                            borderRadius: '12px',
-                        }}
-                    >
-                        <h4
-                            style={{
-                                fontWeight: 'bold',
-                                textDecoration: 'underline',
-                                marginBottom: '25px',
-                            }}
-                        >
-                            {TITULOS[fromType]}
-                        </h4>
+      border: "2px solid #6f42c1",
+      boxShadow: "0 15px 40px rgba(111,66,193,0.2)",
+      animation: "modalFade 0.3s ease",
+    }}
+  >
+    {/* Glow */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "22px",
+        boxShadow: "0 0 30px rgba(111,66,193,0.2)",
+        pointerEvents: "none",
+      }}
+    />
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            {fromType === "crearRaza" && <CrearRaza onClose={handleCloseModal} onUpdated={cargarRazas} />}
-                            {fromType === "verRaza" && <VerRaza id={razaId} />}{/*paso el id por prop */}
-                            {fromType === "editarRaza" && <EditarRaza id={razaId} onClose={handleCloseModal} onUpdated={cargarRazas} />}
-                        </div>
-                    </div>
-                </div>
+    {/* Cerrar */}
+    <button
+      onClick={handleCloseModal}
+      style={{
+        position: "absolute",
+        top: "12px",
+        right: "12px",
+        width: "34px",
+        height: "34px",
+        borderRadius: "50%",
+        border: "none",
+        background: "#f3f0ff",
+        color: "#6f42c1",
+        fontSize: "16px",
+        cursor: "pointer",
+        transition: "0.2s",
+      }}
+      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+    >
+      ✕
+    </button>
 
+    {/* HEADER */}
+    <div style={{ textAlign: "center", marginBottom: "20px" }}>
+      <div
+        style={{
+          width: "50px",
+          height: "50px",
+          borderRadius: "14px",
+          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          margin: "auto",
+          marginBottom: "10px",
+          color: "#fff",
+          fontSize: "20px",
+          boxShadow: "0 8px 20px rgba(111,66,193,0.35)",
+        }}
+      >
+       
+      </div>
 
-            </Modal>
+      <h3
+        style={{
+          fontWeight: "700",
+          color: "#6f42c1",
+          marginBottom: "4px",
+          fontSize: "20px",
+        }}
+      >
+        <i className="bi bi-paw"></i>
+        {TITULOS[fromType]}
+      </h3>
+
+      <div
+        style={{
+          width: "60px",
+          height: "3px",
+          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+          margin: "8px auto 0",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
+
+    {/* CONTENIDO */}
+    <div
+      style={{
+        background: "#ffffff",
+        borderRadius: "16px",
+        padding: "22px",
+        boxShadow: "0 10px 25px rgba(0,0,0,0.06)",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        
+        {fromType === "crearRaza" && (
+          <CrearRaza
+            onClose={handleCloseModal}
+            onUpdated={cargarRazas}
+          />
+        )}
+
+        {fromType === "verRaza" && (
+          <VerRaza id={razaId} />
+        )}
+
+        {fromType === "editarRaza" && (
+          <EditarRaza
+            id={razaId}
+            onClose={handleCloseModal}
+            onUpdated={cargarRazas}
+          />
+        )}
+
+      </div>
+    </div>
+  </div>
+
+  {/* Animación */}
+  <style>
+    {`
+      @keyframes modalFade {
+        from {
+          opacity: 0;
+          transform: scale(0.95) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    `}
+  </style>
+</Modal>
         </>
     )
 }

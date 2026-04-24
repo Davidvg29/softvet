@@ -30,7 +30,6 @@ console.log(turno);
     <>
       <Card className="m-4 p-4 shadow"
         style={{
-          backgroundColor: "#cfcfcf",
           borderRadius: "10px",
           padding: "25px 40px",
           color: "#000",
