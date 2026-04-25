@@ -27,6 +27,9 @@ const MainVentas = () => {
     editar: 'Editar Venta',
   };
 
+  // --- Estado de Filtro ---
+    const [filtroActivo, setFiltroActivo] = useState("todos");
+
   const obtenerFechaFormateada = (diasRestar = 0) => {
     const fecha = new Date();
     fecha.setDate(fecha.getDate() - diasRestar);
@@ -104,7 +107,6 @@ const MainVentas = () => {
   };
 
   const handleCloseModal = () => {
-    // console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
     setVentaId(null);
@@ -126,14 +128,39 @@ const MainVentas = () => {
   }, []);
 
   const ventasFiltrados = ventas.filter((venta) => {
+    // 1. Búsqueda segura (evita crasheos si el nombre o DNI vienen en null)
+    const nombre = venta.nombre_cliente || "";
+    const dni = venta.dni_cliente || "";
+    
     const coincideBusqueda =
-      venta.nombre_cliente.toLowerCase().includes(busqueda.toLowerCase()) ||
-      venta.dni_cliente.toString().includes(busqueda);
-    // *Nota: Asegúrate de que la propiedad del rol se llame 'rol' en tu objeto empleado,
+      nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+      dni.toString().includes(busqueda);
+      
+    // 2. Permiso de visualización según el rol
     const puedeVer = empleado?.nombre_rol === 'Administrador' ? true : venta.is_active;
 
-    return coincideBusqueda && puedeVer;
+    // 3. Normalizamos el valor de is_active para que cubra booleanos, números y strings
+    const ventaEstaActiva = 
+      venta.is_active === true || 
+      venta.is_active === 1 || 
+      venta.is_active === "1" || 
+      venta.is_active === "true";
+
+    // 4. Filtro de botones
+    let coincideEstado = true;
+    if (filtroActivo === "activos") {
+      coincideEstado = ventaEstaActiva;
+    } else if (filtroActivo === "inactivos") {
+      coincideEstado = !ventaEstaActiva;
+    }
+
+    // Retornamos la venta solo si cumple todas las condiciones
+    return coincideBusqueda && puedeVer && coincideEstado;
   });
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [busqueda, filtroActivo]);
 
   // ── Paginación ──────────────────────────────────────────
   const [paginaActual, setPaginaActual] = useState(1);
@@ -255,7 +282,6 @@ const MainVentas = () => {
       });
     }
   };
-  console.log(empleado);
 
   return (
     <>
@@ -275,6 +301,7 @@ const MainVentas = () => {
           VENTAS
         </h1>
       </div>
+      
 
       <style>
         {`
@@ -351,6 +378,33 @@ const MainVentas = () => {
             </Button>
           </div>
         </div>
+
+        {/* Filtros de Estado */}
+        {empleado.nombre_rol === "Administrador" && (
+          <div className="d-flex gap-2 mt-3">
+            {[
+              { key: "todos", label: "Todos" },
+              { key: "activos", label: "Activos" },
+              { key: "inactivos", label: "Inactivos" }
+            ].map((item) => (
+              <span
+                key={item.key}
+                onClick={() => setFiltroActivo(item.key)}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                  background: filtroActivo === item.key ? "#6f42c1" : "#f1f1f1",
+                  color: filtroActivo === item.key ? "#fff" : "#555",
+                  transition: "0.2s"
+                }}
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control

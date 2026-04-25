@@ -171,6 +171,8 @@ const MainProducto = () => {
     handleOpenModal(type, id);
   };
 
+
+  
   return (
     <>
       <div className="text-center">

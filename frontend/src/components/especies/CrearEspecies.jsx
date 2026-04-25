@@ -22,7 +22,7 @@ function CrearEspecies ({onClose, onUpdate}) {
 
 const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("🟣 handleSubmit ejecutado");
+        // console.log("🟣 handleSubmit ejecutado");
 
         const validation = validationCrearEspecies(formData.nombre_especie);
         if (validation.length !== 0) {

@@ -48,7 +48,7 @@ const mostrarHistoriasClinicas = (req, res) => {
         BETWEEN ? AND ?`;
         params.push(fechaDesde, fechaHasta);
     } else {
-        // 🔥 por defecto últimos 2 días
+        // por defecto últimos 2 días
         query += ` 
         WHERE DATE(COALESCE(dhc.fecha_hora, hc.fecha_apertura)) 
         >= DATE_SUB(CURDATE(), INTERVAL 2 DAY)`;

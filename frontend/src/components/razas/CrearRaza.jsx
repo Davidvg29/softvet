@@ -16,7 +16,6 @@ const CrearRaza = ({ onClose, onUpdated }) => {
         try {
 
             const { data } = await axios.get(`${ESPECIES}/ver`, { withCredentials: true });
-            console.log(data);
             setEspecies(data);
         } catch (error) {
             console.error("Error al cargar las especies:", error);
@@ -36,7 +35,6 @@ const CrearRaza = ({ onClose, onUpdated }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("🟣 handleSubmit ejecutado");
 
         const validation = validationCrearRaza(formData.nombre_raza);
         if (validation.length !== 0) {

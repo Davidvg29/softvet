@@ -27,11 +27,11 @@ const Header = () => {
     const cerrarSesion = async () => {
         try {
             const { data } = await axios(`${empleados}/logout`, { withCredentials: true })
-            console.log(data);
+            // console.log(data);
             logout()
             navigate("/login")
         } catch (error) {
-            console.log(error);
+            // console.log(error);
 
         }
     }

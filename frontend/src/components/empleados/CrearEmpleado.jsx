@@ -43,7 +43,7 @@ function CrearEmpleado({ onClose, onUpdate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("FormData antes de validar:", formData);
+    // console.log("FormData antes de validar:", formData);
 
     const validation = validationCrearEmpleados(
       formData.usuario,
@@ -65,10 +65,10 @@ function CrearEmpleado({ onClose, onUpdate }) {
       });
     }
 
-    console.log("🟣 Datos enviados:", formData);
+    // console.log("🟣 Datos enviados:", formData);
     try {
       const response = await axios.post(`${empleados}/crear`, formData, { withCredentials: true });
-      console.log(response.data);
+      // console.log(response.data);
 
       if (response.status === 200 || response.status === 201) {
 

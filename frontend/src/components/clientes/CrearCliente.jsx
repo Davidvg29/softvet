@@ -32,7 +32,7 @@ function CrearCliente({ onClose, onUpdate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log("FormData antes de validar:", formData);
+    // console.log("FormData antes de validar:", formData);
 
     const validation = validationCrearClientes(
   formData.nombre_cliente,
@@ -56,10 +56,10 @@ if (validation.length !== 0) {
       ...formData,
       id_empleado: empleadoStore?.id_empleado 
     };
-console.log("🟣 Datos enviados:", datosFinales);
+// console.log("🟣 Datos enviados:", datosFinales);
     try {
       const response = await axios.post(`${clientes}/crear`, datosFinales, { withCredentials: true });
-      console.log(response.data);
+      // console.log(response.data);
       
       if (response.status === 200 || response.status === 201) {
 

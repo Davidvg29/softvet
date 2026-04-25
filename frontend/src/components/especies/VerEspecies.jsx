@@ -18,7 +18,7 @@ const VerEspecies = ({id_especie}) => {
                 
                 if (response.data) {
                 setEspecie(response.data);
-                console.log("Datos de la especie recibida:", response.data);
+                // console.log("Datos de la especie recibida:", response.data);
             } else {
                    setError("No se encontraron datos para la especie.");
                 console.error("No se encontraron datos para la especie.");

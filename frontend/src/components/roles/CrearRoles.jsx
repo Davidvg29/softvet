@@ -22,7 +22,6 @@ function CrearRoles({ onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🟣 handleSubmit ejecutado");
 
     const validation = validationCrearRoles(formData.nombre_rol);
     if (validation.length !== 0) {

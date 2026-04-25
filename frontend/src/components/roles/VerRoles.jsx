@@ -18,7 +18,6 @@ const VerRoles = ({ id_rol }) => {
 
         if (response.data) {
           setRol(response.data);
-          console.log("Datos del rol recibido:", response.data);
         } else {
           setError("No se encontraron datos para el rol especificado.");
         }

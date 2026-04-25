@@ -100,7 +100,6 @@ const MainTurnos = () => {
   };
 
   const handleCloseModal = () => {
-    console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
   };

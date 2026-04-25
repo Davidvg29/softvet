@@ -22,7 +22,6 @@ function CrearSucursales({ onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🟣 handleSubmit ejecutado");
 
     const validation = validationCrearSucursales(formData.nombre_sucursal);
     if (validation.length !== 0) {

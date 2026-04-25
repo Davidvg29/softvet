@@ -43,7 +43,7 @@ const MailRestablecerContraseñaComponente = () => {
       const { data } = await axios.get(`${empleados}/password/restablecer/${mail}`);
       setMessage(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setMessage(error.response.data);
     }
   };

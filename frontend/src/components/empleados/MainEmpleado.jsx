@@ -22,7 +22,7 @@ const MainEmpleado = () => {
   // valores: "todos" | "activos" | "inactivos"
 
   const empleadoCurrent = useEmpleadoStore((state) => state.empleado);
-
+  
   const TITULOS = {
     crear: 'Nuevo Empleado',
     ver: 'Ver Empleado',
@@ -36,7 +36,7 @@ const MainEmpleado = () => {
   };
 
   const handleCloseModal = () => {
-    console.log('cerrar modal');
+    // console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
   };
@@ -44,7 +44,7 @@ const MainEmpleado = () => {
   const cargarEmpleados = async () => {
     try {
       const response = await axios.get(`${empleados}/ver`, { withCredentials: true });
-      setEmpleado(response.data.reverse());
+      setEmpleado(response.data);
     } catch (error) {
       console.error('Error al cargar los empleados:', error);
     }
@@ -180,7 +180,7 @@ const MainEmpleado = () => {
       });
     }
   };
-  console.log(empleado);
+  // console.log(empleado);
 
   return (
     <>
@@ -224,7 +224,7 @@ const MainEmpleado = () => {
       </style>
 
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
-        {rolUsuario === "Administrador" && (
+        {empleadoCurrent.nombre_rol === "Administrador" && (
           <div className="d-flex gap-2 mt-3">
             {[
               { key: "todos", label: "Todos" },

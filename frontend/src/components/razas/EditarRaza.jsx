@@ -17,7 +17,6 @@ const EditarRaza = ({ id, onClose, onUpdated }) => {
         try {
 
             const { data } = await axios.get(`${razas}/ver/${id}`, { withCredentials: true });
-            console.log(data);
             setFormdata(data);
         } catch (error) {
             console.error("Error al cargar las razas:", error);
@@ -32,7 +31,6 @@ const EditarRaza = ({ id, onClose, onUpdated }) => {
         try {
 
             const { data } = await axios.get(`${ESPECIES}/ver`, { withCredentials: true });
-            console.log(data);
             setEspecies(data);
         } catch (error) {
             console.error("Error al cargar las especies:", error);
@@ -52,7 +50,6 @@ const EditarRaza = ({ id, onClose, onUpdated }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("🟣 handleSubmit ejecutado");
 
         const validation = validationCrearRaza(formData.nombre_raza);
         if (validation.length !== 0) {

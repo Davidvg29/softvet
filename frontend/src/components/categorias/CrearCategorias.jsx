@@ -37,7 +37,7 @@ const handleSubmit = async (e) => {
 
         try {
       const response = await axios.post(`${categorias}/crear`, formData, { withCredentials: true });
-console.log(response);
+// console.log(response);
 
       if (response.status === 200 || response.status === 201) {
       

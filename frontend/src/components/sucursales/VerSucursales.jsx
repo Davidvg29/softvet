@@ -18,7 +18,6 @@ const VerSucursales = ({ id_sucursal }) => {
 
         if (response.data) {
           setSucursal(response.data);
-          console.log("Datos de la sucursal recibida:", response.data);
         } else {
           setError("No se encontraron datos para la sucursal especificada.");
         }

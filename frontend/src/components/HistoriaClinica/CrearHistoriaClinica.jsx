@@ -144,9 +144,6 @@ const CrearHistoriaClinica = ({ onClose, onUpdated }) => {
 
     setMascotasCliente(mascotasClienteActualizadas);
 
-    
-    console.log("Historia clínica creada", response.data);
-
     setClienteSeleccionado(null);
     setMascotasCliente([]);
     setBusquedaCliente("");

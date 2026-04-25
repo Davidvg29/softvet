@@ -24,7 +24,6 @@ const VerTurno = ({ id_turno }) => {
   }, [id_turno]);
 
   if (!turno) return <p>Cargando turno...</p>;
-console.log(turno);
 
   return (
     <>
