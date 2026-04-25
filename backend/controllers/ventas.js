@@ -2,22 +2,46 @@ const { connection } = require("../config/bd/dataBase");
 const { validationsCrearVenta } = require("../validations/ventas");
 
 const verVentas = (req, res) => {
-    const queryGetVentas = `select 
-        ventas.id_venta, ventas.fecha_hora, ventas.total, ventas.is_active,
-        clientes.id_cliente, clientes.nombre_cliente, clientes.dni_cliente,
-        empleados.id_empleado, empleados.nombre_empleado
-        from ventas
-        left join clientes on clientes.id_cliente = ventas.id_cliente
-        left join empleados on empleados.id_empleado = ventas.id_empleado
-        order by ventas.is_active;`
-    connection.query(queryGetVentas, (error, results) => {
+    const { fechaDesde, fechaHasta } = req.query;
+
+    let query = `
+        SELECT 
+            ventas.id_venta, 
+            ventas.fecha_hora, 
+            ventas.total, 
+            ventas.is_active,
+            clientes.id_cliente, 
+            clientes.nombre_cliente, 
+            clientes.dni_cliente,
+            empleados.id_empleado, 
+            empleados.nombre_empleado
+        FROM ventas
+        LEFT JOIN clientes 
+            ON clientes.id_cliente = ventas.id_cliente
+        LEFT JOIN empleados 
+            ON empleados.id_empleado = ventas.id_empleado
+    `;
+
+    let params = [];
+
+    if (fechaDesde && fechaHasta) {
+        query += ` 
+            WHERE DATE(ventas.fecha_hora) >= ? 
+            AND DATE(ventas.fecha_hora) <= ?
+        `;
+        params.push(fechaDesde, fechaHasta);
+    }
+
+    query += ` ORDER BY ventas.fecha_hora DESC`;
+
+    connection.query(query, params, (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener las ventas' });
-        }else {
+        } else {
             return res.status(200).json(results);
         }
-    })
-}
+    });
+};
 
 const crearVenta = (req, res) => {
     const { total, id_cliente, id_empleado} = req.body;

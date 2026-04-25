@@ -2,48 +2,63 @@ const { connection } = require('../config/bd/dataBase');
 
 // Obtener todos los turnos (soporta filtros por fecha, cliente, mascota, empleado y estado)
 const mostrarTurnos = (req, res) => {
-    let sql = `select 
+    let sql = `SELECT 
         turnos.id_turno, 
-        DATE_FORMAT(turnos.fecha_hora, '%Y-%m-%d %H:%i') AS fecha_hora, 
+        turnos.fecha_hora,
+        DATE_FORMAT(turnos.fecha_hora, '%Y-%m-%d %H:%i') AS fecha_hora_formateada,
         turnos.motivo_turno, 
         turnos.estado, 
         turnos.id_cliente, 
         turnos.id_mascota, 
         turnos.id_empleado,
+
         clientes.*,
         mascotas.*,
-        empleados.id_empleado, empleados.nombre_empleado
-        from turnos
-        left join clientes on turnos.id_cliente = clientes.id_cliente
-        left join mascotas on turnos.id_mascota = mascotas.id_mascota
-        left join empleados on turnos.id_empleado = empleados.id_empleado`;
+        empleados.nombre_empleado
+
+        FROM turnos
+        LEFT JOIN clientes ON turnos.id_cliente = clientes.id_cliente
+        LEFT JOIN mascotas ON turnos.id_mascota = mascotas.id_mascota
+        LEFT JOIN empleados ON turnos.id_empleado = empleados.id_empleado`;
+
     const conditions = [];
     const params = [];
 
-    if (req.query.fecha) { // formato yyyy-mm-dd
-        conditions.push('DATE(fecha_hora) = ?');
+    if (req.query.fechaDesde && req.query.fechaHasta) {
+        conditions.push('DATE(turnos.fecha_hora) BETWEEN ? AND ?');
+        params.push(req.query.fechaDesde, req.query.fechaHasta);
+    }
+
+    if (req.query.fecha) {
+        conditions.push('DATE(turnos.fecha_hora) = ?');
         params.push(req.query.fecha);
     }
+
     if (req.query.id_cliente) {
-        conditions.push('id_cliente = ?');
+        conditions.push('turnos.id_cliente = ?');
         params.push(req.query.id_cliente);
     }
+
     if (req.query.id_mascota) {
-        conditions.push('id_mascota = ?');
+        conditions.push('turnos.id_mascota = ?');
         params.push(req.query.id_mascota);
     }
+
     if (req.query.id_empleado) {
-        conditions.push('id_empleado = ?');
+        conditions.push('turnos.id_empleado = ?');
         params.push(req.query.id_empleado);
     }
+
     if (req.query.estado) {
-        conditions.push('estado = ?');
+        conditions.push('turnos.estado = ?');
         params.push(req.query.estado);
     }
 
     if (conditions.length > 0) {
         sql += ' WHERE ' + conditions.join(' AND ');
     }
+
+    sql += ' ORDER BY turnos.fecha_hora DESC';
 
     connection.query(sql, params, (error, results) => {
         if (error) {
