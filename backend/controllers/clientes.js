@@ -3,29 +3,34 @@ const nodemailer = require("nodemailer");
 
 // Obtener todos los clientes
 const mostrarClientes = (req, res) => {
-    // 1. Recibir parámetros (con valores por defecto por si no llegan)
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
     const search = req.query.search || '';
-    
-    // 2. Calcular el Offset
+    const estado = req.query.estado || 'todos'; // 🔥 NUEVO
+
     const offset = (page - 1) * limit;
 
-    // 3. Preparar la consulta base y los parámetros dinámicos
-    // CORRECCIÓN AQUÍ: Agregamos "WHERE 1=1" para poder concatenar "AND" sin romper el SQL
-    let baseQuery = 'FROM clientes WHERE 1=1'; 
+    let baseQuery = 'FROM clientes WHERE 1=1';
     let queryParams = [];
 
-    // Si hay texto en el buscador, agregamos la condición LIKE
+    // 🔎 BUSCADOR
     if (search) {
         baseQuery += ' AND (LOWER(nombre_cliente) LIKE ? OR dni_cliente LIKE ?)';
         const searchParam = `%${search.toLowerCase()}%`;
         queryParams.push(searchParam, searchParam);
     }
 
-    // 4. Primera consulta: Saber cuántos registros totales hay (para calcular totalPaginas)
+    // 🔥 FILTRO POR ESTADO
+    if (estado === 'activos') {
+        baseQuery += ' AND is_active = true';
+    } else if (estado === 'inactivos') {
+        baseQuery += ' AND is_active = false';
+    }
+    // "todos" no agrega nada
+
+    // 🔢 COUNT
     const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
-    
+
     connection.query(countQuery, queryParams, (errorCount, resultsCount) => {
         if (errorCount) {
             return res.status(500).json({ error: 'Error al contar los clientes.' });
@@ -34,17 +39,21 @@ const mostrarClientes = (req, res) => {
         const totalItems = resultsCount[0].total;
         const totalPages = Math.ceil(totalItems / limit);
 
-        // 5. Segunda consulta: Traer solo el tramo de datos solicitado
-        // CAMBIO PRINCIPAL AQUÍ: Agregamos "is_active DESC" antes del id_cliente
-        const dataQuery = `SELECT * ${baseQuery} ORDER BY is_active DESC, id_cliente DESC LIMIT ? OFFSET ?`;
-        const dataParams = [...queryParams, limit, offset]; // Agregamos limit y offset al final
+        // 📦 DATA
+        const dataQuery = `
+            SELECT * 
+            ${baseQuery} 
+            ORDER BY is_active DESC, id_cliente DESC 
+            LIMIT ? OFFSET ?
+        `;
+
+        const dataParams = [...queryParams, limit, offset];
 
         connection.query(dataQuery, dataParams, (errorData, resultsData) => {
             if (errorData) {
                 return res.status(500).json({ error: 'Error al obtener los clientes.' });
             }
 
-            // 6. Devolvemos un objeto con los datos y la metadata de paginación
             res.json({
                 data: resultsData,
                 pagination: {
@@ -55,7 +64,7 @@ const mostrarClientes = (req, res) => {
             });
         });
     });
-}
+};
 
 // Asegúrate de exportarlo como lo hacías antes
 

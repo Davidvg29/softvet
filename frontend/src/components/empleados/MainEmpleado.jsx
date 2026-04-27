@@ -18,9 +18,11 @@ const MainEmpleado = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
+  const [filtroActivo, setFiltroActivo] = useState("todos");
+  // valores: "todos" | "activos" | "inactivos"
 
   const empleadoCurrent = useEmpleadoStore((state) => state.empleado);
-
+  
   const TITULOS = {
     crear: 'Nuevo Empleado',
     ver: 'Ver Empleado',
@@ -34,7 +36,7 @@ const MainEmpleado = () => {
   };
 
   const handleCloseModal = () => {
-    console.log('cerrar modal');
+    // console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
   };
@@ -67,7 +69,7 @@ const MainEmpleado = () => {
     if (!confirmacion.isConfirmed) return;
 
     try {
-      const response = await axios.delete(`${empleados}/eliminar/${id}`, { data:{id_empleado:empleadoCurrent.id_empleado},withCredentials: true });
+      const response = await axios.delete(`${empleados}/eliminar/${id}`, { data: { id_empleado: empleadoCurrent.id_empleado }, withCredentials: true });
 
       if (response.status === 200) {
         await Swal.fire({
@@ -98,19 +100,25 @@ const MainEmpleado = () => {
   const elementosPorPagina = 5;
 
   // 1. Filtrado
-  const empleadosFiltrados = empleado.filter((emp) =>
-    emp.nombre_empleado.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const empleadosFiltrados = empleado
+    .filter((emp) =>
+      emp.nombre_empleado.toLowerCase().includes(busqueda.toLowerCase())
+    )
+    .filter((emp) => {
+      if (filtroActivo === "activos") return emp.is_active === 1;
+      if (filtroActivo === "inactivos") return emp.is_active === 0;
+      return true; // todos
+    });
 
   // Resetear a la primera página cuando el usuario busca algo
   useEffect(() => {
     setPaginaActual(1);
-  }, [busqueda]);
+  }, [busqueda, filtroActivo]);
 
   // 2. Paginación sobre el resultado filtrado
   const indiceUltimoElemento = paginaActual * elementosPorPagina;
   const indicePrimerElemento = indiceUltimoElemento - elementosPorPagina;
-  
+
   const empleadosPaginados = empleadosFiltrados.slice(indicePrimerElemento, indiceUltimoElemento);
   const totalPaginas = Math.ceil(empleadosFiltrados.length / elementosPorPagina);
 
@@ -126,7 +134,7 @@ const MainEmpleado = () => {
     borderRadius: "10px"
   };
 
-// ── Lógica para Activar el Empleado ─────────────────────────────────────────
+  // ── Lógica para Activar el Empleado ─────────────────────────────────────────
   const activarEmpleadoFront = async (id) => {
     const confirmacion = await Swal.fire({
       title: '¿Activar Empleado?',
@@ -143,8 +151,8 @@ const MainEmpleado = () => {
 
     try {
       const response = await axios.put(
-        `${empleados}/activar/${id}`, 
-        { id_empleado: empleadoCurrent.id_empleado }, 
+        `${empleados}/activar/${id}`,
+        { id_empleado: empleadoCurrent.id_empleado },
         { withCredentials: true }
       );
 
@@ -156,7 +164,7 @@ const MainEmpleado = () => {
           confirmButtonText: 'Aceptar',
           confirmButtonColor: '#6f42c1',
         });
-        
+
         cargarEmpleados(); // Recargamos la tabla
       } else {
         throw new Error('Respuesta inesperada del servidor.');
@@ -172,7 +180,7 @@ const MainEmpleado = () => {
       });
     }
   };
-console.log(empleado);
+  // console.log(empleado);
 
   return (
     <>
@@ -216,6 +224,32 @@ console.log(empleado);
       </style>
 
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
+        {empleadoCurrent.nombre_rol === "Administrador" && (
+          <div className="d-flex gap-2 mt-3">
+            {[
+              { key: "todos", label: "Todos" },
+              { key: "activos", label: "Activos" },
+              { key: "inactivos", label: "Inactivos" }
+            ].map((item) => (
+              <span
+                key={item.key}
+                onClick={() => setFiltroActivo(item.key)}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  fontWeight: "600",
+                  background:
+                    filtroActivo === item.key ? "#6f42c1" : "#f1f1f1",
+                  color: filtroActivo === item.key ? "#fff" : "#555",
+                  transition: "0.2s"
+                }}
+              >
+                {item.label}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
             type="text"
@@ -488,143 +522,143 @@ console.log(empleado);
       </div>
 
       <Modal
-  key={fromType}
-  show={showModal}
-  onHide={handleCloseModal}
-  centered
-  backdrop="static"
-  contentClassName="bg-transparent border-0 shadow-none"
-  dialogClassName="bg-transparent"
-  style={{ "--bs-modal-width": "800px" }}
->
-  <div
-    style={{
-      maxWidth: "800px",
-      width: "100%",
-      margin: "auto",
-
-      backdropFilter: "blur(12px)",
-      background: "rgba(255,255,255,0.9)",
-      borderRadius: "18px",
-      padding: "22px",
-      position: "relative",
-
-      border: "2px solid #6f42c1",
-      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
-    }}
-  >
-    {/* Glow decorativo */}
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        borderRadius: "22px",
-        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
-        pointerEvents: "none",
-      }}
-    />
-
-    {/* Botón cerrar */}
-    <button
-      onClick={handleCloseModal}
-      style={{
-        position: "absolute",
-        top: "14px",
-        right: "14px",
-        width: "38px",
-        height: "38px",
-        borderRadius: "50%",
-        border: "none",
-        background: "#f3f0ff",
-        color: "#6f42c1",
-        fontSize: "18px",
-        cursor: "pointer",
-        transition: "0.2s",
-      }}
-      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
-      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
-    >
-      ✕
-    </button>
-
-    {/* HEADER PRO */}
-    <div style={{ textAlign: "center", marginBottom: "25px" }}>
-      <div
-        style={{
-          width: "55px",
-          height: "55px",
-          borderRadius: "16px",
-          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "auto",
-          marginBottom: "10px",
-          color: "#fff",
-          fontSize: "22px",
-          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
-        }}
+        key={fromType}
+        show={showModal}
+        onHide={handleCloseModal}
+        centered
+        backdrop="static"
+        contentClassName="bg-transparent border-0 shadow-none"
+        dialogClassName="bg-transparent"
+        style={{ "--bs-modal-width": "800px" }}
       >
-        <i className="bi-person-fill"></i>
-      </div>
+        <div
+          style={{
+            maxWidth: "800px",
+            width: "100%",
+            margin: "auto",
 
-      <h3
-        style={{
-          fontWeight: "700",
-          color: "#6f42c1",
-          marginBottom: "4px",
-        }}
-      >
-        {TITULOS[fromType]}
-      </h3>
+            backdropFilter: "blur(12px)",
+            background: "rgba(255,255,255,0.9)",
+            borderRadius: "18px",
+            padding: "22px",
+            position: "relative",
 
-      <div
-        style={{
-          width: "70px",
-          height: "4px",
-          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
-          margin: "10px auto 0",
-          borderRadius: "10px",
-        }}
-      />
-    </div>
-
-    {/* CONTENIDO */}
-    <div
-      style={{
-        background: "#ffffff",
-        borderRadius: "18px",
-        padding: "28px",
-        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-        transition: "all 0.3s ease",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        {fromType === "crear" && (
-          <CrearEmpleado
-            onClose={handleCloseModal}
-            onUpdate={cargarEmpleados}
+            border: "2px solid #6f42c1",
+            boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+          }}
+        >
+          {/* Glow decorativo */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "22px",
+              boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+              pointerEvents: "none",
+            }}
           />
-        )}
 
-        {fromType === "ver" && (
-          <VerEmpleado id_empleado={empleadoId} />
-        )}
+          {/* Botón cerrar */}
+          <button
+            onClick={handleCloseModal}
+            style={{
+              position: "absolute",
+              top: "14px",
+              right: "14px",
+              width: "38px",
+              height: "38px",
+              borderRadius: "50%",
+              border: "none",
+              background: "#f3f0ff",
+              color: "#6f42c1",
+              fontSize: "18px",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+            onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+          >
+            ✕
+          </button>
 
-        {fromType === "editar" && (
-          <EditEmpleado
-            id_empleado={empleadoId}
-            onClose={handleCloseModal}
-            onUpdate={cargarEmpleados}
-          />
-        )}
-      </div>
-    </div>
-  </div>
+          {/* HEADER PRO */}
+          <div style={{ textAlign: "center", marginBottom: "25px" }}>
+            <div
+              style={{
+                width: "55px",
+                height: "55px",
+                borderRadius: "16px",
+                background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "auto",
+                marginBottom: "10px",
+                color: "#fff",
+                fontSize: "22px",
+                boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              }}
+            >
+              <i className="bi-person-fill"></i>
+            </div>
 
-  {/* ANIMACIONES */}
-  <style>
-    {`
+            <h3
+              style={{
+                fontWeight: "700",
+                color: "#6f42c1",
+                marginBottom: "4px",
+              }}
+            >
+              {TITULOS[fromType]}
+            </h3>
+
+            <div
+              style={{
+                width: "70px",
+                height: "4px",
+                background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+                margin: "10px auto 0",
+                borderRadius: "10px",
+              }}
+            />
+          </div>
+
+          {/* CONTENIDO */}
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: "18px",
+              padding: "28px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+              transition: "all 0.3s ease",
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              {fromType === "crear" && (
+                <CrearEmpleado
+                  onClose={handleCloseModal}
+                  onUpdate={cargarEmpleados}
+                />
+              )}
+
+              {fromType === "ver" && (
+                <VerEmpleado id_empleado={empleadoId} />
+              )}
+
+              {fromType === "editar" && (
+                <EditEmpleado
+                  id_empleado={empleadoId}
+                  onClose={handleCloseModal}
+                  onUpdate={cargarEmpleados}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ANIMACIONES */}
+        <style>
+          {`
       @keyframes modalFade {
         from {
           opacity: 0;
@@ -636,10 +670,10 @@ console.log(empleado);
         }
       }
     `}
-  </style>
+        </style>
 
-  
-</Modal>
+
+      </Modal>
     </>
   );
 };

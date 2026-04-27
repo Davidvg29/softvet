@@ -32,7 +32,6 @@ const CrearProveedor = ({ onClose, onUpdated }) => {
 
     try {
       const response = await axios.post(`${proveedores}/crear`, proveedor, { withCredentials: true });
-      console.log("proveedor creado correctamente", response.data);
       setProveedor({
         nombre_proveedor: "",
         direccion_proveedor: "",

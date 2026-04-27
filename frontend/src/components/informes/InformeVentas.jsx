@@ -73,7 +73,6 @@ const InformeVentas = () => {
       setVentas(res.data);
     } catch (err) {
       setError("No se pudo obtener el informe de ventas.");
-      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -174,8 +173,6 @@ const InformeVentas = () => {
   const blob = pdf.output("bloburl");
   window.open(blob, "_blank");
 };
-
-console.log(listaClientes);
 
   return (
     <div>

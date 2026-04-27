@@ -209,7 +209,7 @@ const VerHistoriaClinica = ({ id, mostrarDetalles = true }) => {
                                 key={detalle.id_detalle_historia_clinica}
                                 className="m-4 p-4 shadow border-info"
                                 style={{
-                                    backgroundColor: index % 2 === 0 ? "#e4d0f5" : "#b48acc",
+                                    backgroundColor: index % 2 === 0 ? "#d1ecff" : "#b48acc",
                                     borderRadius: "10px",
                                     color: "#000000",
                                     borderLeft: "10px solid #9d00ff",

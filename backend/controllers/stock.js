@@ -2,7 +2,9 @@ const { connection } = require("../config/bd/dataBase");
 const { validationsCrearStock } = require("../validations/stock");
 
 const verStock = (req, res) => {
-    const queryGetStock = `
+    const { fechaDesde, fechaHasta } = req.query;
+
+    let queryGetStock = `
         SELECT 
             productos.id_producto, 
             productos.nombre_producto, 
@@ -29,10 +31,20 @@ const verStock = (req, res) => {
         LEFT JOIN sucursales ON stock.id_sucursal = sucursales.id_sucursal
 
         WHERE productos.is_active = 1
-          AND (sucursales.is_active = 1 OR sucursales.is_active IS NULL);
+        AND (sucursales.is_active = 1 OR sucursales.is_active IS NULL)
     `;
 
-    connection.query(queryGetStock, (error, results) => {
+    const params = [];
+
+    // 🔥 filtro por fechas (solo si vienen)
+    if (fechaDesde && fechaHasta) {
+        queryGetStock += ` AND DATE(stock.fecha_ingreso) BETWEEN ? AND ?`;
+        params.push(fechaDesde, fechaHasta);
+    }
+
+    queryGetStock += ` ORDER BY stock.fecha_ingreso DESC`;
+
+    connection.query(queryGetStock, params, (error, results) => {
         if (error) {
             return res.status(500).json({ error: 'Error al obtener el stock' });
         } else {

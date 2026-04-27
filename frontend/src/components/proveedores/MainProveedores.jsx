@@ -47,7 +47,6 @@ const MainProveedores = () => {
         try {
 
             const { data } = await axios.get(`${proveedores}/ver`, { withCredentials: true });
-            console.log(data);
             setProveedor(data);
         } catch (error) {
             console.error("Error al cargar los proveedores:", error);

@@ -17,12 +17,82 @@ const MainStock = () => {
   const [busqueda, setBusqueda] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [fromType, setFromType] = useState('');
-  const {empleado} = useEmpleadoStore()
+  const { empleado } = useEmpleadoStore()
+  const [fechaDesde, setFechaDesde] = useState('');
+  const [fechaHasta, setFechaHasta] = useState('');
 
   const TITULOS = {
     crear: 'Nuevo Stock',
     ver: 'Ver Stock',
     editar: 'Editar Stock',
+  };
+
+  const obtenerFechaFormateada = (diasRestar = 0) => {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - diasRestar);
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleFiltroRapido = (dias) => {
+    const hoy = obtenerFechaFormateada(0);
+    const desde = obtenerFechaFormateada(dias);
+
+    setFechaDesde(desde);
+    setFechaHasta(hoy);
+
+    handleBuscarPorFechas(desde, hoy); // 🔥 ejecuta búsqueda automática
+  };
+
+  const handleBuscarPorFechas = async (overrideDesde = null, overrideHasta = null) => {
+    const fDesde = overrideDesde || fechaDesde;
+    const fHasta = overrideHasta || fechaHasta;
+
+    if (!fDesde || !fHasta) {
+      Swal.fire("Error", "Seleccioná ambas fechas", "warning");
+      return;
+    }
+
+    if (new Date(fDesde) > new Date(fHasta)) {
+      Swal.fire("Error", "La fecha desde no puede ser mayor a la hasta", "warning");
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(`${STOCK}/ver`, {
+        params: {
+          fechaDesde: fDesde,
+          fechaHasta: fHasta,
+        },
+        withCredentials: true,
+      });
+
+      setStock(data);
+      setPaginaActual(1); // 🔥 clave para evitar bug de paginación
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "No se pudo filtrar", "error");
+    }
+  };
+
+  const botonAccionStyle = {
+    backgroundColor: "#6f42c1", border: "none", fontWeight: "bold", color: "#fff",
+    boxShadow: "0 4px 0 #59359a", transition: "all 0.1s ease", padding: "10px 20px", borderRadius: "10px", whiteSpace: "nowrap"
+  };
+  const botonRapidoStyle = {
+    backgroundColor: "#e2d9f3", color: "#6f42c1", border: "1px solid #6f42c1",
+    fontWeight: "bold", transition: "all 0.15s ease", padding: "8px 15px", borderRadius: "8px", whiteSpace: "nowrap"
+  };
+
+  const botonLimpiar = () => {
+    setFechaDesde('');
+    setFechaHasta('');
+    cargarStock();
+    setPaginaActual(1);
   };
 
   const handleOpenModal = (type, id = null) => {
@@ -32,7 +102,6 @@ const MainStock = () => {
   };
 
   const handleCloseModal = () => {
-    console.log('cerrar modal');
     setShowModal(false);
     setFromType('');
   };
@@ -40,7 +109,7 @@ const MainStock = () => {
   const cargarStock = async () => {
     try {
       const response = await axios.get(`${STOCK}/ver`, { withCredentials: true });
-      setStock(response.data.reverse());
+      setStock(response.data);
     } catch (error) {
       console.error('Error al cargar Stock:', error);
     }
@@ -100,7 +169,7 @@ const MainStock = () => {
 
     try {
 
-      const response = await axios.delete(`${STOCK}/borrar/${id}`, { data:{id_empleado: empleado.id_empleado}, withCredentials: true });
+      const response = await axios.delete(`${STOCK}/borrar/${id}`, { data: { id_empleado: empleado.id_empleado }, withCredentials: true });
 
       if (response.status === 200) {
 
@@ -132,7 +201,7 @@ const MainStock = () => {
 
   return (
     <>
-    <div className="text-center">
+      <div className="text-center">
         <h1
           className="fw-bold animate-title p-2 mb-2 d-inline-block"
           style={{
@@ -144,7 +213,7 @@ const MainStock = () => {
             textTransform: "uppercase",
             borderRadius: "12px",
           }}
-        ><i className="bi bi-boxes" style={{marginRight: "8px"}}></i>
+        ><i className="bi bi-boxes" style={{ marginRight: "8px" }}></i>
           STOCK
         </h1>
       </div>
@@ -170,6 +239,62 @@ const MainStock = () => {
 `}
       </style>
       <div className="w-100 d-flex justify-content-center align-items-center flex-column mb-5">
+
+        {/* Fila superior: Filtros de fecha y Botones Rápidos */}
+        <div className="d-flex align-items-center gap-2 p-3 bg-light rounded shadow-sm border flex-wrap" style={{ borderColor: '#e0e0e0' }}>
+          <span className="fw-bold text-secondary">Desde:</span>
+          <Form.Control
+            type="date"
+            value={fechaDesde}
+            onChange={(e) => setFechaDesde(e.target.value)}
+            style={{ width: 'auto' }}
+          />
+
+          <span className="fw-bold text-secondary ms-2">Hasta:</span>
+          <Form.Control
+            type="date"
+            value={fechaHasta}
+            onChange={(e) => setFechaHasta(e.target.value)}
+            style={{ width: 'auto' }}
+          />
+
+          <Button
+            style={botonAccionStyle}
+            onClick={() => handleBuscarPorFechas()}
+            className=""
+            onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+          >
+            <i className="bi bi-search "></i>
+          </Button>
+          <Button
+            style={botonAccionStyle}
+            onClick={() => botonLimpiar()}
+            className=""
+            onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
+            onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+          >
+            <i className="bi bi-trash3"></i>
+          </Button>
+
+          <div className="d-flex gap-2 ms-3 border-start ps-3" style={{ borderColor: '#ccc' }}>
+            <Button
+              style={botonRapidoStyle}
+              className="btn-rapido"
+              onClick={() => handleFiltroRapido(1)}
+            >
+              Último día
+            </Button>
+            <Button
+              style={botonRapidoStyle}
+              className="btn-rapido"
+              onClick={() => handleFiltroRapido(3)}
+            >
+              Últimos 3 días
+            </Button>
+          </div>
+        </div>
+
         <div className="d-flex justify-content-center align-items-center m-3 w-75">
           <Form.Control
             type="text"
@@ -465,145 +590,145 @@ const MainStock = () => {
       </div>
 
       <Modal
-  key={fromType}
-  show={showModal}
-  onHide={handleCloseModal}
-  centered
-  backdrop="static"
-  contentClassName="bg-transparent border-0 shadow-none"
-  dialogClassName="bg-transparent"
-  style={{ "--bs-modal-width": "850px" }} // 👈 ideal para stock
->
-  <div
-    style={{
-      maxWidth: "850px",
-      width: "100%",
-      margin: "auto",
-
-      backdropFilter: "blur(12px)",
-      background: "rgba(255,255,255,0.9)",
-      borderRadius: "18px",
-      padding: "22px",
-      position: "relative",
-
-      border: "2px solid #6f42c1",
-      boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
-      animation: "modalFade 0.3s ease",
-    }}
-  >
-    {/* Glow */}
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        borderRadius: "22px",
-        boxShadow: "0 0 40px rgba(111,66,193,0.25)",
-        pointerEvents: "none",
-      }}
-    />
-
-    {/* Cerrar */}
-    <button
-      onClick={handleCloseModal}
-      style={{
-        position: "absolute",
-        top: "14px",
-        right: "14px",
-        width: "38px",
-        height: "38px",
-        borderRadius: "50%",
-        border: "none",
-        background: "#f3f0ff",
-        color: "#6f42c1",
-        fontSize: "18px",
-        cursor: "pointer",
-        transition: "0.2s",
-      }}
-      onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
-      onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
-    >
-      ✕
-    </button>
-
-    {/* HEADER */}
-    <div style={{ textAlign: "center", marginBottom: "25px" }}>
-      <div
-        style={{
-          width: "55px",
-          height: "55px",
-          borderRadius: "16px",
-          background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "auto",
-          marginBottom: "10px",
-          color: "#fff",
-          fontSize: "22px",
-          boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
-        }}
+        key={fromType}
+        show={showModal}
+        onHide={handleCloseModal}
+        centered
+        backdrop="static"
+        contentClassName="bg-transparent border-0 shadow-none"
+        dialogClassName="bg-transparent"
+        style={{ "--bs-modal-width": "850px" }} // 👈 ideal para stock
       >
-        <i className="bi-boxes"></i>
-      </div>
+        <div
+          style={{
+            maxWidth: "850px",
+            width: "100%",
+            margin: "auto",
 
-      <h3
-        style={{
-          fontWeight: "700",
-          color: "#6f42c1",
-          marginBottom: "4px",
-        }}
-      >
-        {TITULOS[fromType]}
-      </h3>
+            backdropFilter: "blur(12px)",
+            background: "rgba(255,255,255,0.9)",
+            borderRadius: "18px",
+            padding: "22px",
+            position: "relative",
 
-      <div
-        style={{
-          width: "70px",
-          height: "4px",
-          background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
-          margin: "10px auto 0",
-          borderRadius: "10px",
-        }}
-      />
-    </div>
-
-    {/* CONTENIDO */}
-    <div
-      style={{
-        background: "#ffffff",
-        borderRadius: "18px",
-        padding: "26px",
-        boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-        maxHeight: "70vh", // 👈 por si hay mucho contenido
-        overflowY: "auto",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-        {fromType === "crear" && (
-          <CrearStock
-            onClose={handleCloseModal}
-            onUpdate={cargarStock}
+            border: "2px solid #6f42c1",
+            boxShadow: "0 20px 60px rgba(111,66,193,0.25)",
+            animation: "modalFade 0.3s ease",
+          }}
+        >
+          {/* Glow */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "22px",
+              boxShadow: "0 0 40px rgba(111,66,193,0.25)",
+              pointerEvents: "none",
+            }}
           />
-        )}
 
-        {fromType === "ver" && (
-          <VerStock id_producto={stockId} />
-        )}
+          {/* Cerrar */}
+          <button
+            onClick={handleCloseModal}
+            style={{
+              position: "absolute",
+              top: "14px",
+              right: "14px",
+              width: "38px",
+              height: "38px",
+              borderRadius: "50%",
+              border: "none",
+              background: "#f3f0ff",
+              color: "#6f42c1",
+              fontSize: "18px",
+              cursor: "pointer",
+              transition: "0.2s",
+            }}
+            onMouseEnter={(e) => (e.target.style.background = "#e0d7ff")}
+            onMouseLeave={(e) => (e.target.style.background = "#f3f0ff")}
+          >
+            ✕
+          </button>
 
-        {fromType === "editar" && (
-          <EditStock
-            id_stock={stockId}
-            onClose={handleCloseModal}
-            onUpdate={cargarStock}
-          />
-        )}
-      </div>
-    </div>
-  </div>
+          {/* HEADER */}
+          <div style={{ textAlign: "center", marginBottom: "25px" }}>
+            <div
+              style={{
+                width: "55px",
+                height: "55px",
+                borderRadius: "16px",
+                background: "linear-gradient(135deg, #6f42c1, #9b59b6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "auto",
+                marginBottom: "10px",
+                color: "#fff",
+                fontSize: "22px",
+                boxShadow: "0 10px 25px rgba(111,66,193,0.4)",
+              }}
+            >
+              <i className="bi-boxes"></i>
+            </div>
 
-  {/* Animación */}
-  <style>
-    {`
+            <h3
+              style={{
+                fontWeight: "700",
+                color: "#6f42c1",
+                marginBottom: "4px",
+              }}
+            >
+              {TITULOS[fromType]}
+            </h3>
+
+            <div
+              style={{
+                width: "70px",
+                height: "4px",
+                background: "linear-gradient(90deg, #6f42c1, #9b59b6)",
+                margin: "10px auto 0",
+                borderRadius: "10px",
+              }}
+            />
+          </div>
+
+          {/* CONTENIDO */}
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: "18px",
+              padding: "26px",
+              boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+              maxHeight: "70vh", // 👈 por si hay mucho contenido
+              overflowY: "auto",
+            }}
+          >
+            <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+              {fromType === "crear" && (
+                <CrearStock
+                  onClose={handleCloseModal}
+                  onUpdate={cargarStock}
+                />
+              )}
+
+              {fromType === "ver" && (
+                <VerStock id_producto={stockId} />
+              )}
+
+              {fromType === "editar" && (
+                <EditStock
+                  id_stock={stockId}
+                  onClose={handleCloseModal}
+                  onUpdate={cargarStock}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Animación */}
+        <style>
+          {`
       @keyframes modalFade {
         from {
           opacity: 0;
@@ -615,8 +740,8 @@ const MainStock = () => {
         }
       }
     `}
-  </style>
-</Modal>
+        </style>
+      </Modal>
     </>
   );
 };

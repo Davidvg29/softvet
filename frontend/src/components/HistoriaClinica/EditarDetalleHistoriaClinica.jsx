@@ -50,7 +50,6 @@ const EditarDetalleHistoriaClinica = ({ id, onClose, onUpdated }) => {
     const cargarDetalle = async () => {
       try {
         const response = await axios.get(`${detalleHistoriasClinicas}/verDetalle/${id}`, { withCredentials: true });
-        console.log("Respuesta Completa del Backend:", response.data);
         const data = Array.isArray(response.data) && response.data.length > 0
           ? response.data[0]
           : response.data;
@@ -58,7 +57,6 @@ const EditarDetalleHistoriaClinica = ({ id, onClose, onUpdated }) => {
         if (!data) {
           throw new Error("Respuesta de detalle vacío.");
         }
-        console.log("Valor de data.observaciones:", data.observaciones);
         setDetalle(data);
         setObservaciones(data.observaciones || "");
 
@@ -97,8 +95,6 @@ const EditarDetalleHistoriaClinica = ({ id, onClose, onUpdated }) => {
       id_empleado: idEmpleadoLogueado, 
       observaciones: observaciones,
     };
-
-    console.log("Datos ENVIADOS para UPDATE:", detalleData);
 
     try {
       await axios.put(

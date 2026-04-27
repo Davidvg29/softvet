@@ -16,8 +16,6 @@ const VerMascota = ({ id_mascota }) => {
           withCredentials: true,
         });
 
-        console.log("DATA RECIBIDA:", response.data);
-
         // Si devuelve array, toma la primera
         if (Array.isArray(response.data)) {
           setMascota(response.data[0]);

@@ -47,7 +47,6 @@ const MainRaza = () => {
         try {
 
             const { data } = await axios.get(`${razas}/ver`, { withCredentials: true });
-            console.log(data);
             setRaza(data.reverse());
         } catch (error) {
             console.error("Error al cargar las razas:", error);
@@ -494,9 +493,9 @@ const MainRaza = () => {
           boxShadow: "0 8px 20px rgba(111,66,193,0.35)",
         }}
       >
-       
+       <i className="bi bi-diagram-3-fill"></i>
       </div>
-
+        
       <h3
         style={{
           fontWeight: "700",
@@ -505,7 +504,7 @@ const MainRaza = () => {
           fontSize: "20px",
         }}
       >
-        <i className="bi bi-paw"></i>
+        
         {TITULOS[fromType]}
       </h3>
 

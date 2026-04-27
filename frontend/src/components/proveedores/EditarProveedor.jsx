@@ -45,7 +45,6 @@ const EditarProveedor = ({ id, onClose, onUpdated }) => {
 
     try {
       const response = await axios.put(`${proveedores}/editar/${id}`, proveedor, { withCredentials: true });
-      console.log("proveedor editado correctamente", response.data);
       setProveedor({
         nombre_proveedor: "",
         direccion_proveedor: "",

@@ -18,7 +18,7 @@ const VerCategorias = ({id_categoria}) => {
                 
                 if (response.data) {
                 setCategoria(response.data);
-                console.log("Datos de la categoria recibida:", response.data);
+                // console.log("Datos de la categoria recibida:", response.data);
             } else {
                    setError("No se encontraron datos para la categoria.");
                 console.error("No se encontraron datos para la categoria.");

@@ -57,7 +57,7 @@ const RestablecerContraseñaComponente = () => {
         navigate("/login");
       }, 3000);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setMessage(error.response.data);
     }
   };

@@ -41,8 +41,6 @@ function CrearProducto({ onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    console.log("FormData antes de validar:", formData);
 
     const validation = validationCrearProductos(
   formData.nombre_producto,
@@ -59,11 +57,8 @@ if (validation.length !== 0) {
       confirmButtonColor: "#6f42c1",
     });
   }
-
-console.log("🟣 Datos enviados:", formData);
     try {
       const response = await axios.post(`${productos}/crear`, formData, { withCredentials: true });
-      console.log(response.data);
       
       if (response.status === 200 || response.status === 201) {
 

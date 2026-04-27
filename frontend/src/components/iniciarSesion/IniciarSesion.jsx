@@ -29,7 +29,6 @@ const IniciarSesion = () => {
       setEmpleado(data.empleado);
       navigate("/dashboard");
     } catch (error) {
-      console.log(error);
       setMessage("Credenciales incorrectas.");
     }
   };
