@@ -177,7 +177,7 @@ const Header = () => {
                         >
                             <NavDropdown.Item
                                 as="a"
-                                href="https://drive.usercontent.google.com/download?id=165mgsWMSG4lqGPpehBV0JDZMWKcee5fQ&export=download&authuser=0&confirm=t&uuid=9a78caf0-ef64-494f-bf3b-43fbbb0eeced&at=APcXIO1ZnRTaAbVLcg0zizN5fZWX:1771541807445"
+                                href="https://drive.usercontent.google.com/download?id=11g1PtKhxsExvvlqH07lfKubeC4zfiC_K&export=download&authuser=0"
                                 download
                             >
                                 Manual de Usuario
